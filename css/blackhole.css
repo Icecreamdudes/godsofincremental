@@ -1,0 +1,60 @@
+/* Set the background color to black */
+body {
+    background-color: #000;
+}
+
+/* Create the black hole */
+.black-hole {
+    /* Set the width and height to 200px to create a circular shape */
+    width: 200px;
+    height: 200px;
+    /* Set the border radius to 50% to create a circular shape */
+    border-radius: 50%;
+    /* Use a radial gradient to create a sense of depth and darkness */
+    background: radial-gradient(ellipse at center, #000 0%, #111 50%, #222 100%);
+    /* Add some texture and depth using box-shadow */
+    box-shadow: inset 0 0 50px #111, 0 0 50px #111;
+    /* Rotate the black hole using an animation */
+    animation: rotates 10s linear infinite;
+    /* Add a glow effect using box-shadow and a radial gradient */
+    box-shadow: 0 0 20px 10px #8a2be2, inset 0 0 50px #111, 0 0 50px #111;
+    background: radial-gradient(ellipse at center, #000 0%, #111 50%, #222 100%, #8a2be2 150%);
+    /* Add another animation to make the glow effect pulse */
+    animation: pulses 5s ease-in-out infinite;
+    /* Add a transform to scale the black hole on hover */
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Define the animation to rotate the black hole */
+@keyframes rotates {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Define the animation to pulse the glow effect */
+@keyframes pulses {
+    0% {
+        opacity: 0.3;
+        box-shadow: 0 0 20px 10px red, inset 0 0 50px #111, 0 0 50px #111;
+    }
+
+    50% {
+        opacity: 0.7;
+        box-shadow: 0 0 40px 20px red, inset 0 0 50px #111, 0 0 50px #111;
+    }
+
+    100% {
+        opacity: 0.3;
+        box-shadow: 0 0 20px 10px red, inset 0 0 50px #111, 0 0 50px #111;
+    }
+}
+
+/* Scale the black hole on hover */
+.black-hole:hover {
+    transform: scale(1.05);
+}
