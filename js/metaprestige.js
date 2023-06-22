@@ -13,11 +13,16 @@
 
         //STANDARD PATH FACTORS
         scorefrombestprestigeenergy: new Decimal(1),
+
+        incrementalenergy: new Decimal(0),
+        incrementalenergytoget: new Decimal(0),
+        incrementalenergyeffect: new Decimal(1),
     }
     },
     onPrestige()
     {
         player.bestpoints = new Decimal(0)
+        player.m.incrementalenergy = player.m.incrementalenergy.add(player.m.incrementalenergytoget)
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
     resource: "Incremental Power", // Name of prestige currency
@@ -38,8 +43,8 @@
         background: 'linear-gradient(45deg, #8a00a9, #e52e71)',
         position: 'relative',
         overflow: 'hidden', 
-        boxShadow: '0 0 20px 10px rgba(138, 0, 169, 0.7)',
-        textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+        boxShadow: '0 0 50px 10px rgba(138, 0, 169, 0.7)',
+        textShadow: '1px 1px 2px rgba(0.4, 0.4, 0.4, 0.4)', // Text shadow
         border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -54,6 +59,9 @@
         if (player.i.standardpath.eq(1)) player.m.scorefrombestprestigeenergy = player.i.bestprestigeenergy.slog().div(5).add(1)
 
         player.m.score = player.m.scorefrombestpoints.mul(player.m.scorefrombestprestigeenergy)
+
+        player.m.incrementalenergytoget = player.i.prestigemachines.slog().pow(3).add(1)
+        player.m.incrementalenergyeffect = player.m.incrementalenergy.pow(1.2).add(1)
     },
     clickables: {
     },
@@ -95,6 +103,21 @@
             effect() 
             {
                  return player[this.layer].points.add(2)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
+        13:
+        {
+            title: "Boost II",
+            unlocked() { return true },
+            description: "Boosts prestige points based on unspent incremental power.",
+            cost: new Decimal(4),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+            effect() 
+            {
+                 return player[this.layer].points.mul(0.5).add(2)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
         },
@@ -155,6 +178,11 @@
                            ["raw-html", function () { return "<h3>YOUR SCORE: " + format(player.m.score) }, { "color": "white", "font-size": "15px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            "prestige-button",
+                           ["blank", "25px"],
+            ["raw-html", function () { return "<h2>You have " + format(player.m.incrementalenergy) + " incremental energy." }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return "<h3>Your incremental energy give a x" + format(player.m.incrementalenergyeffect) + " boost to points and prestige energy." }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return "<h3>Your prestige machines will give you " + format(player.m.incrementalenergytoget) + " incremental energy on reset." }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+
                     ]
 
             },
@@ -167,7 +195,7 @@
                         ["blank", "25px"],
             ["raw-html", function () { return "<h2>You have " + format(player.m.points) + " incremental power." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
-                        ["row", [["upgrade", 11], ["upgrade", 12]]],
+                        ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13]]],
         ]
 
             },

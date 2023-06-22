@@ -16,6 +16,11 @@
         prestigeenergyeffectonpoints: new Decimal(1),
         prestigeenergypersecond: new Decimal(0),
         producingprestigeenergy: new Decimal(0),
+        prestigemachines: new Decimal(0),
+        prestigemachineeffect: new Decimal(0),
+        prestigemachinereq: new Decimal(250000),
+        machinecorruption: new Decimal(0),
+        machinecorruptioneffect: new Decimal(0),
     }
     },
     automate() {
@@ -36,14 +41,25 @@
                 "background-origin": "border-box",
 			}
         }
-        if (player.unlockedmetaprestige.eq(1)) {
+        if (player.unlockedmetaprestige.eq(1) && player.i.standardpath.eq(0)) {
             return {
                 background: "white",
                 "background-origin": "border-box",
-                animation: 'orbit 50s infinite linear', // Rotation animation
+                animation: 'orbit 25s infinite linear', // Rotation animation
                 position: "absolute",
-                top: "30%",
-                left: "45%",
+                top: "27.5%",
+                left: "46.5%",
+            }
+        }
+        if (player.i.standardpath.eq(1)) {
+            return {
+                background: "#ffffaa",
+                "background-origin": "border-box",
+                animation: 'orbit 25s infinite linear', // Rotation animation
+                position: "absolute",
+                boxShadow: '0 0 10px 2px #ffffff',
+                top: "27.5%",
+                left: "46.5%",
             }
         }
     },
@@ -57,6 +73,8 @@
         player.i.prestigepointstoget = player.points.pow(0.4).div(3)
         if (player.i.standardpath.eq(1)) player.i.prestigepointstoget = player.i.prestigepointstoget.mul(1.25)
         if (player.i.standardpath.eq(1)) player.i.prestigepointstoget = player.i.prestigepointstoget.mul(player.i.prestigeenergyeffect)
+        if (hasUpgrade("m", 13)) player.i.prestigepointstoget = player.i.prestigepointstoget.mul(upgradeEffect("m", 13))
+        if (player.i.standardpath.eq(1)) player.i.prestigepointstoget = player.i.prestigepointstoget.mul(player.i.prestigemachineeffect)
 
         if (player.i.prestigepause.gt(0)) {
             layers.i.prestigereset();
@@ -68,13 +86,25 @@
 
         player.i.prestigeenergypersecond = buyableEffect("i", 15)
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.producingprestigeenergy)
+        player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.prestigemachineeffect)
 
         player.i.prestigeenergy = player.i.prestigeenergy.add(player.i.prestigeenergypersecond.mul(delta))
 
         player.i.prestigeenergyeffect = player.i.prestigeenergy.pow(0.4).add(1)
-        player.i.prestigeenergyeffectonpoints = player.i.prestigeenergy.pow(0.2).add(1)
+        player.i.prestigeenergyeffectonpoints = player.i.prestigeenergy.pow(0.2).add(1).mul(player.i.machinecorruptioneffect)
 
         if (player.i.prestigeenergy.gte(player.i.bestprestigeenergy)) player.i.bestprestigeenergy = player.i.prestigeenergy
+
+        if (player.machinescene.eq(22)) {
+            player.machinecutscene = new Decimal(0)
+        }
+
+        if (player.i.prestigemachines.lt(100))player.i.prestigemachinereq = Decimal.pow(player.i.prestigemachines.add(1).mul(25000), 1.3)
+        if (player.i.prestigemachines.gte(100)) player.i.prestigemachinereq = Decimal.pow(player.i.prestigemachines.add(1).mul(250000), 1.3)
+        player.i.prestigemachineeffect = player.i.prestigemachines.pow(1.5).add(1)
+
+        player.i.machinecorruption = player.i.prestigemachines.pow(1.75)
+        player.i.machinecorruptioneffect = player.i.machinecorruption.pow(0.75).add(1)
     },
     prestigereset()
     {
@@ -104,7 +134,7 @@
         },
         13: {
             title() { return "<h2>Prestige for prestige points" },
-            canClick() { return player.i.prestigepointstoget.gte(1) },
+            canClick() { return player.i.prestigepointstoget.gte(1) && player.points.gt(1) },
             unlocked() { return player.prestigecutscene.eq(0) },
             onClick() {
                 player.i.prestigepause = new Decimal(3)
@@ -114,7 +144,7 @@
         },
         14: {
             title() { return "+" + format(player.i.prestigepointstoget) + " PP" },
-            canClick() { return player.i.prestigepointstoget.gte(1) },
+            canClick() { return player.i.prestigepointstoget.gte(1) && player.points.gt(1) },
             unlocked() { return player.prestigecutscene.eq(0) },
             onClick() {
                 player.i.prestigepause = new Decimal(3)
@@ -186,6 +216,40 @@
                 player.i.producingprestigeenergy = new Decimal(1)
             },
         },
+        19: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.machinecutscene.eq(1) },
+            unlocked() { return player.machinescene.neq(22) },
+            onClick() {
+                player.machinescene = player.machinescene.add(1)
+            },
+        },
+        21: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.machinecutscene.eq(1) },
+            unlocked() { return player.machinescene.neq(22) && player.machinescene.neq(0) },
+            onClick() {
+                player.machinescene = player.machinescene.sub(1)
+            },
+        },
+        22: {
+            title() { return "<h2>Create a prestige machine." },
+            canClick() { return player.i.prestigepoints.gte(player.i.prestigemachinereq) },
+            unlocked() { return player.machinecutscene.eq(0) && player.i.standardpath.eq(1) },
+            onClick() {
+                player.i.prestigemachines = player.i.prestigemachines.add(1)
+            },
+            style: { "background-color": "#ffffaa", width: '400px', "min-height": '100px' },
+        },
+        23: {
+            title() { return "<h5>" + format(player.i.prestigepoints) + "<br>/" + format(player.i.prestigemachinereq) },
+            canClick() { return player.i.prestigepoints.gte(player.i.prestigemachinereq) },
+            unlocked() { return player.machinecutscene.eq(0) && player.i.standardpath.eq(1) && hasUpgrade("i", 13) && player.machinecutscene.eq(0) },
+            onClick() {
+                player.i.prestigemachines = player.i.prestigemachines.add(1)
+            },
+            style: { width: '150px', "min-height": '60px', "background-color": "#ffffaa", }
+        },
     },
     upgrades: {
         //STANDARD PATH
@@ -211,6 +275,17 @@
             unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 11) },
             description: "Automatically buys main buyables without spending points.",
             cost: new Decimal(10000),
+            canAfford() { return player.i.standardpath.eq(1)},
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Prestige Points",
+            currencyInternalName: "prestigepoints",
+        },
+        13:
+        {
+            title: "SP Prestige Upgrade III",
+            unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 11) },
+            description: "Unlocks machines.",
+            cost: new Decimal(1e6),
             canAfford() { return player.i.standardpath.eq(1)},
             currencyLocation() { return player.i },
             currencyDisplayName: "Prestige Points",
@@ -407,7 +482,7 @@
                         ["blank", "25px"],
                         ["row", [["buyable", 14]]],
                         ["blank", "25px"],
-                        ["row", [["upgrade", 11], ["upgrade", 12]]],
+                        ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13]]],
                         ["row", [["clickable", 15]]],
                         ["row", [["clickable", 16]]],
                     ]
@@ -423,12 +498,59 @@
                         ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h2>You have " + format(player.i.prestigepoints) + "<h2> prestige points. " : ""}],
                         ["blank", "25px"],
                         ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h2>You have " + format(player.i.prestigeenergy) + "<h2> prestige energy. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
-                        ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>which has a x" + format(player.i.prestigeenergyeffect) + " boost to prestige points gain. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
-                        ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>but a /" + format(player.i.prestigeenergyeffectonpoints) + " divide on point gain. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>You are gaining " + format(player.i.prestigeenergypersecond) + "<h2> prestige energy per second. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>which gives a x" + format(player.i.prestigeenergyeffect) + " boost to prestige points gain. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>but a /" + format(player.i.prestigeenergyeffectonpoints) + " divide on point gain. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["buyable", 15]]],
                         ["blank", "25px"],
                         ["row", [["clickable", 18], ["clickable", 17]]],
+                    ]
+
+            },
+            "Machines": {
+                buttonStyle() { return { 'color': '#31aeb0' } },
+                unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 13) },
+                content:
+
+                    [
+                        ["raw-html", function () { return player.machinescene.eq(0) && player.i.standardpath.eq(1) ? "<h1> That yellow glow..." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(1) && player.i.standardpath.eq(1) ? "<h1> Maybe you do have a reason to be here." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(2) && player.i.standardpath.eq(1) ? "<h1>The standard path. The easiest one to master." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(3) && player.i.standardpath.eq(1) ? "<h1>Me and my team worked very hard to create a path like this." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(4) && player.i.standardpath.eq(1) ? "<h1>After many failed attempts. The path of singularity. The game developer." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(5) && player.i.standardpath.eq(1) ? "<h1>All attempts to produce a perfect hero." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(6) && player.i.standardpath.eq(1) ? "<h1>Yhvr was right. Maybe a simpler path is the way to start." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(7) && player.i.standardpath.eq(1) ? "<h1>You must be the hero! I will introduce myself." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(8) && player.i.standardpath.eq(1) ? "<h1>My name is Red Diamond. I am from THE HIGHER PLANE OF EXISTENCE." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(9) && player.i.standardpath.eq(1) ? "<h1>I am no being of incremental power, as I am from a foreign realm." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(10) && player.i.standardpath.eq(1) ? "<h1>I am not one of the four nobles, but I work with them." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(11) && player.i.standardpath.eq(1) ? "<h1>I want to make sure no hero loses to celestial powers." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(12) && player.i.standardpath.eq(1) ? "<h1>Unlike the last one..." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(13) && player.i.standardpath.eq(1) ? "<h1>If you have made contact with Yhvr, follow his directions." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(14) && player.i.standardpath.eq(1) ? "<h1>I am not the greatest at giving directions." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(15) && player.i.standardpath.eq(1) ? "<h1>Last time it didn't go so well." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(16) && player.i.standardpath.eq(1) ? "<h1>Your job now should be to produce prestige machines." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(17) && player.i.standardpath.eq(1) ? "<h1>They will provide a good booster and help with meta-prestiges." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(18) && player.i.standardpath.eq(1) ? "<h1>However, there are some corrupted energy in it." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(19) && player.i.standardpath.eq(1) ? "<h1>Oh shoot! I just realized!" : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(20) && player.i.standardpath.eq(1) ? "<h1>Platonic! The corruptions! The path of ascension! " : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.machinescene.eq(21) && player.i.standardpath.eq(1) ? "<h1>WHY DID I BRING THEM OVER TO THIS PATH..." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 21], ["clickable", 19]]],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0) ? "<h2>You have " + format(player.i.prestigepoints) + "<h2> prestige points. " : ""}],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0) ? "<h2>You have " + format(player.i.prestigemachines) + "<h2> prestige machines. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>which has a x" + format(player.i.prestigemachineeffect) + " boost to prestige energy and prestige point gain. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0) ? "<h2>Your machines cause there to be " + format(player.i.machinecorruption) + "<h2> machine corruption. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>which causes the prestige energy downside to be x" + format(player.i.machinecorruptioneffect) + " stronger. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 22]]],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>Req: " + format(player.i.prestigemachinereq) + " prestige points." : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>YOU CANNOT REFUND MACHINES. THE CORRUPTION IS INEVITABLE. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+
                     ]
 
             },
@@ -438,7 +560,7 @@
     tabFormat: [
                            ["raw-html", function () { return "You have " + format(player.points) + " points." }, { "color": "white", "font-size": "32px", "font-family": "monospace" }],
         ["raw-html", function () { return "You are gaining " + format(player.gain) + " points per second."}, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
-        ["row", [["clickable", 14]]],
+        ["row", [["clickable", 14], ["clickable", 23]]],
          ["microtabs", "stuff", { 'border-width': '0px' }],
     ],
     layerShown() { return true }
@@ -532,10 +654,10 @@ const styleSheet2 = document.createElement('style');
 styleSheet2.innerHTML = `
 @keyframes orbit {
     0% {
-        transform: rotate(0deg) translateX(200px) rotate(0deg);
+        transform: rotate(0deg) translateX(175px) rotate(0deg);
       }
       100% {
-        transform: rotate(360deg) translateX(200px) rotate(-360deg);
+        transform: rotate(360deg) translateX(175px) rotate(-360deg);
       }
   }
   `;

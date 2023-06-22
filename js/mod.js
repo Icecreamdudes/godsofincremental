@@ -49,6 +49,7 @@ function getPointGen() {
 	if (player.i.standardpath.eq(1)) gain = gain.div(player.i.prestigeenergyeffectonpoints)
 	if (hasUpgrade("i", 11)) gain = gain.mul(upgradeEffect("i", 11))
 	if (hasUpgrade("m", 12)) gain = gain.mul(upgradeEffect("m", 12))
+	gain = gain.mul(player.m.incrementalenergyeffect)
 	player.gain = gain
 	return gain
 }
@@ -61,6 +62,8 @@ function addedPlayerData() {
 		unlockedmetaprestige: new Decimal(0),
 		prestigecutscene: new Decimal(1),
         prestigescene: new Decimal(0),
+		machinecutscene: new Decimal(1),
+        machinescene: new Decimal(0),
 	}
 }
 
