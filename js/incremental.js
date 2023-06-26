@@ -15,12 +15,24 @@
         prestigeenergyeffect: new Decimal(1),
         prestigeenergyeffectonpoints: new Decimal(1),
         prestigeenergypersecond: new Decimal(0),
-        producingprestigeenergy: new Decimal(0),
+        producingprestigeenergy: new Decimal(1),
         prestigemachines: new Decimal(0),
         prestigemachineeffect: new Decimal(0),
         prestigemachinereq: new Decimal(250000),
         machinecorruption: new Decimal(0),
         machinecorruptioneffect: new Decimal(0),
+        noenergyboost: new Decimal(1),
+        bestpureenergy: new Decimal(0),
+        pureenergy: new Decimal(0),
+        pureenergypause: new Decimal(0),
+        pureenergyeffect: new Decimal(0),
+        pureenergytoget: new Decimal(0),
+        generatorenergy: new Decimal(0),
+        generatorenergyeffect: new Decimal(1),
+        generatorenergypersecond: new Decimal(0),
+        boosterenergy: new Decimal(0),
+        boosterenergyeffect: new Decimal(1),
+        boosterenergypersecond: new Decimal(0),
     }
     },
     automate() {
@@ -29,6 +41,11 @@
             buyBuyable("i", 11)
             buyBuyable("i", 12)
             buyBuyable("i", 13)
+        }
+        if (hasUpgrade("i", 16))
+        {
+            buyBuyable("i", 14)
+            buyBuyable("i", 15)
         }
     },
     nodeStyle() {
@@ -87,11 +104,13 @@
         player.i.prestigeenergypersecond = buyableEffect("i", 15)
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.producingprestigeenergy)
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.prestigemachineeffect)
+        player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.generatorenergyeffect)
 
         player.i.prestigeenergy = player.i.prestigeenergy.add(player.i.prestigeenergypersecond.mul(delta))
 
+        player.i.pureenergyeffect = player.i.pureenergy.pow(1.2).add(1)
         player.i.prestigeenergyeffect = player.i.prestigeenergy.pow(0.4).add(1)
-        player.i.prestigeenergyeffectonpoints = player.i.prestigeenergy.pow(0.2).add(1).mul(player.i.machinecorruptioneffect)
+        player.i.prestigeenergyeffectonpoints = player.i.prestigeenergy.pow(0.2).add(1).mul(player.i.machinecorruptioneffect).div(player.i.pureenergyeffect)
 
         if (player.i.prestigeenergy.gte(player.i.bestprestigeenergy)) player.i.bestprestigeenergy = player.i.prestigeenergy
 
@@ -99,12 +118,35 @@
             player.machinecutscene = new Decimal(0)
         }
 
-        if (player.i.prestigemachines.lt(100))player.i.prestigemachinereq = Decimal.pow(player.i.prestigemachines.add(1).mul(25000), 1.3)
-        if (player.i.prestigemachines.gte(100)) player.i.prestigemachinereq = Decimal.pow(player.i.prestigemachines.add(1).mul(250000), 1.3)
-        player.i.prestigemachineeffect = player.i.prestigemachines.pow(1.5).add(1)
+        if (player.i.prestigemachines.lt(100))player.i.prestigemachinereq = Decimal.pow(3, player.i.prestigemachines)
+        if (player.i.prestigemachines.gte(100)) player.i.prestigemachinereq = Decimal.pow(4, player.i.prestigemachines)
+        player.i.prestigemachineeffect = player.i.prestigemachines.pow(1.2).add(1)
 
         player.i.machinecorruption = player.i.prestigemachines.pow(1.75)
         player.i.machinecorruptioneffect = player.i.machinecorruption.pow(0.75).add(1)
+
+        if (player.i.prestigeenergy.neq(0)) player.i.noenergyboost = new Decimal(1)
+
+        if (player.pureenergyscene.eq(16)) {
+            player.pureenergycutscene = new Decimal(0)
+        }
+
+        if (player.i.pureenergypause.gt(0)) {
+            layers.i.pureenergyreset();
+        }
+        player.i.pureenergypause = player.i.pureenergypause.sub(1)
+
+        player.i.pureenergytoget = player.i.prestigepoints.div(1e7).pow(0.3)
+        if (player.i.pureenergy.gte(player.i.bestpureenergy)) player.i.bestpureenergy = player.i.pureenergy
+
+        player.i.generatorenergypersecond = buyableEffect("i", 16)
+        player.i.generatorenergy = player.i.generatorenergy.add(player.i.generatorenergypersecond.mul(delta))
+
+        player.i.boosterenergypersecond = buyableEffect("i", 17)
+        player.i.boosterenergy = player.i.boosterenergy.add(player.i.boosterenergypersecond.mul(delta))
+
+        player.i.generatorenergyeffect = player.i.generatorenergy.pow(0.3).add(1)
+        player.i.boosterenergyeffect = player.i.boosterenergy.pow(0.4).add(1)
     },
     prestigereset()
     {
@@ -114,6 +156,31 @@
         player.i.buyables[11] = new Decimal(0)
         player.i.buyables[12] = new Decimal(0)
         player.i.buyables[13] = new Decimal(0)
+    }, 
+    pureenergyreset()
+    {
+        if (player.i.standardpath.eq(1)) {
+        if (!hasUpgrade("i", 15)) {
+        for (let i = 0; i < player.i.upgrades.length; i++) {
+            if (+player.i.upgrades[i] < 14) {
+                player.i.upgrades.splice(i, 1);
+                i--;
+            }
+        }
+        }
+        player.points = new Decimal(1)
+        player.i.prestigeenergy = new Decimal(0)
+        player.i.prestigepoints = new Decimal(0)
+        player.i.prestigemachines = new Decimal(0)
+        player.i.generatorenergy = new Decimal(0)
+        player.i.boosterenergy = new Decimal(0)
+
+        player.i.buyables[11] = new Decimal(0)
+        player.i.buyables[12] = new Decimal(0)
+        player.i.buyables[13] = new Decimal(0)
+        player.i.buyables[14] = new Decimal(0)
+        player.i.buyables[15] = new Decimal(0)
+    }
     }, 
     clickables: {
         11: {
@@ -248,7 +315,69 @@
             onClick() {
                 player.i.prestigemachines = player.i.prestigemachines.add(1)
             },
+            style: { width: '150px', "min-height": '60px', "background-color": "#ffffaa" }
+        },
+        24: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.pureenergycutscene.eq(1) },
+            unlocked() { return player.pureenergyscene.neq(16) },
+            onClick() {
+                player.pureenergyscene = player.pureenergyscene.add(1)
+            },
+        },
+        25: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.pureenergycutscene.eq(1) },
+            unlocked() { return player.pureenergyscene.neq(16) && player.pureenergyscene.neq(0) },
+            onClick() {
+                player.pureenergyscene = player.pureenergyscene.sub(1)
+            },
+        },
+        26: {
+            title() { return "<h2>Absorb your energy for pure energy." },
+            canClick() { return player.i.standardpath.eq(1) && player.i.pureenergytoget.gte(1) },
+            unlocked() { return player.pureenergycutscene.eq(0) },
+            onClick() {
+                player.i.pureenergypause = new Decimal(3)
+                player.i.pureenergy = player.i.pureenergy.add(player.i.pureenergytoget)
+            },
+            style: { "background-color": "#ffffaa", width: '400px', "min-height": '100px' },
+        },
+        27: {
+            title() { return "+" + format(player.i.pureenergytoget) + " PE" },
+            canClick() { return player.i.standardpath.eq(1) && player.i.pureenergytoget.gte(1) },
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 14) },
+            onClick() {
+                player.i.pureenergypause = new Decimal(3)
+                player.i.pureenergy = player.i.pureenergy.add(player.i.pureenergytoget)
+            },
             style: { width: '150px', "min-height": '60px', "background-color": "#ffffaa", }
+        },
+        28: {
+            title() { return "<h2>Layer 1: Prestige <h3>Req: 1e12 prestige points" },
+            canClick() { return player.i.prestigepoints.gte(1e12) },
+            unlocked() { return player.pureenergycutscene.eq(0) && player.prestigelayer.eq(0) && player.i.standardpath.eq(1) },
+            onClick() {
+                player.prestigelayer = new Decimal(1)
+                // Particle effect
+                alert("Jacorb and Aarex. You must free them.")
+                alert("You must find all the layers.")
+                alert("28 is a lot, but don't worry. You will get there.")
+                alert("Going through many paths, you will find each of them one by one.")
+                alert("Good luck.")
+                createParticles();
+                createParticles();
+                createParticles();
+            },
+            style: {   background: '#31aeb0',
+            width: '150px',
+            minHeight: '150px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #31aeb0',
+            textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+         },
         },
     },
     upgrades: {
@@ -283,13 +412,92 @@
         13:
         {
             title: "SP Prestige Upgrade III",
-            unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 11) },
+            unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 12) },
             description: "Unlocks machines.",
             cost: new Decimal(1e6),
             canAfford() { return player.i.standardpath.eq(1)},
             currencyLocation() { return player.i },
             currencyDisplayName: "Prestige Points",
             currencyInternalName: "prestigepoints",
+            onPurchase()
+            {
+                if (player.i.prestigeenergy.eq(0))
+                {
+                    if (player.yhvrcutscene2.eq(0))
+                    {
+                   alert("Very smart.")
+                   alert("You chose to not produce prestige energy.")
+                   alert("You know that prestige energy and corruption can cause issues.")
+                   alert("You will gain more incremental energy from doing this.")
+                   alert("Great job.")
+                    }
+                   player.yhvrcutscene2 = new Decimal(1)
+                   player.i.noenergyboost = new Decimal(2)
+                }
+                
+            },
+        },
+        14:
+        {
+            title: "SP Prestige Upgrade IV",
+            unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 13) && hasUpgrade("m", 14) },
+            description: "Unlocks pure energy.",
+            cost: new Decimal(1e8),
+            canAfford() { return player.i.standardpath.eq(1)},
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Prestige Points",
+            currencyInternalName: "prestigepoints",
+            onPurchase()
+            {
+                    if (player.yhvrcutscene3.eq(0))
+                    {
+                   alert("You have reached the next layer.")
+                   alert("This layer is huge. It is the final one of this path.")
+                   alert("At the end, you will find yourself against a celestial.")
+                   alert("Don't worry, it's not really a celestial. It's a pseudo-celestial.")
+                   alert("The power of your prestige machines should be effective against this celestial.")
+                   alert("Your purpose of being our hero is to REUNITE THE SIX REALMS OF THE MULTIVERSE.")
+                   alert("However, it will be baby steps. You will be great, don't worry.")
+                   alert("It will only take time.")
+                }
+                   player.yhvrcutscene3 = new Decimal(1)
+            },
+        },
+        15:
+        {
+            title: "Pure Energy Upgrade I",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) },
+            description: "Keeps prestige upgrades on reset.",
+            cost: new Decimal(3),
+            canAfford() { return player.i.standardpath.eq(1)},
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Pure Energy",
+            currencyInternalName: "pureenergy",
+            onPurchase() {},
+        },
+        16:
+        {
+            title: "Pure Energy Upgrade II",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 15) },
+            description: "Autobuy prestige buyables without them spending.",
+            cost: new Decimal(10),
+            canAfford() { return player.i.standardpath.eq(1)},
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Pure Energy",
+            currencyInternalName: "pureenergy",
+            onPurchase() {},
+        },
+        17:
+        {
+            title: "Pure Energy Upgrade III",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 16) },
+            description: "Unlocks energizers.",
+            cost: new Decimal(50),
+            canAfford() { return player.i.standardpath.eq(1)},
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Pure Energy",
+            currencyInternalName: "pureenergy",
+            onPurchase() {},
         },
     },
     buyables: {
@@ -388,7 +596,7 @@
                 let growth = 1.3
                 let max = Decimal.affordGeometricSeries(player.i.prestigepoints, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.prestigepoints = player.i.prestigepoints.sub(cost)
+                if (!hasUpgrade("i", 16)) player.i.prestigepoints = player.i.prestigepoints.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#31aeb0",}
@@ -414,10 +622,60 @@
                 let growth = 1.5
                 let max = Decimal.affordGeometricSeries(player.i.prestigepoints, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.prestigepoints = player.i.prestigepoints.sub(cost)
+                if (!hasUpgrade("i", 16)) player.i.prestigepoints = player.i.prestigepoints.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#31aeb0",}
+        },
+        16: {
+            cost(x) { return new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(2) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(2)},
+            unlocked() { return player.pureenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.pureenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Generator Energy Producer"
+            },
+            tooltip() {
+                return "<h5>galaxy.click was recently made. The future should be bright."
+            },
+            display() {
+                return "which are producing +" + format(tmp[this.layer].buyables[this.id].effect) + " generator energy per second.\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Pure Energy"
+            },
+            buy() {
+                let base = new Decimal(2)
+                let growth = 1.5
+                let max = Decimal.affordGeometricSeries(player.i.pureenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.pureenergy = player.i.pureenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#a3d9a5",}
+        },
+        17: {
+            cost(x) { return new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(2) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(2)},
+            unlocked() { return player.pureenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.pureenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Booster Energy Producer"
+            },
+            tooltip() {
+                return "<h5>However, the void grows stronger. I don't think things are gonna go well."
+            },
+            display() {
+                return "which are producing +" + format(tmp[this.layer].buyables[this.id].effect) + " booster energy per second.\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Pure Energy"
+            },
+            buy() {
+                let base = new Decimal(2)
+                let growth = 1.5
+                let max = Decimal.affordGeometricSeries(player.i.pureenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.pureenergy = player.i.pureenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#6e64c4",}
         },
     },
     milestones: {
@@ -445,6 +703,7 @@
                            ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h2>Standard Path Effects:" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>x1.25 to prestige points. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>/1.25 to points. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.i.prestigeenergy.eq(0) && hasUpgrade("i", 13) ? "<h3>x" + format(player.i.noenergyboost)+  " to incremental energy. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                     ]
 
             },
@@ -458,7 +717,16 @@
         ]
 
             },
+            "Pure Energy": {
+                buttonStyle() { return { 'color': '#ffffaa' } },
+                unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) },
+                content:
+                
+                    [
+         ["microtabs", "pureenergy", { 'border-width': '0px' }],
+        ]
 
+            },
         },
         prestige: {
             "Main": {
@@ -482,9 +750,11 @@
                         ["blank", "25px"],
                         ["row", [["buyable", 14]]],
                         ["blank", "25px"],
-                        ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13]]],
+                        ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14]]],
                         ["row", [["clickable", 15]]],
                         ["row", [["clickable", 16]]],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 28]]],
                     ]
 
             },
@@ -542,7 +812,7 @@
                         ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0) ? "<h2>You have " + format(player.i.prestigepoints) + "<h2> prestige points. " : ""}],
                         ["blank", "25px"],
                         ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0) ? "<h2>You have " + format(player.i.prestigemachines) + "<h2> prestige machines. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
-                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>which has a x" + format(player.i.prestigemachineeffect) + " boost to prestige energy and prestige point gain. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>which gives a x" + format(player.i.prestigemachineeffect) + " boost to prestige energy and prestige point gain. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0) ? "<h2>Your machines cause there to be " + format(player.i.machinecorruption) + "<h2> machine corruption. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>which causes the prestige energy downside to be x" + format(player.i.machinecorruptioneffect) + " stronger. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
@@ -555,12 +825,73 @@
 
             },
         },
+        pureenergy: {
+            "Main": {
+                buttonStyle() { return { 'color': '#ffffaa' } },
+                unlocked() { return player.i.standardpath.eq(1) },
+                content:
+                    [
+                        ["raw-html", function () { return player.pureenergyscene.eq(0) && player.i.standardpath.eq(1) ? "<h1>Hello again. Sorry about before." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(1) && player.i.standardpath.eq(1) ? "<h1>PLATONIC. He wanted me to use corruptions in the standard path." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(2) && player.i.standardpath.eq(1) ? "<h1>They are dangerous... Very dangerous." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(3) && player.i.standardpath.eq(1) ? "<h1>I have no clue how the nobles still trust him." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(4) && player.i.standardpath.eq(1) ? "<h1>After that incident. That incident that got all of them exiled." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(5) && player.i.standardpath.eq(1) ? "<h1>His many attempts to use his many-dimensional cubes failed." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(6) && player.i.standardpath.eq(1) ? "<h1>Jacorb and Aarex's attempts failed as well." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(7) && player.i.standardpath.eq(1) ? "<h1>Maybe Yhvr's plan would work. You would be the ones setting them free." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(8) && player.i.standardpath.eq(1) ? "<h1>When I first met Yhvr recently, he worked really hard on galaxy.click" : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(9) && player.i.standardpath.eq(1) ? "<h1>It is now the key area of the incremental community." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(10) && player.i.standardpath.eq(1) ? "<h1>The highest concentration of incremental developers." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(11) && player.i.standardpath.eq(1) ? "<h1>I've never gone before, but I'd love to see it one day." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(12) && player.i.standardpath.eq(1) ? "<h1>Now is not the time. YOU must be the one to go there." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(13) && player.i.standardpath.eq(1) ? "<h1>Yhvr, Jacorb, and Aarex will explain more about this." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(14) && player.i.standardpath.eq(1) ? "<h1>They want you to find the 28 LAYERS OF THE PRESTIGE TREE." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergyscene.eq(15) && player.i.standardpath.eq(1) ? "<h1>Anyways, gotta go. You'll get more lore later." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 25], ["clickable", 24]]],
+                        ["raw-html", function () { return player.pureenergycutscene.eq(0) ? "<h2>You have " + format(player.i.pureenergy) + "<h2> pure energy. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0)? "<h3>which divides prestige energy downside by /" + format(player.i.pureenergyeffect) + ". " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergycutscene.eq(0) ? "<h2>You will gain " + format(player.i.pureenergytoget) + "<h2> on reset. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 26]]],
+                        ["blank", "25px"],
+                        ["row", [["upgrade", 15], ["upgrade", 16], ["upgrade", 17]]],
+                    ]
+            },
+            "Generator and Booster energy": {
+                buttonStyle() { return { 'color': '#ffffaa' } },
+                unlocked() { return player.i.standardpath.eq(1) },
+                content:
+                    [
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.pureenergycutscene.eq(0) ? "<h2>You have " + format(player.i.pureenergy) + "<h2> pure energy. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.pureenergycutscene.eq(0) ? "<h2>You have " + format(player.i.boosterenergy) + "<h2> booster energy. " : "" }, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>which gives a x" + format(player.i.boosterenergyeffect) + " boost to point gain. " : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergycutscene.eq(0) ? "<h3>You are gaining " + format(player.i.boosterenergypersecond) + "<h3> booster energy per second. " : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.pureenergycutscene.eq(0) ? "<h2>You have " + format(player.i.generatorenergy) + "<h2> generator energy. " : "" }, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>which gives a x" + format(player.i.generatorenergyeffect) + " boost to prestige energy gain. " : ""}, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.pureenergycutscene.eq(0) ? "<h3>You are gaining " + format(player.i.generatorenergypersecond) + "<h3> generator energy per second. " : ""}, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["buyable", 17], ["buyable", 16]]],
+                    ]
+            },
+            "Energizers": {
+                buttonStyle() { return { 'color': '#ffffaa' } },
+                unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 17) },
+                content:
+                    [
+                        ["blank", "25px"],
+                    ]
+            },
+        },
     },
 
     tabFormat: [
                            ["raw-html", function () { return "You have " + format(player.points) + " points." }, { "color": "white", "font-size": "32px", "font-family": "monospace" }],
         ["raw-html", function () { return "You are gaining " + format(player.gain) + " points per second."}, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
-        ["row", [["clickable", 14], ["clickable", 23]]],
+        ["row", [["clickable", 14], ["clickable", 23], ["clickable", 27]]],
          ["microtabs", "stuff", { 'border-width': '0px' }],
     ],
     layerShown() { return true }

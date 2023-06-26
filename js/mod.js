@@ -3,7 +3,7 @@
 	id: "godsofincremental",
 	author: "Icecreamdude",
 	pointsName: "points",
-	modFiles: ["incremental.js", "metaprestige.js", "tree.js"],
+	modFiles: ["incremental.js", "metaprestige.js", "tree.js", "prestigetree.js"],
 
 	discordName: "Incremental God Tree Server",
 	discordLink: "https://discord.gg/icecreamdude-s-incremental-games-850817562040467556",
@@ -25,7 +25,7 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset"]
+var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset"]
 
 function getStartPoints() {
 	return new Decimal(modInfo.initialStartPoints)
@@ -50,6 +50,7 @@ function getPointGen() {
 	if (hasUpgrade("i", 11)) gain = gain.mul(upgradeEffect("i", 11))
 	if (hasUpgrade("m", 12)) gain = gain.mul(upgradeEffect("m", 12))
 	gain = gain.mul(player.m.incrementalenergyeffect)
+	gain = gain.mul(player.i.boosterenergyeffect)
 	player.gain = gain
 	return gain
 }
@@ -64,6 +65,14 @@ function addedPlayerData() {
         prestigescene: new Decimal(0),
 		machinecutscene: new Decimal(1),
         machinescene: new Decimal(0),
+		pureenergycutscene: new Decimal(1),
+        pureenergyscene: new Decimal(0),
+		yhvrcutscene1: new Decimal(0),
+		yhvrcutscene2: new Decimal(0),
+		yhvrcutscene3: new Decimal(0),
+
+		//PT layers
+		prestigelayer: new Decimal(0),
 	}
 }
 
