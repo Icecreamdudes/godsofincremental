@@ -62,15 +62,15 @@
         player.m.scorefrombestpoints = player.bestpoints.add(1).slog().pow(2)
 
         if (player.i.standardpath.eq(0)) player.m.scorefrombestprestigeenergy = new Decimal(1)
-        if (player.i.standardpath.eq(1)) player.m.scorefrombestprestigeenergy = player.i.bestprestigeenergy.slog().div(5).add(1)
+        if (player.i.standardpath.eq(1) && player.i.bestprestigeenergy.neq(0)) player.m.scorefrombestprestigeenergy = player.i.bestprestigeenergy.slog().div(5).add(1)
 
         if (player.i.standardpath.eq(0)) player.m.scorefrombestpureenergy = new Decimal(1)
-        if (player.i.standardpath.eq(1) && player.m.scorefrombestpureenergy.neq(0)) player.m.scorefrombestpureenergy = player.i.bestpureenergy.slog().div(4).add(1)
+        if (player.i.standardpath.eq(1) && player.i.bestpureenergy.neq(0)) player.m.scorefrombestpureenergy = player.i.bestpureenergy.slog().div(4).add(1)
 
         if (!hasUpgrade("m", 14)) player.m.scorefromtimeplayed = new Decimal(1)
         if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed))
 
-        player.m.score = player.m.scorefrombestpoints.mul(player.m.scorefrombestprestigeenergy.mul(player.m.scorefrombestpureenergy.mul(buyableEffect("pr", 11)))).mul(player.m.scorefromtimeplayed)
+        player.m.score = player.m.scorefrombestpoints.mul(player.m.scorefrombestprestigeenergy.mul(player.m.scorefrombestpureenergy.mul(buyableEffect("pr", 11))))//.mul(player.m.scorefromtimeplayed)
 
         player.m.incrementalenergytoget = player.i.prestigemachines.slog().pow(3).add(1)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.noenergyboost)
