@@ -70,7 +70,8 @@
         if (!hasUpgrade("m", 14)) player.m.scorefromtimeplayed = new Decimal(1)
         if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed))
 
-        player.m.score = player.m.scorefrombestpoints.mul(player.m.scorefrombestprestigeenergy.mul(player.m.scorefrombestpureenergy.mul(buyableEffect("pr", 11))))//.mul(player.m.scorefromtimeplayed)
+        player.m.score = player.m.scorefrombestpoints.mul(player.m.scorefrombestprestigeenergy.mul(player.m.scorefrombestpureenergy.mul(buyableEffect("pr", 11))))
+        player.m.score = player.m.score.mul(player.m.scorefromtimeplayed)
 
         player.m.incrementalenergytoget = player.i.prestigemachines.slog().pow(3).add(1)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.noenergyboost)
