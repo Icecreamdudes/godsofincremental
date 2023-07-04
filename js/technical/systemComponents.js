@@ -135,7 +135,7 @@ var systemComponents = {
         <br>
         Songs made by Sweetlolipop (My brother) <br>
         The Prestige Tree made by Jacorb and Aarex<br>
-        Art by JToH_SC<br>
+        Art by JToH_SC and Citrine (Also known as lumen/niko)<br>
         Typo check by Piterpicher<br>
 		<br>
 		<div class="link" onclick="showTab('changelog-tab')">Changelog</div><br>

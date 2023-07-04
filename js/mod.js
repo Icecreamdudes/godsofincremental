@@ -61,18 +61,28 @@ function addedPlayerData() {
 		gain: new Decimal(0),
 		bestpoints: new Decimal(0),
 		unlockedmetaprestige: new Decimal(0),
+
+		//Cutscenes
 		prestigecutscene: new Decimal(1),
         prestigescene: new Decimal(0),
 		machinecutscene: new Decimal(1),
         machinescene: new Decimal(0),
 		pureenergycutscene: new Decimal(1),
         pureenergyscene: new Decimal(0),
+		energizercutscene: new Decimal(1),
+		energizerscene: new Decimal(0),
+		boostercutscene: new Decimal(1),
+		boosterscene: new Decimal(0),
+
+		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),
 		yhvrcutscene2: new Decimal(0),
 		yhvrcutscene3: new Decimal(0),
 
 		//PT layers
 		prestigelayer: new Decimal(0),
+		boosterlayer: new Decimal(0),
+		generatorlayer: new Decimal(0),
 	}
 }
 

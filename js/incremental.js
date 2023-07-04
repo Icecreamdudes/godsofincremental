@@ -9,6 +9,8 @@
         prestigepause: new Decimal(0),
         prestigepointstoget: new Decimal(0),
 		bestpoints: new Decimal(0),
+
+        //STANDARD PATH
         standardpath: new Decimal(0),
         bestprestigeenergy: new Decimal(0),
         prestigeenergy: new Decimal(0),
@@ -23,6 +25,8 @@
         machinecorruptioneffect: new Decimal(0),
         noenergyboost: new Decimal(1),
         bestpureenergy: new Decimal(0),
+
+        //PURE ENERGY
         pureenergy: new Decimal(0),
         pureenergypause: new Decimal(0),
         pureenergyeffect: new Decimal(0),
@@ -33,6 +37,15 @@
         boosterenergy: new Decimal(0),
         boosterenergyeffect: new Decimal(1),
         boosterenergypersecond: new Decimal(0),
+
+        //ENERGIZERS
+        nextenergizer: new Decimal(0),
+        currentenergizer: new Decimal(0),
+        //0 - None
+        //1 - Cheaper machines, more corruption
+        //2 - Stronger prestige energy
+
+        corruptiondelay: new Decimal(0),
     }
     },
     automate() {
@@ -105,12 +118,15 @@
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.producingprestigeenergy)
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.prestigemachineeffect)
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.generatorenergyeffect)
+        player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(buyableEffect("i", 19))
 
         player.i.prestigeenergy = player.i.prestigeenergy.add(player.i.prestigeenergypersecond.mul(delta))
 
         player.i.pureenergyeffect = player.i.pureenergy.pow(1.2).add(1)
-        player.i.prestigeenergyeffect = player.i.prestigeenergy.pow(0.4).add(1)
-        player.i.prestigeenergyeffectonpoints = player.i.prestigeenergy.pow(0.2).add(1).mul(player.i.machinecorruptioneffect).div(player.i.pureenergyeffect)
+        if (player.i.currentenergizer.neq(2)) player.i.prestigeenergyeffect = player.i.prestigeenergy.pow(0.4).add(1)
+        if (player.i.currentenergizer.eq(2)) player.i.prestigeenergyeffect = player.i.prestigeenergy.pow(0.4).mul(8).add(1)
+        if (player.i.currentenergizer.neq(2)) player.i.prestigeenergyeffectonpoints = player.i.prestigeenergy.pow(0.2).add(1).mul(player.i.machinecorruptioneffect).div(player.i.pureenergyeffect)
+        if (player.i.currentenergizer.eq(2)) player.i.prestigeenergyeffectonpoints = player.i.prestigeenergy.pow(0.2).pow(2).add(1).mul(player.i.machinecorruptioneffect).div(player.i.pureenergyeffect).div(buyableEffect("i", 19))
 
         if (player.i.prestigeenergy.gte(player.i.bestprestigeenergy)) player.i.bestprestigeenergy = player.i.prestigeenergy
 
@@ -118,11 +134,15 @@
             player.machinecutscene = new Decimal(0)
         }
 
-        if (player.i.prestigemachines.lt(100))player.i.prestigemachinereq = Decimal.pow(3, player.i.prestigemachines)
-        if (player.i.prestigemachines.gte(100)) player.i.prestigemachinereq = Decimal.pow(4, player.i.prestigemachines)
+        if (player.i.currentenergizer.neq(1)) player.i.prestigemachinereq = Decimal.pow(3, player.i.prestigemachines)
+        if (player.i.currentenergizer.eq(1)) player.i.prestigemachinereq = Decimal.pow(1.5, player.i.prestigemachines)
         player.i.prestigemachineeffect = player.i.prestigemachines.pow(1.2).add(1)
 
-        player.i.machinecorruption = player.i.prestigemachines.pow(1.75)
+        player.i.corruptiondelay = buyableEffect('i', 18)
+
+        if (player.i.prestigemachines.lt(player.i.corruptiondelay)) player.i.machinecorruption = new Decimal(0)
+        if (player.i.currentenergizer.neq(1) && player.i.prestigemachines.gt(player.i.corruptiondelay)) player.i.machinecorruption = player.i.prestigemachines.sub(player.i.corruptiondelay).pow(1.75)
+        if (player.i.currentenergizer.eq(1) && player.i.prestigemachines.gt(player.i.corruptiondelay)) player.i.machinecorruption = player.i.prestigemachines.sub(player.i.corruptiondelay).pow(1.75).pow(2)
         player.i.machinecorruptioneffect = player.i.machinecorruption.pow(0.75).add(1)
 
         if (player.i.prestigeenergy.neq(0)) player.i.noenergyboost = new Decimal(1)
@@ -140,13 +160,19 @@
         if (player.i.pureenergy.gte(player.i.bestpureenergy)) player.i.bestpureenergy = player.i.pureenergy
 
         player.i.generatorenergypersecond = buyableEffect("i", 16)
+        player.i.generatorenergypersecond = player.i.generatorenergypersecond.mul(buyableEffect("i", 21))
         player.i.generatorenergy = player.i.generatorenergy.add(player.i.generatorenergypersecond.mul(delta))
 
         player.i.boosterenergypersecond = buyableEffect("i", 17)
+        player.i.boosterenergypersecond = player.i.boosterenergypersecond.mul(buyableEffect("i", 22))
         player.i.boosterenergy = player.i.boosterenergy.add(player.i.boosterenergypersecond.mul(delta))
 
         player.i.generatorenergyeffect = player.i.generatorenergy.pow(0.3).add(1)
         player.i.boosterenergyeffect = player.i.boosterenergy.pow(0.4).add(1)
+
+        if (player.energizerscene.eq(16)) {
+            player.energizercutscene = new Decimal(0)
+        }
     },
     prestigereset()
     {
@@ -180,6 +206,8 @@
         player.i.buyables[13] = new Decimal(0)
         player.i.buyables[14] = new Decimal(0)
         player.i.buyables[15] = new Decimal(0)
+
+        player.i.currentenergizer = player.i.nextenergizer
     }
     }, 
     clickables: {
@@ -354,8 +382,8 @@
             style: { width: '150px', "min-height": '60px', "background-color": "#ffffaa", }
         },
         28: {
-            title() { return "<h2>Layer 1: Prestige <h3>Req: 1e12 prestige points" },
-            canClick() { return player.i.prestigepoints.gte(1e12) },
+            title() { return "<h2>Layer 1: Prestige <br><h3>Req: 1e10 prestige points" },
+            canClick() { return player.i.prestigepoints.gte(1e10) },
             unlocked() { return player.pureenergycutscene.eq(0) && player.prestigelayer.eq(0) && player.i.standardpath.eq(1) },
             onClick() {
                 player.prestigelayer = new Decimal(1)
@@ -370,11 +398,100 @@
                 createParticles();
             },
             style: {   background: '#31aeb0',
-            width: '150px',
-            minHeight: '150px',
+            width: '300px',
+            minHeight: '75px',
             position: 'relative',
             overflow: 'hidden', 
             boxShadow: '0 0 20px 10px #31aeb0',
+            textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+         },
+        },
+        29: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.energizercutscene.eq(1) },
+            unlocked() { return player.energizerscene.neq(16) },
+            onClick() {
+                player.energizerscene = player.energizerscene.add(1)
+            },
+        },
+        31: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.energizercutscene.eq(1) },
+            unlocked() { return player.energizerscene.neq(16) && player.energizerscene.neq(0) },
+            onClick() {
+                player.energizerscene = player.energizerscene.sub(1)
+            },
+        },
+        32: {
+            title() { return "<img src='resources/assemblylinex.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return true },
+            unlocked() { return player.pureenergycutscene.eq(0) && player.i.standardpath.eq(1) },
+            onClick() {
+                player.i.nextenergizer = new Decimal(0)
+            },
+        },
+        33: {
+            title() { return "<img src='resources/cheapmachines.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return true },
+            unlocked() { return player.pureenergycutscene.eq(0) && player.i.standardpath.eq(1) },
+            onClick() {
+                player.i.nextenergizer = new Decimal(1)
+            },
+        },
+        34: {
+            title() { return "<img src='resources/strongprestigeenergy.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return true },
+            unlocked() { return player.pureenergycutscene.eq(0) && player.i.standardpath.eq(1) },
+            onClick() {
+                player.i.nextenergizer = new Decimal(2)
+            },
+        },
+        35: {
+            title() { return "<h2>Layer 2: Booster <br><h3>Req: 50,000 Booster Energy" },
+            canClick() { return player.i.boosterenergy.gte(50000) },
+            unlocked() { return player.i.currentenergizer.eq(1) && player.prestigelayer.eq(1) && player.boosterlayer.eq(0) },
+            onClick() {
+                player.boosterlayer = new Decimal(1)
+                // Particle effect
+                alert("You have found the second layer.")
+                alert("You still have a long way to go.")
+                alert("Each layer is a step closer to the truth.")
+                createParticles();
+                createParticles();
+                createParticles();
+            },
+            style: {   background: '#6e64c4',
+            width: '300px',
+            minHeight: '75px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #6e64c4',
+            textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+         },
+        },
+        36: {
+            title() { return "<h2>Layer 3: Generator <br><h3>Req: 50,000 Generator Energy" },
+            canClick() { return player.i.generatorenergy.gte(50000) },
+            unlocked() { return player.i.currentenergizer.eq(2) && player.boosterlayer.eq(1) && player.generatorlayer.eq(0)},
+            onClick() {
+                player.generatorlayer = new Decimal(1)
+                // Particle effect
+                alert("You have found the third layer.")
+                alert("You are done with the first two rows.")
+                alert("The fundamental elements of the prestige tree.")
+                alert("More complex layers will arise.")
+                createParticles();
+                createParticles();
+                createParticles();
+            },
+            style: {   background: '#a3d9a5',
+            width: '300px',
+            minHeight: '75px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #a3d9a5',
             textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
             border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
          },
@@ -493,6 +610,18 @@
             unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 16) },
             description: "Unlocks energizers.",
             cost: new Decimal(50),
+            canAfford() { return player.i.standardpath.eq(1)},
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Pure Energy",
+            currencyInternalName: "pureenergy",
+            onPurchase() {},
+        },
+        18:
+        {
+            title: "Pure Energy Upgrade IV",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 17) },
+            description: "Unlocks buyables.",
+            cost: new Decimal(250),
             canAfford() { return player.i.standardpath.eq(1)},
             currencyLocation() { return player.i },
             currencyDisplayName: "Pure Energy",
@@ -677,6 +806,106 @@
             },
             style: { width: '275px', height: '150px', "background-color": "#6e64c4",}
         },
+        18: {
+            cost(x) { return new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(100) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id)},
+            unlocked() { return player.pureenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.boosterenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Corruption Delayer"
+            },
+            tooltip() {
+                return "<h5>The time before the war was great. We were going to create our first hero."
+            },
+            display() {
+                return "You can own +" + format(tmp[this.layer].buyables[this.id].effect) + " prestige machines before corruptions spawn.\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Booster Energy"
+            },
+            buy() {
+                let base = new Decimal(100)
+                let growth = 1.5
+                let max = Decimal.affordGeometricSeries(player.i.boosterenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.boosterenergy = player.i.boosterenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#6e64c4",}
+        },
+        19: {
+            cost(x) { return new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(100) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(0.8).add(1)},
+            unlocked() { return player.pureenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.generatorenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Prestige Energy Amplifier"
+            },
+            tooltip() {
+                return "<h5>We were so close. Why did it have to happen?"
+            },
+            display() {
+                return "which are boosting prestige energy gain and dividing the downside by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Generator Energy"
+            },
+            buy() {
+                let base = new Decimal(100)
+                let growth = 1.5
+                let max = Decimal.affordGeometricSeries(player.i.generatorenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.generatorenergy = player.i.generatorenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#a3d9a5",}
+        },
+        21: {
+            cost(x) { return new Decimal(1.75).pow(x || getBuyableAmount(this.layer, this.id)).mul(2500) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.1).add(1) },
+            unlocked() { return player.pureenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.boosterenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Generator Synergy"
+            },
+            tooltip() {
+                return "<h5>All of this could have been easily avoided. We were so naive."
+            },
+            display() {
+                return "which are boosting generator energy by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Booster Energy"
+            },
+            buy() {
+                let base = new Decimal(2500)
+                let growth = 1.75
+                let max = Decimal.affordGeometricSeries(player.i.boosterenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.boosterenergy = player.i.boosterenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#6e64c4",}
+        },
+        22: {
+            cost(x) { return new Decimal(1.75).pow(x || getBuyableAmount(this.layer, this.id)).mul(2500) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.1).add(1)},
+            unlocked() { return player.pureenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.generatorenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Booster Synergy"
+            },
+            tooltip() {
+                return "<h5>If it wasn't for ????????, we would have been fine."
+            },
+            display() {
+                return "which are boosting booster energy by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Generator Energy"
+            },
+            buy() {
+                let base = new Decimal(2500)
+                let growth = 1.75
+                let max = Decimal.affordGeometricSeries(player.i.generatorenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.generatorenergy = player.i.generatorenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#a3d9a5",}
+        },
     },
     milestones: {
 
@@ -687,7 +916,21 @@
 
     },
     infoboxes: {
-
+        jacorblog1: {
+            unlocked() { return player.energizercutscene.eq(0) && player.i.nextenergizer.eq(0) },
+            title: "Log I",
+            body() { return "Log I: We have declared war on the death realm. I am scared, but I don't want to tell anyone. Aarex and ???????? seem to be calm though. The first war meeting is tomorrow. The high goddess of the backrooms will inform us on the details about this war. If you are reading this, we will meet very soon." },         
+        },       
+        jacorblog2: {
+            unlocked() { return player.energizercutscene.eq(0) && player.i.nextenergizer.eq(1) },
+            title: "Log II",
+            body() { return "Log II: The meeting was frightening. Hevipelle wanted to use ?????????? to obliterate the entire realm, but that is wrong. Me and Aarex pitched our own ideas. To build a weapon of great power, but without any destructive intents. This would stop the death realm from reaching the ??????????? weapon that we have locked up in the ???????? ?????. A lot of people agreed, but I had to start work tommorow. A lot of battles would be raging, but I think I'll be fine." },         
+        },    
+        jacorblog4: {
+            unlocked() { return player.energizercutscene.eq(0) && player.i.nextenergizer.eq(2) },
+            title: "Log IV",
+            body() { return "Log IV: It's hard to believe that the ???? ?? ??????????? are gone. After helping us make the ?????????? ??????, it seemed like they dissapeared. I wish they would return someday. I were great friends with them. The high ruler of the void is sending more troops to battle. ???????? has been slacking off lately. ???? has been doing all of his work. I wonder whats going on with him. Is ??? ??? back?" },         
+        },    
     },
     microtabs: {
         stuff: {
@@ -709,7 +952,7 @@
             },
             "Prestige": {
                 buttonStyle() { return { 'color': '#31aeb0' } },
-                unlocked() { return player.points.gte(250) || player.i.prestigepoints.gt(0) },
+                unlocked() { return player.points.gte(50) || player.i.prestigepoints.gt(0) },
                 content:
                 
                     [
@@ -735,6 +978,7 @@
                 content:
 
                     [
+                        ["row", [["clickable", 28]]],
                         ["blank", "25px"],
                         ["raw-html", function () { return player.prestigescene.eq(0) ? "<h1> Incrementals aren't as great as they were before." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.prestigescene.eq(1) ? "<h1> After THEY took everything from us, nothing was the same." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
@@ -754,7 +998,6 @@
                         ["row", [["clickable", 15]]],
                         ["row", [["clickable", 16]]],
                         ["blank", "25px"],
-                        ["row", [["clickable", 28]]],
                     ]
 
             },
@@ -820,7 +1063,7 @@
                         ["row", [["clickable", 22]]],
                         ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>Req: " + format(player.i.prestigemachinereq) + " prestige points." : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>YOU CANNOT REFUND MACHINES. THE CORRUPTION IS INEVITABLE. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
-
+                        ["raw-html", function () { return "<h3>Current corruption delay: " + format(player.i.corruptiondelay) }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                     ]
 
             },
@@ -855,10 +1098,10 @@
                         ["blank", "25px"],
                         ["row", [["clickable", 26]]],
                         ["blank", "25px"],
-                        ["row", [["upgrade", 15], ["upgrade", 16], ["upgrade", 17]]],
+                        ["row", [["upgrade", 15], ["upgrade", 16], ["upgrade", 17], ["upgrade", 18]]],
                     ]
             },
-            "Generator and Booster energy": {
+            "Energy": {
                 buttonStyle() { return { 'color': '#ffffaa' } },
                 unlocked() { return player.i.standardpath.eq(1) },
                 content:
@@ -882,7 +1125,54 @@
                 unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 17) },
                 content:
                     [
+                        ["raw-html", function () { return player.energizerscene.eq(0) && player.i.standardpath.eq(1) ? "<h1>It's about time I inform you about your predecessor." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(1) && player.i.standardpath.eq(1) ? "<h1>The path of singularity. " : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(2) && player.i.standardpath.eq(1) ? "<h1>The path your predecessor took. They made it through countless efforts." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(3) && player.i.standardpath.eq(1) ? "<h1>However, the power of a celestial stopped them." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(4) && player.i.standardpath.eq(1) ? "<h1>Maybe you can make it through, once and for all." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(5) && player.i.standardpath.eq(1) ? "<h1>We have found alternative celestials for growing power and strength." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(6) && player.i.standardpath.eq(1) ? "<h1>This one celestial you will find at the end of this path is weak." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(7) && player.i.standardpath.eq(1) ? "<h1>It is the celestial of prestige machines. It should be very easy." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(8) && player.i.standardpath.eq(1) ? "<h1>In the time between the predecessor and your arrival," : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(9) && player.i.standardpath.eq(1) ? "<h1>We have done long and strenuous research." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(10) && player.i.standardpath.eq(1) ? "<h1>One of these advancements was to shorten meta-prestiges." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(11) && player.i.standardpath.eq(1) ? "<h1>It wasn't so complicated as we thought." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(12) && player.i.standardpath.eq(1) ? "<h1>Another was this very path. A path to energize and to become powerful." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(13) && player.i.standardpath.eq(1) ? "<h1>Just keep going. You will meet Aarex and Jacorb very very soon." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(14) && player.i.standardpath.eq(1) ? "<h1>Keep finding the 28 layers." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(15) && player.i.standardpath.eq(1) ? "<h1>Don't stop. I don't want another failure." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
+                        ["row", [["clickable", 35], ["clickable", 36]]],
+                        ["row", [["clickable", 31], ["clickable", 29]]],
+                        ["raw-html", function () { return player.i.currentenergizer.eq(0) && player.pureenergycutscene.eq(0) ? "<h2>You are energizing with nothing. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.currentenergizer.eq(1) && player.pureenergycutscene.eq(0) ? '<h2>You are energizing with "Cheaper machines, more corruption."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.currentenergizer.eq(2) && player.pureenergycutscene.eq(0) ? '<h2>You are energizing with "Stronger prestige energy."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.nextenergizer.eq(0) && player.pureenergycutscene.eq(0) ? "<h3>Next reset, you will energize with nothing. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.nextenergizer.eq(1) && player.pureenergycutscene.eq(0) ? '<h3>Next reset, you will energize with "Cheaper machines, more corruption."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.nextenergizer.eq(2) && player.pureenergycutscene.eq(0) ? '<h3>Next reset, you will energize with "Stronger prestige energy."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.i.nextenergizer.eq(1) && player.pureenergycutscene.eq(0) ? '<h3>Prestige machines scale less (x3 -> x1.5), but machine corruptions are squared.' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.nextenergizer.eq(2) && player.pureenergycutscene.eq(0) ? "<h3>Prestige Energy's good effect is multiplied by 8, but its downside is squared." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 32], ["clickable", 33], ["clickable", 34]]],
+                        ["blank", "50px"],
+                        ["infobox", "jacorblog1"],
+                        ["infobox", "jacorblog2"],
+                        ["infobox", "jacorblog4"],
+                    ]
+            },
+            "Buyables": {
+                buttonStyle() { return { 'color': '#ffffaa' } },
+                unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 18) },
+                content:
+                    [
+                        ["blank", "25px"],
+                        ["raw-html", function () { return "<h2>You have " + format(player.i.pureenergy) + "<h2> pure energy. " }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h2>You have " + format(player.i.boosterenergy) + "<h2> booster energy. " }, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h2>You have " + format(player.i.generatorenergy) + "<h2> generator energy. " }, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["buyable", 18], ["buyable", 19]]],
+                        ["row", [["buyable", 21], ["buyable", 22]]],
                     ]
             },
         },

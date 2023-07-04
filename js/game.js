@@ -384,7 +384,14 @@ function gameLoop(diff) {
 }
 
 function hardReset(resetOptions) {
-	if (!confirm("Are you sure you want to do this? You will lose all your progress!")) return
+	alert("...")
+	alert("So this is really what you want.")
+	alert("You want to use THE ANCIENT TEMPORAL POWER OF THE VOID.")
+	alert("I know how you are feeling.")
+	alert("I felt the same before.")
+	alert("Just know that when you travel back in time,")
+	alert("All of this will have never happened.")
+	if (!confirm("So are you sure you want to reset everything???")) return
 	player = null
 	if(resetOptions) options = null
 	save(true);

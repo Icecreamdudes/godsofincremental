@@ -1,4 +1,5 @@
-﻿var prestigetree = [["pr"]]
+﻿var prestigetree = [["pr"],
+["bo", "ge"]]
           
           addLayer("m", {
     name: "Meta-Prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -64,7 +65,7 @@
         if (player.i.standardpath.eq(1)) player.m.scorefrombestprestigeenergy = player.i.bestprestigeenergy.slog().div(5).add(1)
 
         if (player.i.standardpath.eq(0)) player.m.scorefrombestpureenergy = new Decimal(1)
-        if (player.i.standardpath.eq(1)) player.m.scorefrombestpureenergy = player.i.bestpureenergy.slog().div(4).add(1)
+        if (player.i.standardpath.eq(1) && player.m.scorefrombestpureenergy.neq(0)) player.m.scorefrombestpureenergy = player.i.bestpureenergy.slog().div(4).add(1)
 
         if (!hasUpgrade("m", 14)) player.m.scorefromtimeplayed = new Decimal(1)
         if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed))
