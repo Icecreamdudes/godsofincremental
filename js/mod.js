@@ -14,7 +14,7 @@
 // Set your version in num and name
 let VERSION = {
 	num: "1.0b",
-	name: "Beta Update 1 - Remember, you aren't the only one here",
+	name: "Beta Update 1 - Remember, you werent the first hero."
 }
 
 let changelog = `<h1>Changelog:</h1><br>
@@ -41,7 +41,8 @@ function getPointGen() {
 	if (!canGenPoints())
 		return new Decimal(0)
 	let gain = new Decimal(0)
-	gain = buyableEffect("i", 11)
+	if (!hasUpgrade("m", 16)) gain = buyableEffect("i", 11)
+	if (hasUpgrade("m", 16)) gain = buyableEffect("i", 11).add(upgradeEffect("m", 16))
 	gain = gain.mul(buyableEffect("i", 12))
 	gain = gain.mul(buyableEffect("i", 13))
 	gain = gain.mul(buyableEffect("i", 14))
@@ -51,6 +52,8 @@ function getPointGen() {
 	if (hasUpgrade("m", 12)) gain = gain.mul(upgradeEffect("m", 12))
 	gain = gain.mul(player.m.incrementalenergyeffect)
 	gain = gain.mul(player.i.boosterenergyeffect)
+	if (player.i.currentenergizer.eq(3)) gain = gain.mul(100000)
+	if (player.i.enhancepath.eq(1)) gain = gain.mul(player.i.enhancepointseffect)
 	player.gain = gain
 	return gain
 }
@@ -73,16 +76,21 @@ function addedPlayerData() {
 		energizerscene: new Decimal(0),
 		boostercutscene: new Decimal(1),
 		boosterscene: new Decimal(0),
+		enhancecutscene: new Decimal(1),
+		enhancescene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),
 		yhvrcutscene2: new Decimal(0),
 		yhvrcutscene3: new Decimal(0),
+		yhvrcutscene4: new Decimal(0),
+		yhvrcutscene5: new Decimal(0),
 
 		//PT layers
 		prestigelayer: new Decimal(0),
 		boosterlayer: new Decimal(0),
 		generatorlayer: new Decimal(0),
+		enhancelayer: new Decimal(0),
 	}
 }
 

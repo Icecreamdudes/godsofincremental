@@ -1,5 +1,5 @@
 ﻿var prestigetree = [["pr"],
-["bo", "ge"]]
+["bo", "ge"], ["en"]]
           
           addLayer("m", {
     name: "Meta-Prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -18,6 +18,14 @@
         //STANDARD PATH FACTORS
         scorefrombestprestigeenergy: new Decimal(1),
         scorefrombestpureenergy: new Decimal(1),
+
+        //STANDARD PATH FACTORS
+        scorefrombestenhancepoints: new Decimal(1),
+
+        //PT Factors
+        scorefromincrementalpower: new Decimal(1),
+        scorefromincrementalenergy: new Decimal(1),
+        scorefrommetaprestigetime: new Decimal(1),
 
         incrementalenergy: new Decimal(0),
         incrementalenergytoget: new Decimal(0),
@@ -67,13 +75,32 @@
         if (player.i.standardpath.eq(0)) player.m.scorefrombestpureenergy = new Decimal(1)
         if (player.i.standardpath.eq(1) && player.i.bestpureenergy.neq(0)) player.m.scorefrombestpureenergy = player.i.bestpureenergy.slog().div(4).add(1)
 
+        if (player.i.enhancepath.eq(0)) player.m.scorefrombestenhancepoints = new Decimal(1)
+        if (player.i.enhancepath.eq(1) && player.i.bestenhancepoints.neq(0)) player.m.scorefrombestenhancepoints = player.i.bestenhancepoints.slog().div(5).add(1)
+
         if (!hasUpgrade("m", 14)) player.m.scorefromtimeplayed = new Decimal(1)
         if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed))
 
-        player.m.score = player.m.scorefrombestpoints.mul(player.m.scorefrombestprestigeenergy.mul(player.m.scorefrombestpureenergy.mul(buyableEffect("pr", 11))))
-        player.m.score = player.m.score.mul(player.m.scorefromtimeplayed)
+        if (player.boosterlayer.eq(0)) player.m.scorefromincrementalpower = new Decimal(1)
+        if (player.boosterlayer.eq(1)) player.m.scorefromincrementalpower = player.m.points.add(1).pow(0.03)
 
-        player.m.incrementalenergytoget = player.i.prestigemachines.slog().pow(3).add(1)
+        if (player.generatorlayer.eq(0)) player.m.scorefromincrementalenergy = new Decimal(1)
+        if (player.generatorlayer.eq(1)) player.m.scorefromincrementalenergy = player.m.incrementalenergy.add(1).pow(0.04)
+
+        if (player.enhancelayer.eq(0)) player.m.scorefrommetaprestigetime = new Decimal(1)
+        if (player.enhancelayer.eq(1)) player.m.scorefrommetaprestigetime = player.i.metaprestigetime.add(1).log10().cbrt().sqrt()
+
+        player.m.score = player.m.scorefrombestpoints
+        player.m.score = player.m.score.mul(player.m.scorefrombestprestigeenergy)
+        player.m.score = player.m.score.mul(player.m.scorefrombestpureenergy)
+        player.m.score = player.m.score.mul(buyableEffect("pr", 11))
+        player.m.score = player.m.score.mul(player.m.scorefromtimeplayed)
+        player.m.score = player.m.score.mul(player.m.scorefromincrementalpower)
+        player.m.score = player.m.score.mul(player.m.scorefromincrementalenergy)
+        player.m.score = player.m.score.mul(player.m.scorefrommetaprestigetime)
+        player.m.score = player.m.score.mul(player.m.scorefrombestenhancepoints)
+
+        player.m.incrementalenergytoget = player.i.prestigemachines.pow(0.3).add(1)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.noenergyboost)
 
         player.m.incrementalenergyeffect = player.m.incrementalenergy.pow(0.8).add(1)
@@ -113,7 +140,7 @@
         12:
         {
             title: "Boost I",
-            unlocked() { return true },
+            unlocked() { return hasUpgrade("m", 11) },
             description: "Boosts points based on unspent incremental power.",
             cost: new Decimal(2),
             currencyLocation() { return player.m },
@@ -128,7 +155,7 @@
         13:
         {
             title: "Boost II",
-            unlocked() { return true },
+            unlocked() { return hasUpgrade("m", 12) },
             description: "Boosts prestige points based on unspent incremental power.",
             cost: new Decimal(4),
             currencyLocation() { return player.m },
@@ -143,7 +170,7 @@
         14:
         {
             title: "Factor I",
-            unlocked() { return true },
+            unlocked() { return hasUpgrade("m", 13) },
             description: "Unlocks a pathless factor.",
             cost: new Decimal(10),
             currencyLocation() { return player.m },
@@ -153,12 +180,38 @@
         15:
         {
             title: "Pure Energy",
-            unlocked() { return true },
+            unlocked() { return hasUpgrade("m", 14) },
             description: "Unlocks the pure energy layer.",
             cost: new Decimal(100),
             currencyLocation() { return player.m },
             currencyDisplayName: "Incremental Power",
             currencyInternalName: "points",
+        },
+        16:
+        {
+            title: "QoL I",
+            unlocked() { return hasUpgrade("m", 15) },
+            description: "Gives extra point producers based on incremental energy.",
+            cost: new Decimal(250),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+            effect() 
+            {
+                 return player[this.layer].incrementalenergy.pow(0.8)
+            },
+            effectDisplay() { return "+" + format(upgradeEffect(this.layer, this.id))}, // Add formatting to the effect
+            onPurchase() {
+                if (player.yhvrcutscene4.eq(0))
+                {
+                alert("Nice.")
+                alert("Now your incremental power gain will skyrocket.")
+                alert("Just remember.")
+                alert("You must keep going farther in the path, or else you won't unlock new factors.")
+                alert("Enjoy.")
+            }
+                player.yhvrcutscene4 = new Decimal(1)
+            },
         },
     },
     buyables: {
@@ -200,9 +253,14 @@
                            ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>Standard Path Factors " : "" }, { "color": "#ffffaa", "font-size": "24px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>Best prestige energy: " + format(player.i.bestprestigeenergy) + " -> x" + format(player.m.scorefrombestprestigeenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) ? "<h3>Best pure energy: " + format(player.i.bestpureenergy) + " -> x" + format(player.m.scorefrombestpureenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Enhance Path Factors " : "" }, { "color": "#b82fbd", "font-size": "24px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Best enhance points: " + formatTime(player.i.bestenhancepoints) + " -> x" + format(player.m.scorefrombestenhancepoints) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            ["raw-html", function () { return player.prestigelayer.eq(1) ? "<h3>Prestige Tree Factors " : "" }, { "color": "#31aeb0", "font-size": "24px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.prestigelayer.eq(1) && player.pr.buyables[11].gt(0) ? "<h3>Score amplifier: " + format(player.pr.buyables[11]) + " -> x" + format(buyableEffect("pr", 11)) : "" }, { "color": "#31aeb0", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.boosterlayer.eq(1) ? "<h3>Incremental Power: " + format(player.m.points) + " -> x" + format(player.m.scorefromincrementalpower) : "" }, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.generatorlayer.eq(1) ? "<h3>Incremental Energy: " + format(player.m.incrementalenergy) + " -> x" + format(player.m.scorefromincrementalenergy) : "" }, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.enhancelayer.eq(1) ? "<h3>Time spent in meta-prestige: " + formatTime(player.i.metaprestigetime) + " -> x" + format(player.m.scorefrommetaprestigetime) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            ["raw-html", function () { return "<h3>TOTAL SCORE: " + format(player.m.score) }, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
                     ]
@@ -249,7 +307,7 @@
                         ["blank", "25px"],
             ["raw-html", function () { return "<h2>You have " + format(player.m.points) + " incremental power." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
-                        ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15]]],
+                        ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 16]]],
         ]
 
             },

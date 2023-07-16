@@ -109,7 +109,7 @@ clickables: {
     12: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.boostercutscene.eq(1) },
-        unlocked() { return player.boosterscene.neq(20) && player.energizerscene.neq(0) },
+        unlocked() { return player.boosterscene.neq(20) && player.boosterscene.neq(0) },
         onClick() {
             player.boosterscene = player.boosterscene.sub(1)
         },
@@ -128,7 +128,11 @@ bars: {
 
 },
 infoboxes: {
-
+    jacorblog6: {
+        unlocked() { return true },
+        title: "Log VI",
+        body() { return "Log VI: Hevipelle came up with an idea. He wants to use his own powers to create beings called celestials. He gave us a demonstration. He said that celestials are like artificial gods that wield certain types of powers. They are not immortal, but certainly not weak. He said that the power of the ??????????? ?????? is similar to the power from celestials. We'll see what he can do." },         
+    }, 
 },
 microtabs: {
 stuff: {
@@ -160,7 +164,16 @@ content:
            ["raw-html", function () { return player.boosterscene.eq(19) ? "<h1>Well, I must go now. See you soon." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
            ["blank", "25px"],
            ["row", [["clickable", 12], ["clickable", 11]]],
-]
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "After Hevipelle, the void and the backrooms were searching for more nobles." : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "They found Jacorb. The apprentice of the six high gods of incremental powers." : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "Hevipelle and Jacorb became good allies. However, they needed more nobles." : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "That's when Hevipelle told the realms about Aarex, who created many things, like NG+3." : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "Aarex and Jacorb would meet and soon become best friends..." : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+           ["blank", "25px"],
+           ["raw-html", function () { return player.boosterlayer.eq(1) ? "<h3>Incremental Power: " + format(player.m.points) + " -> x" + format(player.m.scorefromincrementalpower) : "" }, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+           ["blank", "25px"],
+           ["infobox", "jacorblog6"],
+        ]
 
 },
 },
@@ -196,7 +209,11 @@ bars: {
 
 },
 infoboxes: {
-
+    jacorblog5: {
+        unlocked() { return true },
+        title: "Log V",
+        body() { return "Log V: More battles kept on raging. We are losing hard. However, me and Aarex's work is going well. Hevipelle thinks that I should join fighting, but it's too risky. Losing a noble can be very catastrophic. I still don't know how this war is going to end, but we are going to need ????????'s help for sure." },         
+    }, 
 },
 microtabs: {
 stuff: {
@@ -207,7 +224,16 @@ content:
 
     [
            ["blank", "25px"],
-]
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "When Aarex and Jacorb met, they instantly got along." : ""}, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "Jacorb helped Aarex with NG+3 by adding condensers." : ""}, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "Jacorb showed Aarex to the high gods, who respected Aarex." : ""}, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "They trained together and grew very powerful." : ""}, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boostercutscene.eq(0) ? "It seemed like everything was going great." : ""}, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+           ["blank", "25px"],
+           ["raw-html", function () { return player.generatorlayer.eq(1) ? "<h3>Incremental Energy: " + format(player.m.incrementalenergy) + " -> x" + format(player.m.scorefromincrementalenergy) : "" }, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+           ["blank", "25px"],
+           ["infobox", "jacorblog5"],
+        ]
 
 },
 },
@@ -218,4 +244,103 @@ tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
 ],
 layerShown() { return player.generatorlayer.eq(1) }
+})
+addLayer("en", {
+    name: "enhance", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "E", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Enhance", // Row the layer is in on the tree (0 is the first row)
+color: "#b82fbd",
+branches: ["bo", "ge"],
+update(delta) {
+},
+clickables: {
+    11: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.enhancecutscene.eq(1) },
+        unlocked() { return player.enhancescene.neq(24) },
+        onClick() {
+            player.enhancescene = player.enhancescene.add(1)
+        },
+    },
+    12: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.enhancecutscene.eq(1) },
+        unlocked() { return player.enhancescene.neq(24) && player.enhancescene.neq(0) },
+        onClick() {
+            player.enhancescene = player.enhancescene.sub(1)
+        },
+    },
+},
+upgrades: {
+},
+buyables: {
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+    jacorblog11: {
+        unlocked() { return true },
+        title: "Log XI",
+        body() { return "Log XI: We have started work on the fourth row, and decided to add some challenges to it. Quirk energy, time energy, space energy, there's always got to be an energy to it. It's like one of my older projects, Incremenergy. It seems I've got a lot of inspiration from my own work. The recent battles have been pretty neutral. Once we start using ??????????, I think we'd start winning." },         
+    }, 
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#b82fbd' } },
+unlocked() { return player.generatorlayer.eq(1) },
+content:
+
+    [
+        ["raw-html", function () { return player.enhancescene.eq(0) ? "<h1>I'm back." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(1) ? "<h1>Ah yes, the power of enhance. It made everything faster." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(2) ? "<h1>I remember working on the prestige tree being one of the best moments of my existence." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(3) ? "<h1>There was hope. I thought we were going to win the war." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(4) ? "<h1>Until IT came and destroyed the tree." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(5) ? "<h1>All 28 layers- scattered and lost.<h6>(celeste ost reference)" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(6) ? "<h1>Once you put the layers back together, it will be great." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(7) ? "<h1>I'll finally know the true power of the tree." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(8) ? "<h1>Me and Aarex worked hard, and I want our work to finally pay off." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(9) ? "<h1>He was one of my best friends. I wonder how he's doing." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(10) ? "<h1>Last time I heard about his well-being was during your predecessor's time." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(11) ? "<h1>And the last time I spoke to him was before we got captured." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(12) ? "<h1>Things between me and him haven't been so well since the day we got captured." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(13) ? "<h1>The death realm haven't been letting us communicate with each other." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(14) ? "<h1>Yes, I've got small messages from Yhvr, but nothing from Aarex." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(15) ? "<h1>And Hevipelle? That guy still exists? Why hasn't he tried saving us?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(16) ? "<h1>He's the most powerful one of us all, yet he hasn't done anything yet." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(17) ? "<h1>But you are here; you will give us hope." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(18) ? "<h1>Once we are freed, we will show the death realm who they truly are!" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(19) ? "<h1>Then the multiverse will be back in one piece!" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(20) ? "<h1>But remember. You are destined to do this." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(21) ? "<h1>If you want to back out, it will lead to certain death." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(22) ? "<h1>After this is all over, you will become KING OF THE MULTIVERSE." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(23) ? "<h1>You are doing great. Bye." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["clickable", 12], ["clickable", 11]]],
+           ["blank", "25px"],
+           ["infobox", "jacorblog11"],
+           ["blank", "25px"],
+           ["raw-html", function () { return player.enhancelayer.eq(1) ? "<h3>Time spent in meta-prestige: " + formatTime(player.i.metaprestigetime) + " -> x" + format(player.m.scorefrommetaprestigetime) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+           ["blank", "25px"],
+           ["raw-html", function () { return player.enhancelayer.eq(1) ? "<h2>UNLOCKED ENHANCE PATH" : "" }, { "color": "#b82fbd", "font-size": "48px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.enhancelayer.eq(1) ? "<h3>Do an meta-prestige reset and there will be some changes." : "" }, { "color": "#b82fbd", "font-size": "24px", "font-family": "monospace" }],
+        ]
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+],
+layerShown() { return player.enhancelayer.eq(1) }
 })
