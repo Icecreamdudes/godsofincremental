@@ -95,6 +95,11 @@ color: "#6e64c4",
 update(delta) {
     if (player.boosterscene.eq(20)) {
         player.boostercutscene = new Decimal(0)
+        player.injacorbcutscene = new Decimal(0)
+    }
+    if (player.boosterscene.gt(0) && player.boostercutscene.eq(1))
+    {
+        player.injacorbcutscene = new Decimal(1)
     }
 },
 clickables: {
@@ -129,7 +134,7 @@ bars: {
 },
 infoboxes: {
     jacorblog6: {
-        unlocked() { return true },
+        unlocked() { return player.boostercutscene.eq(0) },
         title: "Log VI",
         body() { return "Log VI: Hevipelle came up with an idea. He wants to use his own powers to create beings called celestials. He gave us a demonstration. He said that celestials are like artificial gods that wield certain types of powers. They are not immortal, but certainly not weak. He said that the power of the ??????????? ?????? is similar to the power from celestials. We'll see what he can do." },         
     }, 
@@ -170,7 +175,7 @@ content:
            ["raw-html", function () { return player.boostercutscene.eq(0) ? "That's when Hevipelle told the realms about Aarex, who created many things, like NG+3." : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
            ["raw-html", function () { return player.boostercutscene.eq(0) ? "Aarex and Jacorb would meet and soon become best friends..." : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
            ["blank", "25px"],
-           ["raw-html", function () { return player.boosterlayer.eq(1) ? "<h3>Incremental Power: " + format(player.m.points) + " -> x" + format(player.m.scorefromincrementalpower) : "" }, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boosterlayer.eq(1) && player.boostercutscene.eq(0) ? "<h3>Incremental Power: " + format(player.m.points) + " -> x" + format(player.m.scorefromincrementalpower) : "" }, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
            ["blank", "25px"],
            ["infobox", "jacorblog6"],
         ]
@@ -182,6 +187,7 @@ content:
 
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.boosterlayer.eq(1) }
 })
@@ -253,6 +259,16 @@ tooltip: "Enhance", // Row the layer is in on the tree (0 is the first row)
 color: "#b82fbd",
 branches: ["bo", "ge"],
 update(delta) {
+    if (player.enhancescene.eq(24)) {
+        player.enhancecutscene = new Decimal(0)
+        player.injacorbcutscene = new Decimal(0)
+    }
+    if (player.enhancescene.gt(0) && player.enhancecutscene.eq(1))
+    {
+        player.boosterscene = new Decimal(21)
+        player.injacorbcutscene = new Decimal(1)
+    }
+    
 },
 clickables: {
     11: {
@@ -286,7 +302,7 @@ bars: {
 },
 infoboxes: {
     jacorblog11: {
-        unlocked() { return true },
+        unlocked() { return player.enhancecutscene.eq(0) },
         title: "Log XI",
         body() { return "Log XI: We have started work on the fourth row, and decided to add some challenges to it. Quirk energy, time energy, space energy, there's always got to be an energy to it. It's like one of my older projects, Incremenergy. It seems I've got a lot of inspiration from my own work. The recent battles have been pretty neutral. Once we start using ??????????, I think we'd start winning." },         
     }, 
@@ -328,10 +344,10 @@ content:
            ["blank", "25px"],
            ["infobox", "jacorblog11"],
            ["blank", "25px"],
-           ["raw-html", function () { return player.enhancelayer.eq(1) ? "<h3>Time spent in meta-prestige: " + formatTime(player.i.metaprestigetime) + " -> x" + format(player.m.scorefrommetaprestigetime) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.enhancelayer.eq(1) && player.enhancecutscene.eq(0) ? "<h3>Time spent in meta-prestige: " + formatTime(player.i.metaprestigetime) + " -> x" + format(player.m.scorefrommetaprestigetime) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
            ["blank", "25px"],
-           ["raw-html", function () { return player.enhancelayer.eq(1) ? "<h2>UNLOCKED ENHANCE PATH" : "" }, { "color": "#b82fbd", "font-size": "48px", "font-family": "monospace" }],
-           ["raw-html", function () { return player.enhancelayer.eq(1) ? "<h3>Do an meta-prestige reset and there will be some changes." : "" }, { "color": "#b82fbd", "font-size": "24px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.enhancelayer.eq(1) && player.enhancecutscene.eq(0) ? "<h2>UNLOCKED ENHANCE PATH" : "" }, { "color": "#b82fbd", "font-size": "48px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.enhancelayer.eq(1) && player.enhancecutscene.eq(0) ? "<h3>Do an meta-prestige reset and there will be some changes." : "" }, { "color": "#b82fbd", "font-size": "24px", "font-family": "monospace" }],
         ]
 
 },
@@ -341,6 +357,7 @@ content:
 
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.enhancelayer.eq(1) }
 })

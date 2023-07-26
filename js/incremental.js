@@ -60,10 +60,19 @@
         enhancepointseffect: new Decimal(1),
         enhancepointspersecond: new Decimal(0),
         enhancedprestigepoints: new Decimal(0),
+
+        //Beacon
+        enhancebeaconlevel: new Decimal(0),
+        enhancebeaconreq: new Decimal(100),
+        enhancebeacontoggle: new Decimal(0),
+        beaconpower: new Decimal(0),
+        beaconpowerpersecond: new Decimal(0),
+        beaconpowerreq: new Decimal(25),
+        incrementalpowergain: new Decimal(0.3),
     }
     },
     automate() {
-        if (hasUpgrade("i", 12))
+        if (hasUpgrade("i", 12) || hasUpgrade("i", 103))
         {
             buyBuyable("i", 11)
             buyBuyable("i", 12)
@@ -91,7 +100,7 @@
                 "background-origin": "border-box",
                 animation: 'orbit 25s infinite linear', // Rotation animation
                 position: "absolute",
-                top: "27.5%",
+                top: "25.5%",
                 left: "46.5%",
             }
         }
@@ -102,7 +111,7 @@
                 animation: 'orbit 25s infinite linear', // Rotation animation
                 position: "absolute",
                 boxShadow: '0 0 10px 2px #ffffff',
-                top: "27.5%",
+                top: "25.5%",
                 left: "46.5%",
             }
         }
@@ -113,7 +122,7 @@
                 animation: 'orbit 25s infinite linear', // Rotation animation
                 position: "absolute",
                 boxShadow: '0 0 10px 2px purple',
-                top: "27.5%",
+                top: "25.5%",
                 left: "46.5%",
             }
         }
@@ -126,8 +135,13 @@
         if (player.i.enhancepath.eq(0)) player.i.metaprestigetime = player.i.metaprestigetime.add(onepersec.mul(delta))
         if (player.i.enhancepath.eq(1)) player.i.metaprestigetime = player.i.metaprestigetime.add(onepersec.mul(3).mul(delta))
 
-        if (player.prestigescene.eq(6)) {
+        if (player.prestigescene.eq(7)) {
             player.prestigecutscene = new Decimal(0)
+            player.inreddiamondcutscene = new Decimal(0)
+        }
+        if (player.prestigescene.gt(0) && player.prestigecutscene.eq(1))
+        {
+            player.inreddiamondcutscene = new Decimal(1)
         }
 
         player.i.prestigepointstoget = player.points.pow(0.4).div(3)
@@ -137,6 +151,8 @@
         if (player.i.standardpath.eq(1)) player.i.prestigepointstoget = player.i.prestigepointstoget.mul(player.i.prestigemachineeffect)
         if (player.i.currentenergizer.eq(3)) player.i.prestigepointstoget = player.i.prestigepointstoget.div(1000)
         player.i.prestigepointstoget = player.i.prestigepointstoget.mul(buyableEffect("i", 23))
+        player.i.prestigepointstoget = player.i.prestigepointstoget.mul(buyableEffect("i", 101))
+        if (hasUpgrade("m", 17)) player.i.prestigepointstoget = player.i.prestigepointstoget.mul(upgradeEffect("m", 17))
         if (player.i.enhancepath.eq(1)) player.i.prestigepointstoget = player.i.prestigepointstoget.pow(0.95)
 
         if (hasUpgrade("i", 22)) player.i.prestigepoints = player.i.prestigepoints.add(player.i.prestigepointstoget.mul(delta))
@@ -168,6 +184,11 @@
 
         if (player.machinescene.eq(22)) {
             player.machinecutscene = new Decimal(0)
+            player.inreddiamondcutscene = new Decimal(0)
+        }
+        if (player.machinescene.gt(0) && player.machinecutscene.eq(1))
+        {
+            player.inreddiamondcutscene = new Decimal(1)
         }
 
         if (player.i.currentenergizer.neq(1)) player.i.prestigemachinereq = Decimal.pow(3, player.i.prestigemachines)
@@ -186,6 +207,11 @@
 
         if (player.pureenergyscene.eq(16)) {
             player.pureenergycutscene = new Decimal(0)
+            player.inreddiamondcutscene = new Decimal(0)
+        }
+        if (player.pureenergyscene.gt(0) && player.pureenergycutscene.eq(1))
+        {
+            player.inreddiamondcutscene = new Decimal(1)
         }
 
         if (player.i.pureenergypause.gt(0)) {
@@ -212,6 +238,11 @@
 
         if (player.energizerscene.eq(16)) {
             player.energizercutscene = new Decimal(0)
+            player.inreddiamondcutscene = new Decimal(0)
+        }
+        if (player.energizerscene.gt(0) && player.energizercutscene.eq(1))
+        {
+            player.inreddiamondcutscene = new Decimal(1)
         }
 
         if (player.i.machineautomode.eq(1) && player.i.prestigepoints.gte(player.i.prestigemachinereq))
@@ -221,8 +252,9 @@
         if (player.i.machineautomode.eq(2) && player.i.prestigepoints.gte(player.i.prestigemachinereq) && player.i.prestigemachines.lt(player.i.corruptiondelay))
         {
             player.i.prestigemachines = player.i.prestigemachines.add(1)
-        }
+        } 
 
+        //ENHANCE PATH
         let enhanceloss = new Decimal(0)
         enhanceloss = player.i.enhancedprestigepoints.mul(0.1)
 
@@ -233,6 +265,38 @@
         player.i.enhancedprestigepoints = player.i.enhancedprestigepoints.sub(enhanceloss.mul(delta))
 
         if (player.i.enhancepoints.gte(player.i.bestenhancepoints)) player.i.bestenhancepoints = player.i.enhancepoints
+
+        if (player.beaconscene.eq(11)) {
+            player.beaconcutscene = new Decimal(0)
+            player.injacorbcutscene = new Decimal(0)
+        }
+        if (player.beaconscene.gt(0) && player.beaconcutscene.eq(1))
+        {
+            player.enhancescene = new Decimal(25)
+            player.injacorbcutscene = new Decimal(1)
+        }
+
+        player.i.enhancebeaconreq = player.i.enhancebeaconlevel.pow(2).add(1).mul(10)
+
+        if (player.i.enhancebeacontoggle.eq(0)) player.i.beaconpowerpersecond = new Decimal(0)
+        if (player.i.enhancebeacontoggle.eq(1)) player.i.beaconpowerpersecond = player.i.enhancebeaconlevel
+        player.i.beaconpower = player.i.beaconpower.add(player.i.beaconpowerpersecond.mul(delta))
+
+        player.i.beaconpowerreq = new Decimal(25)
+        player.i.incrementalpowergain = new Decimal(0.3)
+        
+        if (player.i.beaconpower.gt(player.i.beaconpowerreq))
+        {
+            player.m.points = player.m.points.add(player.m.score.mul(player.i.incrementalpowergain))
+            player.i.beaconpower = new Decimal(0)
+            if (hasUpgrade("m", 18)) player.i.metaprestigetime = player.i.metaprestigetime.add(10)
+        }
+
+        let pointloss = new Decimal(0)
+        if (player.i.enhancebeacontoggle.eq(0)) pointloss = new Decimal(0)
+        if (player.i.enhancebeacontoggle.eq(1)) pointloss = player.points.mul(0.4)
+
+        player.points = player.points.sub(pointloss.mul(delta))
     },
     prestigereset()
     {
@@ -272,9 +336,9 @@
     }, 
     clickables: {
         11: {
-            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);he t:calc(80%);margin:10%'></img>" },
             canClick() { return player.prestigecutscene.eq(1) },
-            unlocked() { return player.prestigescene.neq(6) },
+            unlocked() { return player.prestigescene.neq(7) },
             onClick() {
                 player.prestigescene = player.prestigescene.add(1)
             },
@@ -282,7 +346,7 @@
         12: {
             title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
             canClick() { return player.prestigecutscene.eq(1) },
-            unlocked() { return player.prestigescene.neq(6) && player.prestigescene.neq(0) },
+            unlocked() { return player.prestigescene.neq(7) && player.prestigescene.neq(0) },
             onClick() {
                 player.prestigescene = player.prestigescene.sub(1)
             },
@@ -486,7 +550,7 @@
         32: {
             title() { return "<img src='resources/assemblylinex.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
             canClick() { return true },
-            unlocked() { return player.pureenergycutscene.eq(0) && player.i.standardpath.eq(1) },
+            unlocked() { return player.energizercutscene.eq(0) && player.i.standardpath.eq(1) },
             onClick() {
                 player.i.nextenergizer = new Decimal(0)
             },
@@ -494,7 +558,7 @@
         33: {
             title() { return "<img src='resources/cheapmachines.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
             canClick() { return true },
-            unlocked() { return player.pureenergycutscene.eq(0) && player.i.standardpath.eq(1) },
+            unlocked() { return player.energizercutscene.eq(0) && player.i.standardpath.eq(1) },
             onClick() {
                 player.i.nextenergizer = new Decimal(1)
             },
@@ -502,7 +566,7 @@
         34: {
             title() { return "<img src='resources/strongprestigeenergy.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
             canClick() { return true },
-            unlocked() { return player.pureenergycutscene.eq(0) && player.i.standardpath.eq(1) },
+            unlocked() { return player.energizercutscene.eq(0) && player.i.standardpath.eq(1) },
             onClick() {
                 player.i.nextenergizer = new Decimal(2)
             },
@@ -583,7 +647,7 @@
         41: {
             title() { return "<img src='resources/morepoints.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
             canClick() { return true },
-            unlocked() { return player.pureenergycutscene.eq(0) && player.i.standardpath.eq(1) && hasUpgrade("i", 19)},
+            unlocked() { return player.energizercutscene.eq(0) && player.i.standardpath.eq(1) && hasUpgrade("i", 19) },
             onClick() {
                 player.i.nextenergizer = new Decimal(3)
             },
@@ -662,6 +726,64 @@
                 player.i.prestigepoints = new Decimal(0)
             },
             style: { width: '150px', "min-height": '60px', "background-color": "#b82fbd", }
+        },
+        103: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.beaconcutscene.eq(1) },
+            unlocked() { return player.beaconscene.neq(11) },
+            onClick() {
+                player.beaconscene = player.beaconscene.add(1)
+            },
+        },
+        104: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.beaconcutscene.eq(1) },
+            unlocked() { return player.beaconscene.neq(11) && player.beaconscene.neq(0) },
+            onClick() {
+                player.beaconscene = player.beaconscene.sub(1)
+            },
+        },
+        105: {
+            title() { return "<h2>Level up your beacon." },
+            canClick() { return player.i.enhancepoints.gte(player.i.enhancebeaconreq) },
+            unlocked() { return player.beaconcutscene.eq(0) && player.i.enhancepath.eq(1) },
+            onClick() {
+                player.i.enhancebeaconlevel = player.i.enhancebeaconlevel.add(1)
+            },
+            style: { "background-color": "#b82fbd", width: '400px', "min-height": '100px' },
+        },
+        106: {
+            title() { return "Off" },
+            canClick() { return true },
+            unlocked() { return player.beaconcutscene.eq(0) && player.i.enhancepath.eq(1) },
+            onClick() {
+                player.i.enhancebeacontoggle = new Decimal(0)
+            },
+        },
+        107: {
+            title() { return "On" },
+            canClick() { return true },
+            unlocked() { return player.beaconcutscene.eq(0) && player.i.enhancepath.eq(1) },
+            onClick() {
+                player.i.enhancebeacontoggle = new Decimal(1)
+            },
+        },
+    },
+    bars: {
+        beaconbar: {
+            unlocked() { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0) },
+            direction: RIGHT,
+            width: 476,
+            height: 50,
+            progress() {
+                return player.i.beaconpower.div(player.i.beaconpowerreq)
+            },
+            fillStyle: {
+                "background-color": "#b82fbd",
+            },
+            display() {
+                return "<h5>" + format(player.i.beaconpower) + "/" + format(player.i.beaconpowerreq) + "<h5> beacon power to produce incremental power</h5>";
+            },
         },
     },
     upgrades: {
@@ -862,6 +984,39 @@
             currencyDisplayName: "Prestige Points",
             currencyInternalName: "prestigepoints",
         },
+        102:
+        {
+            title: "EP Prestige Upgrade II",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 101) },
+            description: "Unlocks true enhancers.",
+            cost: new Decimal(1e7),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Prestige Points",
+            currencyInternalName: "prestigepoints",
+        },
+        103:
+        {
+            title: "EP Prestige Upgrade III",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 102) },
+            description: "Automatically buys main buyables without spending points.",
+            cost: new Decimal(2.5e7),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Prestige Points",
+            currencyInternalName: "prestigepoints",
+        },
+        104:
+        {
+            title: "EP Prestige Upgrade IV",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 103) },
+            description: "Unlocks the enhance beacon.",
+            cost: new Decimal(1.5e8),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Prestige Points",
+            currencyInternalName: "prestigepoints",
+        },
     },
     buyables: {
         11: {
@@ -884,7 +1039,11 @@
                 let growth = 1.08
                 let max = Decimal.affordGeometricSeries(player.points, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                if (!hasUpgrade("i", 12)) player.points = player.points.sub(cost)
+
+                if (!hasUpgrade("i", 103))
+                {
+                    if (!hasUpgrade("i", 12)) player.points = player.points.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', }
@@ -909,7 +1068,10 @@
                 let growth = 1.12
                 let max = Decimal.affordGeometricSeries(player.points, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                if (!hasUpgrade("i", 12)) player.points = player.points.sub(cost)
+                if (!hasUpgrade("i", 103))
+                {
+                    if (!hasUpgrade("i", 12)) player.points = player.points.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', }
@@ -934,7 +1096,10 @@
                 let growth = 1.2
                 let max = Decimal.affordGeometricSeries(player.points, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                if (!hasUpgrade("i", 12)) player.points = player.points.sub(cost)
+                if (!hasUpgrade("i", 103))
+                {
+                    if (!hasUpgrade("i", 12)) player.points = player.points.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', }
@@ -1165,14 +1330,39 @@
             },
             style: { width: '275px', height: '150px', "background-color": "#b82fbd",}
         },
+
+        //ENHANCE PATH
+
+        101: {
+            cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(10) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(0.85).add(1)},
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 102) },
+            canAfford() { return player.i.enhancepoints.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>True Enhancers"
+            },
+            tooltip() {
+                return "<h5>Jacorb meticulously designed enhance points for efficiency."
+            },
+            display() {
+                return "which are boosting prestige points by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Enhance Points"
+            },
+            buy() {
+                let base = new Decimal(10)
+                let growth = 1.2
+                let max = Decimal.affordGeometricSeries(player.i.enhancepoints, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.enhancepoints = player.i.enhancepoints.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#b82fbd",}
+        },
     },
     milestones: {
 
     },
     challenges: {
-    },
-    bars: {
-
     },
     infoboxes: {
         jacorblog1: {
@@ -1210,6 +1400,16 @@
             title: "Log X",
             body() { return "Log X: Bad news. Our last battle was a big flop. The realms want to get ????????? from the dimensional realm to help them fight since we already lost a lot of soldiers. However, the dimensional realm has always stayed neutral. Aarex is feeling better now, so we kept on doing our work. Hope they don't find out about the ???????? ?????." },         
         }, 
+        jacorblog12: {
+            unlocked() { return player.enhancelayer.eq(1) && player.i.enhancebeacontoggle.eq(1) },
+            title: "Log XII",
+            body() { return "Log XII: Today, we had a really important meeting. Due to ????????'s injuries and lack of work getting done, they might move his position of ?????? ?? ??????? to ????. Strange, because ???????? already replaced ??. A mage from the death realm named ??????? joined our side. We don't know if we can trust him or not, but he has substantial incremental weaponry." },         
+        }, 
+        jacorblog13: {
+            unlocked() { return player.enhancelayer.eq(1) && player.i.enhancebeacontoggle.eq(0) },
+            title: "Log XIII",
+            body() { return "Log XIII: I can't imagine how ???????? is feeling. Getting your rank challenged by ????, who has been working harder than ever. I don't know. This might be the second time this is happening. Even if ???????? loses his spot we will all stay determined to win this war. Apparently, ??????? is a ?????? ?????. He can also manipulate the forces of ?????, ?????, and has defeated the ancient ?????????? ?????????. ??????? and ???? are starting to get along." },         
+        }, 
     },
     microtabs: {
         stuff: {
@@ -1229,6 +1429,9 @@
                         ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h2>Enhance Path Effects:" : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>x3 to meta prestige time. " : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                      ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>^0.95 to prestige points. " : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                           ["blank", "25px"],
+                           ["infobox", "jacorblog13"],
+                           ["infobox", "jacorblog12"],
                     ]
 
             },
@@ -1268,6 +1471,7 @@
                         ["raw-html", function () { return player.prestigescene.eq(3) ? "<h1> I'm going to ask you a question. What are you doing here?" : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.prestigescene.eq(4) ? "<h1> There is no point of restoring the balance of incrementals." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.prestigescene.eq(5) ? "<h1> THE DEATH REALM took everything. It's all over." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.prestigescene.eq(6) ? "<h1> CHAPTER 1: THE STANDARD PATH." : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["clickable", 12], ["clickable", 11]]],
                         ["raw-html", function () { return player.prestigecutscene.eq(0) ? "<h2>You have " + format(player.i.prestigepoints) + "<h2> prestige points. " : "" }],
@@ -1277,7 +1481,7 @@
                         ["row", [["buyable", 14]]],
                         ["blank", "25px"],
                         ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14]]],
-                        ["row", [["upgrade", 101]]],
+                        ["row", [["upgrade", 101], ["upgrade", 102], ["upgrade", 103], ["upgrade", 104]]],
                         ["row", [["clickable", 15]]],
                         ["row", [["clickable", 16], ["blank", "25px"], ["clickable", 43]]],
                         ["blank", "25px"],
@@ -1346,7 +1550,7 @@
                         ["row", [["clickable", 22]]],
                         ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>Req: " + format(player.i.prestigemachinereq) + " prestige points." : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)? "<h3>YOU CANNOT REFUND MACHINES. THE CORRUPTION IS INEVITABLE. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
-                        ["raw-html", function () { return "<h3>Current corruption delay: " + format(player.i.corruptiondelay) }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) && player.machinecutscene.eq(0)?  "<h3>Current corruption delay: " + format(player.i.corruptiondelay) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                     ]
 
             },
@@ -1380,7 +1584,46 @@
                         ["row", [["clickable", 101]]],
                         ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Performs a prestige reset without gain." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>You lose 10% of enhanced prestige points per second." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["buyable", 101]]],
                     ]
+
+            },
+            "The Enhance Beacon": {
+                buttonStyle() { return { 'color': '#b82fbd' } },
+                unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 104) },
+                content:
+                    [
+                        ["raw-html", function () { return player.beaconscene.eq(0) ? "<h1>Ah, the enhance beacon. One of my earliest work." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(1) ? "<h1>I remember having to make it to prove my worth to the gods." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(2) ? "<h1>Suprisingly, it still works. Even in my exile." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(3) ? "<h1>It can radiate JACORBIAN ENERGY. Something that would be very useful down the path." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(4) ? "<h1>You may also be able to start JACORBIAN BALANCING. Which is pretty cool." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(5) ? "<h1>This enhance beacon can help you out through meta-prestiges." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(6) ? "<h1>You will be able to passively earn incremental power." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(7) ? "<h1>However, gaining incremental power with the beacon would be very slow." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(8) ? "<h1>But in times like these, it would be most efficient." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(9) ? "<h1>You must power the beacon using your ENHANCE POINTS." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.beaconscene.eq(10) ? "<h1>We are only getting started here." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+            ["blank", "25px"],
+                        ["row", [["clickable", 104], ["clickable", 103]]],
+            ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0) ? "<h2>You have " + format(player.m.points) + " incremental power." : ""}, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0) ? "<h2>You have " + format(player.i.enhancepoints) + "<h2> enhance points, which boost point gain by x" + format(player.i.enhancepointseffect) + "." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0) ? "<h2>Your beacon is level " + format(player.i.enhancebeaconlevel) + "." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["row", [["clickable", 105]]],
+                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0)? "<h3>Req: " + format(player.i.enhancebeaconreq) + " enhance points." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0) && player.i.enhancebeacontoggle.eq(0) ? "<h3>THE BEACON IS OFF." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0) && player.i.enhancebeacontoggle.eq(1) ? "<h3>THE BEACON IS ON." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 106], ["clickable", 107]]],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0)? "<h3>You are making " + format(player.i.beaconpowerpersecond) + " beacon power per second." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0)? "<h3>You will produce " + format(player.m.score.mul(player.i.incrementalpowergain)) + " incremental power (based on score)." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0)? "<h3>You lose 40% of points per second if your beacon is toggled on." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["bar", "beaconbar"],
+        ]
 
             },
         },
@@ -1508,7 +1751,11 @@
         ["raw-html", function () { return "You are gaining " + format(player.gain) + " points per second."}, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
         ["row", [["clickable", 14], ["clickable", 23], ["clickable", 27], ["clickable", 102]]],
          ["microtabs", "stuff", { 'border-width': '0px' }],
-    ],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(1) && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/reddiamond.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pathless.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(1) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/energeticsong.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+        ],
     layerShown() { return true }
 })
 function createParticles() {

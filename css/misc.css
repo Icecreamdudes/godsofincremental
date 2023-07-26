@@ -140,3 +140,24 @@
         clip-path: polygon(0% 15%, 100% 14%, 100% 20%, 0% 21%);
         z-index: -2;
     }
+
+    .spinning-symbol {
+        display: inline-block;
+        font-size: 350px;
+        animation: spin 8s linear infinite;
+        transition: transform 0.2s ease-in-out;
+        background: linear-gradient(45deg, red, orange);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+  
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+

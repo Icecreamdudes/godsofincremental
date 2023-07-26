@@ -3,7 +3,7 @@
 	id: "godsofincremental",
 	author: "Icecreamdude",
 	pointsName: "points",
-	modFiles: ["incremental.js", "metaprestige.js", "tree.js", "prestigetree.js"],
+	modFiles: ["incremental.js", "metaprestige.js", "tree.js", "prestigetree.js", "crafting.js"],
 
 	discordName: "Incremental God Tree Server",
 	discordLink: "https://discord.gg/icecreamdude-s-incremental-games-850817562040467556",
@@ -65,6 +65,11 @@ function addedPlayerData() {
 		bestpoints: new Decimal(0),
 		unlockedmetaprestige: new Decimal(0),
 
+		//Cutscene Song Optimization
+		inreddiamondcutscene: new Decimal(0),
+		injacorbcutscene: new Decimal(0),
+		inartiscutscene: new Decimal(0),
+
 		//Cutscenes
 		prestigecutscene: new Decimal(1),
         prestigescene: new Decimal(0),
@@ -78,6 +83,12 @@ function addedPlayerData() {
 		boosterscene: new Decimal(0),
 		enhancecutscene: new Decimal(1),
 		enhancescene: new Decimal(0),
+		beaconcutscene: new Decimal(1),
+		beaconscene: new Decimal(0),
+		craftingcutscene: new Decimal(1),
+		craftingscene: new Decimal(0),
+		crafting2cutscene: new Decimal(1),
+		crafting2scene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),
@@ -85,6 +96,7 @@ function addedPlayerData() {
 		yhvrcutscene3: new Decimal(0),
 		yhvrcutscene4: new Decimal(0),
 		yhvrcutscene5: new Decimal(0),
+		yhvrcutscene6: new Decimal(0),
 
 		//PT layers
 		prestigelayer: new Decimal(0),

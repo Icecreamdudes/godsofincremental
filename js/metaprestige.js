@@ -11,6 +11,9 @@
         points: new Decimal(0),
         score: new Decimal(0),
 
+        //Unlocks
+		craftingunlock: new Decimal(0),
+
         //PATHLESS FACTORS
         scorefrombestpoints: new Decimal(0),
         scorefromtimeplayed: new Decimal(1),
@@ -36,6 +39,14 @@
     {
         player.bestpoints = new Decimal(0)
         player.m.incrementalenergy = player.m.incrementalenergy.add(player.m.incrementalenergytoget)
+
+        player.c.scrapmetalcancel = new Decimal(1)
+        player.c.wirescancel = new Decimal(1)
+        player.c.enhancepowdercancel = new Decimal(1)
+
+        player.c.scrapmetal = player.c.scrapmetal.add(player.c.scrapmetaltoget)
+        player.c.wires = player.c.wires.add(player.c.wirestoget)
+        player.c.enhancepowder = player.c.enhancepowder.add(player.c.enhancepowdertoget)
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
     resource: "Incremental Power", // Name of prestige currency
@@ -100,7 +111,7 @@
         player.m.score = player.m.score.mul(player.m.scorefrommetaprestigetime)
         player.m.score = player.m.score.mul(player.m.scorefrombestenhancepoints)
 
-        player.m.incrementalenergytoget = player.i.prestigemachines.pow(0.3).add(1)
+        player.m.incrementalenergytoget = player.i.prestigemachines.pow(0.3)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.noenergyboost)
 
         player.m.incrementalenergyeffect = player.m.incrementalenergy.pow(0.8).add(1)
@@ -213,6 +224,52 @@
                 player.yhvrcutscene4 = new Decimal(1)
             },
         },
+        17:
+        {
+            title: "Boost III",
+            unlocked() { return hasUpgrade("m", 16) && player.enhancelayer.eq(1) },
+            description: "Boosts prestige points based on meta-prestige time.",
+            cost: new Decimal(1500),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+            effect() 
+            {
+                 return player.i.metaprestigetime.div(500).pow(0.7).add(1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
+        18:
+        {
+            title: "Cool Upgrade I",
+            unlocked() { return hasUpgrade("m", 17) && player.beaconcutscene.eq(0) },
+            description: "Adds 10s to the meta-prestige timer when your beacon fills up.",
+            cost: new Decimal(2500),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+        },
+        19:
+        {
+            title: "Crafting",
+            unlocked() { return hasUpgrade("m", 18) },
+            description: "Unlocks the crafting layer.",
+            cost: new Decimal(5000),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+            onPurchase() {
+                if (player.yhvrcutscene6.eq(0))
+                {
+                alert("It's about time you unlocked this feature.")
+                alert("It is run by a unique celestial, but this feature will be very helpful.")
+                alert("You are close to the first celestial you will fight.")
+                alert("But to summon it, you must craft a certain item.")
+                alert("But there are requirements you will need to complete first.")
+            }
+                player.yhvrcutscene6 = new Decimal(1)
+            },
+        },
     },
     buyables: {
     },
@@ -254,7 +311,7 @@
                            ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>Best prestige energy: " + format(player.i.bestprestigeenergy) + " -> x" + format(player.m.scorefrombestprestigeenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) ? "<h3>Best pure energy: " + format(player.i.bestpureenergy) + " -> x" + format(player.m.scorefrombestpureenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Enhance Path Factors " : "" }, { "color": "#b82fbd", "font-size": "24px", "font-family": "monospace" }],
-                           ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Best enhance points: " + formatTime(player.i.bestenhancepoints) + " -> x" + format(player.m.scorefrombestenhancepoints) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Best enhance points: " + format(player.i.bestenhancepoints) + " -> x" + format(player.m.scorefrombestenhancepoints) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            ["raw-html", function () { return player.prestigelayer.eq(1) ? "<h3>Prestige Tree Factors " : "" }, { "color": "#31aeb0", "font-size": "24px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.prestigelayer.eq(1) && player.pr.buyables[11].gt(0) ? "<h3>Score amplifier: " + format(player.pr.buyables[11]) + " -> x" + format(buyableEffect("pr", 11)) : "" }, { "color": "#31aeb0", "font-size": "18px", "font-family": "monospace" }],
@@ -307,7 +364,8 @@
                         ["blank", "25px"],
             ["raw-html", function () { return "<h2>You have " + format(player.m.points) + " incremental power." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
-                        ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 16]]],
+                        ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 16], ["upgrade", 17]]],
+                        ["row", [["upgrade", 18], ["upgrade", 19]]],
         ]
 
             },
@@ -316,6 +374,8 @@
 
     tabFormat: [
             ["microtabs", "stuff", { 'border-width': '0px' }],
+            //MUSIC
+            ["raw-html", function () { return options.musicToggle ? "<audio controls autoplay loop hidden><source src=music/metaprestige.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
     ],
     layerShown() { return player.unlockedmetaprestige.eq(1) }
 })
