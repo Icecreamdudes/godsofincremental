@@ -435,3 +435,122 @@ var interval = setInterval(function() {
 }, 50)
 
 setInterval(function() {needCanvasUpdate = true}, 500)
+
+function adjustMusic() {
+	const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+	const audioElements = document.querySelectorAll("audio");
+
+	audioElements.forEach((audio) => {
+	  const source = audioContext.createMediaElementSource(audio);
+	  const pitchShift = audioContext.createGain();
+	  const rate = 0.5; // Adjust the playback rate as needed (e.g., 0.5 = half speed)
+	  const pitch = 0.5; // Adjust the pitch as needed (e.g., 0.5 = half pitch)
+
+	  // Connect the audio graph for pitch adjustment
+	  source.connect(pitchShift);
+	  pitchShift.connect(audioContext.destination);
+	  pitchShift.gain.value = pitch;
+
+	  // Set the playback rate to slow down the music
+	  audio.playbackRate = rate;
+	});
+  }
+
+  // Function to restore the original music pitch and playback rate
+  function restoreMusic() {
+	const audioElements = document.querySelectorAll("audio");
+	audioElements.forEach((audio) => {
+	  audio.playbackRate = 1; // Restore to the original playback rate
+	});
+  }
+    function addMistWithTextEffect(durationInSeconds, texts) {
+      const mistColor = "white";
+      const mistOpacity = 1; // Change this value to adjust the opacity of the mist
+      const textDuration = 4000; // Time in milliseconds to show each text
+      const textSize = "48px";
+      const textColor = "blue";
+      const textFont = "Lucida Console, Courier New, monospace";
+
+      // Create the mist overlay element
+      const mistOverlay = document.createElement("div");
+      mistOverlay.style.position = "fixed";
+      mistOverlay.style.top = "0";
+      mistOverlay.style.left = "0";
+      mistOverlay.style.width = "100%";
+      mistOverlay.style.height = "100%";
+      mistOverlay.style.backgroundColor = mistColor;
+      mistOverlay.style.opacity = "0";
+      document.body.appendChild(mistOverlay);
+
+      // Create the text container element
+      const textContainer = document.createElement("div");
+      textContainer.style.position = "fixed";
+      textContainer.style.top = "30%";
+      textContainer.style.left = "50%";
+      textContainer.style.transform = "translate(-50%, -50%)";
+      textContainer.style.zIndex = "10000";
+      textContainer.style.textAlign = "center";
+      textContainer.style.fontSize = textSize;
+      textContainer.style.color = textColor;
+      textContainer.style.fontFamily = textFont;
+      textContainer.style.display = "none";
+      document.body.appendChild(textContainer);
+
+      // Animate the mist overlay and text
+      let mistOpacityValue = 0;
+      let textIndex = 0;
+      let startTime = null;
+
+      function animateMistAndText(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+
+        // Calculate mist opacity
+        if (elapsed < durationInSeconds * 1000) {
+          mistOpacityValue = (elapsed / (durationInSeconds * 1000)) * mistOpacity;
+        } else {
+          mistOpacityValue = mistOpacity;
+        }
+        mistOverlay.style.opacity = mistOpacityValue;
+
+        // Calculate text appearance
+        const textDurationIndex = Math.floor(elapsed / textDuration);
+        if (textDurationIndex < texts.length) {
+          textContainer.innerHTML = texts[textDurationIndex];
+          textContainer.style.display = "block";
+        } else {
+          textContainer.style.display = "none";
+        }
+
+        if (elapsed < durationInSeconds * 1000 + (texts.length - 1) * textDuration) {
+          requestAnimationFrame(animateMistAndText);
+        } else {
+          document.body.removeChild(mistOverlay);
+          textContainer.style.display = "none";
+        }
+      }
+	  adjustMusic();
+      requestAnimationFrame(animateMistAndText);
+    }
+
+    // Usage example: Call the function with the desired duration in seconds and an array of texts
+    const textsToShow = [
+      'The "hero" is coming...',
+      "And it's some random junkie.",
+      "This is wrong! This can't be the hero!",
+      "I must put a stop to this!",
+      "I am the celestial of replicanti, and I want to do the right thing!",
+      "I will use extreme time dilation. Hopefully another hero will come in time.",
+      "When the next hero comes prepared, I will die in peace.",
+      "Next hero: If you are listening to this in the future,",
+      "My name is Cante. I am the celestial of replicanti.",
+      "I am telling you the truth about your predecessor.",
+      "Your predecessor is not worthy enough to fight me!",
+      "I will place them in extreme time dilation.",
+      "When you eventually return to the path of singularity,",
+      "You must free them from the dilation and continue your conquest!",
+      "Now I end my case here. You may return to consciousness.",
+      "WHATEVER YOU DO, DO NOT GO TO THE VOID",
+      // Add more texts here if needed
+    ];
+	//addMistWithTextEffect(0.3, textsToShow)

@@ -38,8 +38,9 @@ startData() { return {
     standardkey: new Decimal(0),
     enhancekey: new Decimal(0),
     currentresourcedisplay: new Decimal(0),
+    currentcraftingdisplay: new Decimal(0),
 
-    //Tier one resources
+    //Resources
     scrapmetal: new Decimal(0),
     scrapmetaltoget: new Decimal(0),
     scrapmetalcancel: new Decimal(1),
@@ -49,6 +50,55 @@ startData() { return {
     enhancepowder: new Decimal(0),
     enhancepowdertoget: new Decimal(0),
     enhancepowdercancel: new Decimal(1),
+    celestialcells: new Decimal(0),
+    celestialcellstoget: new Decimal(0),
+     
+    //Anvil
+    craftingspeed: new Decimal(1),
+    anvilslots: new Decimal(1),
+    maxanvilslots: new Decimal(1),
+
+    //Crafted Resources
+
+    //Time Metal
+    timemetal: new Decimal(0),
+    timemetaltoget: new Decimal(1),
+    timemetalcosts: [new Decimal(1), new Decimal(2)],
+    craftingtimemetal: new Decimal(0),
+    timemetalcraftingtime: new Decimal(0),
+    timemetalcraftingtimereq: new Decimal(20),
+
+    //Space Metal
+    spacemetal: new Decimal(0),
+    spacemetaltoget: new Decimal(1),
+    spacemetalcosts: [new Decimal(1), new Decimal(2)],
+    craftingspacemetal: new Decimal(0),
+    spacemetalcraftingtime: new Decimal(0),
+    spacemetalcraftingtimereq: new Decimal(25),
+
+    //Time Capsule
+    timecapsules: new Decimal(0),
+    timecapsulestoget: new Decimal(1),
+    timecapsulecosts: [new Decimal(3), new Decimal(1), new Decimal(600)],
+    craftingtimecapsules: new Decimal(0),
+    timecapsulecraftingtime: new Decimal(0),
+    timecapsulecraftingtimereq: new Decimal(80),
+
+    //Space Building
+    spacebuildings: new Decimal(0),
+    spacebuildingstoget: new Decimal(1),
+    spacebuildingcosts: [new Decimal(4), new Decimal(2), new Decimal(8)],
+    craftingspacebuildings: new Decimal(0),
+    spacebuildingcraftingtime: new Decimal(0),
+    spacebuildingcraftingtimereq: new Decimal(150),
+
+    //Celestial Battery
+    celestialbatteries: new Decimal(0),
+    celestialbatteriestoget: new Decimal(1),
+    celestialbatterycosts: [new Decimal(25), new Decimal(25), new Decimal(10), new Decimal(10), new Decimal(10), new Decimal(2), new Decimal(1)],
+    craftingcelestialbatteries: new Decimal(0),
+    celestialbatterycraftingtime: new Decimal(0),
+    celestialbatterycraftingtimereq: new Decimal(400),
 }
 },
 update(delta) {
@@ -75,30 +125,132 @@ update(delta) {
         player.inartiscutscene = new Decimal(1)
     }
 
-    //TIER ONE CRAFTING
+    //RESOURCES
     if (player.i.prestigeenergy.gt(0))
     {
         player.c.scrapmetalcancel = new Decimal(0)
     }
-    player.c.scrapmetaltoget = player.i.prestigemachines.pow(0.35).mul(player.c.scrapmetalcancel).floor()
+    player.c.scrapmetaltoget = player.i.prestigemachines.pow(0.4).mul(player.c.scrapmetalcancel).floor()
 
     if (player.i.prestigemachines.gt(0))
     {
         player.c.wirescancel = new Decimal(0)
     }
-    player.c.wirestoget = player.i.prestigeenergy.add(1).slog().pow(4).mul(player.c.wirescancel).floor()
+    player.c.wirestoget = player.i.prestigeenergy.add(1).slog().pow(4.5).mul(2).mul(player.c.wirescancel).floor()
 
     if (player.i.enhancedprestigepoints.gt(0) && player.i.enhancedprestigepoints.lt(1))
     {
         player.c.enhancepowdercancel = new Decimal(0)
     }
-    player.c.enhancepowdertoget = player.i.enhancepoints.add(1).slog().pow(4).mul(player.c.enhancepowdercancel).floor()
+    player.c.enhancepowdertoget = player.i.enhancepoints.add(1).slog().pow(5).mul(3).mul(player.c.enhancepowdercancel).floor()
+
+    player.c.celestialcellstoget = player.i.celestialenergy.mul(100).add(1).slog().pow(2).mul(3).floor()
+
+    //ANVIL
+    let craftingspeed = new Decimal(1)
+    craftingspeed = new Decimal(1)
+    if (hasUpgrade("m", 21)) craftingspeed = craftingspeed.mul(upgradeEffect("m", 21))
+    if (player.c.anvilslots.gt(player.c.maxanvilslots)) player.c.anvilslots = player.c.maxanvilslots
+
+    player.c.craftingspeed = craftingspeed
+
+    //time metal
+    player.c.timemetalcosts[0] = new Decimal(1)
+    player.c.timemetalcosts[1] = new Decimal(2)
+    if (player.c.craftingtimemetal.eq(1))
+    {
+        player.c.timemetalcraftingtime = player.c.timemetalcraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.timemetalcraftingtimereq = new Decimal(20)
+    player.c.timemetaltoget = new Decimal(1)
+    if (player.c.timemetalcraftingtime.gte(player.c.timemetalcraftingtimereq))
+    {
+        player.c.timemetal = player.c.timemetal.add(player.c.timemetaltoget)
+            player.c.craftingtimemetal = new Decimal(0)
+            player.c.timemetalcraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+    }
+
+    //space metal
+    player.c.spacemetalcosts[0] = new Decimal(1)
+    player.c.spacemetalcosts[1] = new Decimal(2)
+    if (player.c.craftingspacemetal.eq(1))
+    {
+        player.c.spacemetalcraftingtime = player.c.spacemetalcraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.spacemetalcraftingtimereq = new Decimal(25)
+    player.c.spacemetaltoget = new Decimal(1)
+    if (player.c.spacemetalcraftingtime.gte(player.c.spacemetalcraftingtimereq))
+    {
+        player.c.spacemetal = player.c.spacemetal.add(player.c.spacemetaltoget)
+            player.c.craftingspacemetal = new Decimal(0)
+            player.c.spacemetalcraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+    }
+
+    //time capsule
+    player.c.timecapsulecosts[0] = new Decimal(3)
+    player.c.timecapsulecosts[1] = new Decimal(1)
+    player.c.timecapsulecosts[2] = new Decimal(600)
+    if (player.c.craftingtimecapsules.eq(1))
+    {
+        player.c.timecapsulecraftingtime = player.c.timecapsulecraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.timecapsulecraftingtimereq = new Decimal(80)
+    player.c.timecapsulestoget = new Decimal(1)
+    if (player.c.timecapsulecraftingtime.gte(player.c.timecapsulecraftingtimereq))
+    {
+        player.c.timecapsules = player.c.timecapsules.add(player.c.timecapsulestoget)
+        player.c.craftingtimecapsules = new Decimal(0)
+        player.c.timecapsulecraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+    }
+
+    //space building
+    player.c.spacebuildingcosts[0] = new Decimal(4)
+    player.c.spacebuildingcosts[1] = new Decimal(2)
+    player.c.spacebuildingcosts[2] = new Decimal(8)
+    if (player.c.craftingspacebuildings.eq(1))
+    {
+        player.c.spacebuildingcraftingtime = player.c.spacebuildingcraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.spacebuildingcraftingtimereq = new Decimal(150)
+    player.c.spacebuildingstoget = new Decimal(1)
+    if (player.c.spacebuildingcraftingtime.gte(player.c.spacebuildingcraftingtimereq))
+    {
+        player.c.spacebuildings = player.c.spacebuildings.add(player.c.spacebuildingstoget)
+        player.c.craftingspacebuildings = new Decimal(0)
+        player.c.spacebuildingcraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+    }
+
+    //battery
+    player.c.celestialbatterycosts[0] = new Decimal(25)
+    player.c.celestialbatterycosts[1] = new Decimal(25)
+    player.c.celestialbatterycosts[2] = new Decimal(10)
+    player.c.celestialbatterycosts[3] = new Decimal(10)
+    player.c.celestialbatterycosts[4] = new Decimal(10)
+    player.c.celestialbatterycosts[5] = new Decimal(2)
+    player.c.celestialbatterycosts[6] = new Decimal(1)
+    if (player.c.craftingcelestialbatteries.eq(1))
+    {
+        player.c.celestialbatterycraftingtime = player.c.celestialbatterycraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.celestialbatterycraftingtimereq = new Decimal(400)
+    player.c.celestialbatteriestoget = new Decimal(1)
+    if (player.c.celestialbatterycraftingtime.gte(player.c.celestialbatterycraftingtimereq))
+    {
+        player.c.celestialbatteries = player.c.celestialbatteries.add(player.c.celestialbatteriestoget)
+        player.c.craftingcelestialbatteries = new Decimal(0)
+        player.c.celestialbatterycraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+    }
 },
 clickables: {
     11: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.craftingcutscene.eq(1) },
-        unlocked() { return player.craftingscene.neq(20) },
+        unlocked() { return player.craftingscene.lte(20) },
         onClick() {
             player.craftingscene = player.craftingscene.add(1)
         },
@@ -106,7 +258,7 @@ clickables: {
     12: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.craftingcutscene.eq(1) },
-        unlocked() { return player.craftingscene.neq(20) && player.craftingscene.neq(0) },
+        unlocked() { return player.craftingscene.lte(20) && player.craftingscene.neq(0) },
         onClick() {
             player.craftingscene = player.craftingscene.sub(1)
         },
@@ -125,7 +277,7 @@ clickables: {
     15: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.crafting2cutscene.eq(1) },
-        unlocked() { return player.crafting2scene.neq(10) },
+        unlocked() { return player.crafting2scene.lte(10) },
         onClick() {
             player.crafting2scene = player.crafting2scene.add(1)
         },
@@ -133,7 +285,7 @@ clickables: {
     16: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.crafting2cutscene.eq(1) },
-        unlocked() { return player.crafting2scene.neq(10) && player.crafting2scene.neq(0) },
+        unlocked() { return player.crafting2scene.lte(10) && player.crafting2scene.neq(0) },
         onClick() {
             player.craftingscene = player.crafting2scene.sub(1)
         },
@@ -165,6 +317,265 @@ clickables: {
         },
         style: { "background-color": "#b82fbd", width: '100px', "min-height": '100px' },
     },
+    21: {
+        title() { return format(player.c.timemetal, 0) + "<br>Time Metal" },
+        canClick() { return true },
+        unlocked() { return player.crafting2cutscene.eq(0) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(1)
+        },
+        style: { "background-color": "#006609", width: '100px', "min-height": '100px' },
+    },
+    22: {
+        title() { return format(player.c.spacemetal, 0) + "<br>Space Metal" },
+        canClick() { return true },
+        unlocked() { return player.crafting2cutscene.eq(0) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(2)
+        },
+        style: { "background-color": "#dfdfdf", width: '100px', "min-height": '100px' },
+    },
+    23: {
+        title() { return format(player.c.celestialbatteries, 0) + "<br>Celestial Battery" },
+        canClick() { return true },
+        unlocked() { return player.crafting2cutscene.eq(0) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(3)
+        },
+        style: { "background-color": "#72a4d4", width: '100px', "min-height": '100px' },
+    },
+    24: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingtimemetal.eq(0) && player.c.scrapmetal.gte(player.c.timemetalcosts[0]) && player.c.enhancepowder.gte(player.c.timemetalcosts[1]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) },
+        onClick() {
+            player.c.craftingtimemetal = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.scrapmetal = player.c.scrapmetal.sub(player.c.timemetalcosts[0])
+            player.c.enhancepowder = player.c.enhancepowder.sub(player.c.timemetalcosts[1])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    25: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingtimemetal.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) },
+        onClick() {
+            
+            player.c.timemetalcraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingtimemetal = new Decimal(0)
+
+            player.c.scrapmetal = player.c.scrapmetal.add(player.c.timemetalcosts[0])
+            player.c.enhancepowder = player.c.enhancepowder.add(player.c.timemetalcosts[1])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    26: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingspacemetal.eq(0) && player.c.scrapmetal.gte(player.c.spacemetalcosts[0]) && player.c.wires.gte(player.c.spacemetalcosts[1]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(2) },
+        onClick() {
+            player.c.craftingspacemetal = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.scrapmetal = player.c.scrapmetal.sub(player.c.spacemetalcosts[0])
+            player.c.wires = player.c.wires.sub(player.c.spacemetalcosts[1])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    27: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingspacemetal.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(2) },
+        onClick() {
+            
+            player.c.spacemetalcraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingspacemetal = new Decimal(0)
+
+            player.c.scrapmetal = player.c.scrapmetal.add(player.c.spacemetalcosts[0])
+            player.c.wires = player.c.wires.add(player.c.spacemetalcosts[1])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    28: {
+        title() { return "<h2>Layer 5: Time <br><h3>Req: 5 Time Metal" },
+        canClick() { return player.c.timemetal.gte(5) },
+        unlocked() { return player.c.currentcraftingdisplay.eq(1) && player.timelayer.eq(0)},
+        onClick() {
+            player.timelayer = new Decimal(1)
+            // Particle effect
+            alert("You have found the fifth layer.")
+            alert("The fourth dimension.")
+            alert("On the third row.")
+            alert("On the second orbiting layer.")
+            alert("On your first time crafting.")
+            alert("Numbers are truly beautiful, aren't they?")
+            createParticles();
+            createParticles();
+            createParticles();
+        },
+        style: {   background: '#006609',
+        width: '275px', height: '150px',
+        position: 'relative',
+        overflow: 'hidden', 
+        boxShadow: '0 0 20px 10px #006609',
+        textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+        border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+        },
+    },
+    29: {
+        title() { return format(player.c.timecapsules, 0) + "<br>Time Capsule" },
+        canClick() { return true },
+        unlocked() { return player.timelayer.eq(1) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(4)
+        },
+        style: { "background-color": "#006609", width: '100px', "min-height": '100px' },
+    },
+    31: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingtimecapsules.eq(0) && player.c.timemetal.gte(player.c.timecapsulecosts[0]) && player.c.spacemetal.gte(player.c.timecapsulecosts[1]) && player.m.points.gte(player.c.timecapsulecosts[2]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) },
+        onClick() {
+            player.c.craftingtimecapsules = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.timemetal = player.c.timemetal.sub(player.c.timecapsulecosts[0])
+            player.c.spacemetal = player.c.spacemetal.sub(player.c.timecapsulecosts[1])
+            player.m.points = player.m.points.sub(player.c.timecapsulecosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    32: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingtimecapsules.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) },
+        onClick() {
+            
+            player.c.timecapsulecraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingtimecapsules = new Decimal(0)
+
+            player.c.timemetal = player.c.timemetal.add(player.c.timecapsulecosts[0])
+            player.c.spacemetal = player.c.spacemetal.add(player.c.timecapsulecosts[1])
+            player.m.points = player.m.points.add(player.c.timecapsulecosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    33: {
+        title() { return "<h2>Layer 6: Space <br><h3>Req: 4 Time Capsules, 6 Space Metal" },
+        canClick() { return player.c.timecapsules.gte(4) && player.c.spacemetal.gte(6) },
+        unlocked() { return player.c.currentcraftingdisplay.eq(2) && player.timelayer.eq(1) && player.spacelayer.eq(0) },
+        onClick() {
+            player.spacelayer = new Decimal(1)
+            // Particle effect
+            alert("You have found the sixth layer.")
+            alert("Space. The most important law of reality.")
+            alert("Can contain matter, energy, everything.")
+            alert("22 layers left. You are more than a fifth done.")
+            alert("I can feel it; we are almost free.")
+            createParticles();
+            createParticles();
+            createParticles();
+        },
+        style: {   background: '#eeefff',
+        width: '275px', height: '150px',
+        position: 'relative',
+        overflow: 'hidden', 
+        boxShadow: '0 0 20px 10px #eeefff',
+        textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+        border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+        },
+    },
+    34: {
+        title() { return format(player.c.spacebuildings, 0) + "<br>Space Building" },
+        canClick() { return true },
+        unlocked() { return player.spacecutscene.eq(0) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(5)
+        },
+        style: { "background-color": "#dfdfdf", width: '100px', "min-height": '100px' },
+    },
+    35: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingspacebuildings.eq(0) && player.c.spacemetal.gte(player.c.spacebuildingcosts[0]) && player.c.timemetal.gte(player.c.spacebuildingcosts[1]) && player.m.incrementalenergy.gte(player.c.spacebuildingcosts[2]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) },
+        onClick() {
+            player.c.craftingspacebuildings = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.spacemetal = player.c.spacemetal.sub(player.c.spacebuildingcosts[0])
+            player.c.timemetal = player.c.timemetal.sub(player.c.spacebuildingcosts[1])
+            player.m.incrementalenergy = player.m.incrementalenergy.sub(player.c.spacebuildingcosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    36: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingspacebuildings.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) },
+        onClick() {
+            
+            player.c.spacebuildingcraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingspacebuildings = new Decimal(0)
+
+            player.c.spacemetal = player.c.spacemetal.add(player.c.spacebuildingcosts[0])
+            player.c.timemetal = player.c.timemetal.add(player.c.spacebuildingcosts[1])
+            player.m.incrementalenergy = player.m.incrementalenergy.add(player.c.spacebuildingcosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    37: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingcelestialbatteries.eq(0) && player.c.enhancepowder.gte(player.c.celestialbatterycosts[0]) && player.c.wires.gte(player.c.celestialbatterycosts[1]) && player.c.scrapmetal.gte(player.c.celestialbatterycosts[2]) && player.c.timemetal.gte(player.c.celestialbatterycosts[3])  && player.c.spacemetal.gte(player.c.celestialbatterycosts[4]) && player.c.timecapsules.gte(player.c.celestialbatterycosts[5]) && player.c.spacebuildings.gte(player.c.celestialbatterycosts[6]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) },
+        onClick() {
+            player.c.craftingcelestialbatteries = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.enhancepowder = player.c.enhancepowder.sub(player.c.celestialbatterycosts[0])
+            player.c.wires = player.c.wires.sub(player.c.celestialbatterycosts[1])
+            player.c.scrapmetal = player.c.scrapmetal.sub(player.c.celestialbatterycosts[2])
+            player.c.timemetal = player.c.timemetal.sub(player.c.celestialbatterycosts[3])
+            player.c.spacemetal = player.c.spacemetal.sub(player.c.celestialbatterycosts[4])
+            player.c.timecapsules = player.c.timecapsules.sub(player.c.celestialbatterycosts[5])
+            player.c.spacebuildings = player.c.spacebuildings.sub(player.c.celestialbatterycosts[6])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    38: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingcelestialbatteries.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) },
+        onClick() {
+            
+            player.c.celestialbatterycraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingcelestialbatteries = new Decimal(0)
+
+            player.c.enhancepowder = player.c.enhancepowder.add(player.c.celestialbatterycosts[0])
+            player.c.wires = player.c.wires.add(player.c.celestialbatterycosts[1])
+            player.c.scrapmetal = player.c.scrapmetal.add(player.c.celestialbatterycosts[2])
+            player.c.timemetal = player.c.timemetal.add(player.c.celestialbatterycosts[3])
+            player.c.spacemetal = player.c.spacemetal.add(player.c.celestialbatterycosts[4])
+            player.c.timecapsules = player.c.timecapsules.add(player.c.celestialbatterycosts[5])
+            player.c.spacebuildings = player.c.spacebuildings.add(player.c.celestialbatterycosts[6])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    39: {
+        title() { return format(player.c.celestialcells, 0) + "<br>Celestial Cells" },
+        canClick() { return true },
+        unlocked() { return player.m.ce308unlock.eq(1) },
+        onClick() {
+            player.c.currentresourcedisplay = new Decimal(4)
+        },
+        style: { "background-color": "#72a4d4", width: '100px', "min-height": '100px' },
+    },
 },
 upgrades: {
 },
@@ -176,7 +587,81 @@ milestones: {
 challenges: {
 },
 bars: {
-
+    timemetalbar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.timemetalcraftingtime.div(player.c.timemetalcraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.timemetalcraftingtime) + "/" + format(player.c.timemetalcraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
+    spacemetalbar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(2) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.spacemetalcraftingtime.div(player.c.spacemetalcraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.spacemetalcraftingtime) + "/" + format(player.c.spacemetalcraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
+    timecapsulebar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.timecapsulecraftingtime.div(player.c.timecapsulecraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.timecapsulecraftingtime) + "/" + format(player.c.timecapsulecraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
+    spacebuildingbar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.spacebuildingcraftingtime.div(player.c.spacebuildingcraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.spacebuildingcraftingtime) + "/" + format(player.c.spacebuildingcraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
+    celestialbatterybar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.celestialbatterycraftingtime.div(player.c.celestialbatterycraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.celestialbatterycraftingtime) + "/" + format(player.c.celestialbatterycraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
 },
 infoboxes: {
     scrapmetal: {
@@ -193,6 +678,46 @@ infoboxes: {
         unlocked() { return player.c.currentresourcedisplay.eq(3) },
         title: "Item Description",
         body() { return "This powder is enhance points in a dormant state. Can be great for powering batteries. This powder is fatal when consumed, as it will burn your internal organs and make your blood's pH level basic. It can be used to track other prestige tree layers." },         
+    }, 
+    timemetal: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(1) && player.c.craftingspacemetal.eq(0)},
+        title: "Item Description",
+        body() { return "Time, the fourth dimension. This piece of metal contains the energy of this dimension, however in small amounts. This metal is used to make time capsules, which produce time energy. Time energy is the weaker version of eternity..." },         
+    }, 
+    spacemetal: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(2) && player.c.craftingtimemetal.eq(0)},
+        title: "Item Description",
+        body() { return "Space, three dimensions of our reality. Space metal is used to create space buildings, which can have many benefits, but none are needed right now. Aarex and Jacorb would found many towns of space buildings in the dimensional realm. They knew what they were doing." },         
+    }, 
+    celestialbattery: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(3) },
+        title: "Item Description",
+        body() { return "This battery, which contains time, space and enhance powers within it. Truly encapsulates the prestige tree's third row. Once it powers up the pseudo-celestial, get ready, because the presence of a celestial caused your predecessor to vanish..." },         
+    }, 
+    jacorblog14: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(2) && player.c.craftingtimemetal.eq(1) },
+        title: "Log XIV",
+        body() { return "Log XIV: We keep working on the foruth row. One of the layers, ????????, is based of one of the gods, ??????? and ???????? ?????? is based off ???????. ??????? pitches the idea of using ????? for the fifth row. Sounds like a good idea, but I still don't fully trust him. Aarex thinks it's a good idea. Hevipelle finished two more celestials. One holds the power of singularity within and the other remembers. They aren't named yet." },         
+    },
+    jacorblog16: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(1) && player.c.craftingspacemetal.eq(1) },
+        title: "Log XVI",
+        body() { return "Log XVI: ???????? did it. He gave up his position and gave it to ????. It makes sense. ???????? said he wanted to do other things in other realms. Makes sense. He's been very interested in researching the ??????? ?????. And ???? has been very interested in becoming a ?????. It's all well." },         
+    },
+    timecapsule: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(4) },
+        title: "Item Description",
+        body() { return "Time capsules contain and produce time energy. They are durable and are very useful. Time energy is a very good source of incremental power. Getting time energy into a singularity can produce eternal remnants..." },         
+    }, 
+    spacebuilding: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(5) },
+        title: "Item Description",
+        body() { return "Space buildings take up space, provided by space energy. You can give them specialized functions that will boost certain aspects of the prestige tree. However it will only serve one purpose right now..." },         
+    }, 
+    celestialcells: {
+        unlocked() { return player.c.currentresourcedisplay.eq(4) },
+        title: "Item Description",
+        body() { return "Celestials are made out of these cells. Hevipelle designed it to be durable and regenerative. Has strange manipulative properties to incremental power. Can also improve quality of life. About the size of an apple. Really shows the true size of celestials..." },         
     }, 
 },
 microtabs: {
@@ -252,7 +777,7 @@ content:
 ]
 
 },
-"Crafting": {
+"Anvil": {
     buttonStyle() { return { 'color': 'orange' } },
     unlocked() { return player.m.craftingunlock.eq(1) },
     content:
@@ -269,6 +794,68 @@ content:
             ["raw-html", function () { return player.crafting2scene.eq(9) ? "<h1>See you when you have made the battery." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["blank", "25px"],
             ["row", [["clickable", 16], ["clickable", 15]]],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) ? "<h3>" + formatWhole(player.c.anvilslots) + "<h3>/" + formatWhole(player.c.maxanvilslots) + " slots": "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) ? "<h3>+" + format(player.c.craftingspeed) + " crafting power per second": "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
+            ["blank", "25px"],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h2>You have " + formatWhole(player.c.timemetal) + "<h2> time metal (+" + formatWhole(player.c.timemetaltoget) + ")": "" }, { "color": "#006609", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(2) ? "<h2>You have " + formatWhole(player.c.spacemetal) + "<h2> space metal (+" + formatWhole(player.c.spacemetaltoget) + ")": "" }, { "color": "#dfdfdf", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h2>You have " + formatWhole(player.c.timecapsules) + "<h2> time capsules (+" + formatWhole(player.c.timecapsulestoget) + ")<br><h5>(Check time layer on prestige tree for details)": "" }, { "color": "#006609", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) ? "<h2>You have " + formatWhole(player.c.spacebuildings) + "<h2> space buildings (+" + formatWhole(player.c.spacebuildingstoget) + ")<br><h5>(Check space layer on prestige tree for details)": "" }, { "color": "#dfdfdf", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h2>You have " + formatWhole(player.c.celestialbatteries) + "<h2> celestial batteries (+" + formatWhole(player.c.spacebuildingstoget) + ")<br><h5>(Buy the standard path upgrade to unlock the celestial)": "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+            ["blank", "25px"],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h4>" + formatWhole(player.c.timemetalcosts[0]) + " scrap metal (you have " + formatWhole(player.c.scrapmetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h4>" + formatWhole(player.c.timemetalcosts[1]) + " enhance powder (you have " + formatWhole(player.c.enhancepowder) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(2) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(2) ? "<h4>" + formatWhole(player.c.spacemetalcosts[0]) + " scrap metal (you have " + formatWhole(player.c.scrapmetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(2) ? "<h4>" + formatWhole(player.c.spacemetalcosts[1]) + " wires (you have " + formatWhole(player.c.wires) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h4>" + formatWhole(player.c.timecapsulecosts[0]) + " time metal (you have " + formatWhole(player.c.timemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h4>" + formatWhole(player.c.timecapsulecosts[1]) + " space metal (you have " + formatWhole(player.c.spacemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h4>" + formatWhole(player.c.timecapsulecosts[2]) + " incremental power (you have " + formatWhole(player.m.points) + ")": "" }, { "font-style": "italic", "color": "#8a00a9", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) ? "<h4>" + formatWhole(player.c.spacebuildingcosts[0]) + " space metal (you have " + formatWhole(player.c.spacemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) ? "<h4>" + formatWhole(player.c.spacebuildingcosts[1]) + " time metal (you have " + formatWhole(player.c.timemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) ? "<h4>" + formatWhole(player.c.spacebuildingcosts[2]) + " incremental energy (you have " + formatWhole(player.m.incrementalenergy) + ")": "" }, { "font-style": "italic", "color": "#ffffaa", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[0]) + " enhance power (you have " + formatWhole(player.c.enhancepowder) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[1]) + " wires (you have " + formatWhole(player.c.wires) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[2]) + " scrap metal (you have " + formatWhole(player.c.scrapmetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[3]) + " time metal (you have " + formatWhole(player.c.timemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[4]) + " space metal (you have " + formatWhole(player.c.spacemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[5]) + " time capsules (you have " + formatWhole(player.c.timecapsules) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[6]) + " space buildings (you have " + formatWhole(player.c.spacebuildings) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["blank", "25px"],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimemetal.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimemetal.eq(1) && player.c.currentcraftingdisplay.eq(1) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingspacemetal.eq(0) && player.c.currentcraftingdisplay.eq(2) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingspacemetal.eq(1) && player.c.currentcraftingdisplay.eq(2) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimecapsules.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimecapsules.eq(1) && player.c.currentcraftingdisplay.eq(4) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingspacebuildings.eq(0) && player.c.currentcraftingdisplay.eq(5) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingspacebuildings.eq(1) && player.c.currentcraftingdisplay.eq(5) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingcelestialbatteries.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingcelestialbatteries.eq(1) && player.c.currentcraftingdisplay.eq(3) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["blank", "25px"],
+            ["row", [["clickable", 24], ["clickable", 25]]],
+            ["row", [["clickable", 26], ["clickable", 27]]],
+            ["row", [["clickable", 31], ["clickable", 32]]],
+            ["row", [["clickable", 35], ["clickable", 36]]],
+            ["row", [["clickable", 37], ["clickable", 38]]],
+            ["blank", "25px"],
+            ["bar", "timemetalbar"],
+            ["bar", "spacemetalbar"],
+            ["bar", "timecapsulebar"],
+            ["bar", "spacebuildingbar"],
+            ["bar", "celestialbatterybar"],
+            ["blank", "25px"],
+            ["row", [["clickable", 21], ["clickable", 29], ["clickable", 22], ["clickable", 34], ["clickable", 23]]],
+            ["blank", "25px"],          
+            ["row", [["clickable", 28], ["infobox", "jacorblog16"], ["infobox", "timemetal"]]],
+            ["row", [["clickable", 33], ["infobox", "jacorblog14"], ["infobox", "spacemetal"]]],
+            ["infobox", "celestialbattery"],
+            ["infobox", "timecapsule"],
+            ["infobox", "spacebuilding"],
     ]
     
     },
@@ -283,16 +870,19 @@ content:
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(1) ? "<h2>You have " + formatWhole(player.c.scrapmetal) + "<h2> scrap metal. (+" + formatWhole(player.c.scrapmetaltoget) + ")": "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(2) ? "<h2>You have " + formatWhole(player.c.wires) + "<h2> wires. (+" + formatWhole(player.c.wirestoget) + ")": "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(3) ? "<h2>You have " + formatWhole(player.c.enhancepowder) + "<h2> enhance powder. (+" + formatWhole(player.c.enhancepowdertoget) + ")": "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(4) ? "<h2>You have " + formatWhole(player.c.celestialcells) + "<h2> celestial cells. (+" + formatWhole(player.c.celestialcellstoget) + ")": "" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
             ["blank", "25px"],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(1) ? "<h3>In order to earn scrap metal, one must NOT produce prestige energy. (Based on machines)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(2) ? "<h3>In order to earn wires, one must NOT produce prestige machines. (Based on prestige energy)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(3) ? "<h3>In order to earn enhance powder, one must NOT let enhanced prestige points decay to nothing.. (Based on enhance points)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(3) ? "<h3>In order to earn enhance powder, one must NOT let enhanced prestige points decay to nothing. (Based on enhance points)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(4) ? "<h3>In order to earn celestial cells, one must FEED the pseudo-celestial. (Based on celestial energy)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["blank", "25px"],
-            ["row", [["clickable", 17], ["clickable", 18], ["clickable", 19]]],
+            ["row", [["clickable", 17], ["clickable", 18], ["clickable", 19], ["clickable", 39]]],
             ["blank", "25px"],
             ["infobox", "scrapmetal"],
             ["infobox", "wires"],
             ["infobox", "enhancepowder"],
+            ["infobox", "celestialcells"],
         ]
         
         },
@@ -321,3 +911,4 @@ tabFormat: [
       `;
     
     document.head.appendChild(styleSheet3);
+

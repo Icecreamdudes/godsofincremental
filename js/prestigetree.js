@@ -106,7 +106,7 @@ clickables: {
     11: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.boostercutscene.eq(1) },
-        unlocked() { return player.boosterscene.neq(20) },
+        unlocked() { return player.boosterscene.lte(20) },
         onClick() {
             player.boosterscene = player.boosterscene.add(1)
         },
@@ -114,7 +114,7 @@ clickables: {
     12: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.boostercutscene.eq(1) },
-        unlocked() { return player.boosterscene.neq(20) && player.boosterscene.neq(0) },
+        unlocked() { return player.boosterscene.lte(20) && player.boosterscene.neq(0) },
         onClick() {
             player.boosterscene = player.boosterscene.sub(1)
         },
@@ -175,7 +175,7 @@ content:
            ["raw-html", function () { return player.boostercutscene.eq(0) ? "That's when Hevipelle told the realms about Aarex, who created many things, like NG+3." : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
            ["raw-html", function () { return player.boostercutscene.eq(0) ? "Aarex and Jacorb would meet and soon become best friends..." : ""}, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
            ["blank", "25px"],
-           ["raw-html", function () { return player.boosterlayer.eq(1) && player.boostercutscene.eq(0) ? "<h3>Incremental Power: " + format(player.m.points) + " -> x" + format(player.m.scorefromincrementalpower) : "" }, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boosterlayer.eq(1) && player.boostercutscene.eq(0) ? "<h2>Incremental Power: " + format(player.m.points) + " -> x" + format(player.m.scorefromincrementalpower) : "" }, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
            ["blank", "25px"],
            ["infobox", "jacorblog6"],
         ]
@@ -236,7 +236,7 @@ content:
            ["raw-html", function () { return player.boostercutscene.eq(0) ? "They trained together and grew very powerful." : ""}, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
            ["raw-html", function () { return player.boostercutscene.eq(0) ? "It seemed like everything was going great." : ""}, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
            ["blank", "25px"],
-           ["raw-html", function () { return player.generatorlayer.eq(1) ? "<h3>Incremental Energy: " + format(player.m.incrementalenergy) + " -> x" + format(player.m.scorefromincrementalenergy) : "" }, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.generatorlayer.eq(1) ? "<h2>Incremental Energy: " + format(player.m.incrementalenergy) + " -> x" + format(player.m.scorefromincrementalenergy) : "" }, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
            ["blank", "25px"],
            ["infobox", "jacorblog5"],
         ]
@@ -274,7 +274,7 @@ clickables: {
     11: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.enhancecutscene.eq(1) },
-        unlocked() { return player.enhancescene.neq(24) },
+        unlocked() { return player.enhancescene.lte(24) },
         onClick() {
             player.enhancescene = player.enhancescene.add(1)
         },
@@ -282,7 +282,7 @@ clickables: {
     12: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.enhancecutscene.eq(1) },
-        unlocked() { return player.enhancescene.neq(24) && player.enhancescene.neq(0) },
+        unlocked() { return player.enhancescene.lte(24) && player.enhancescene.neq(0) },
         onClick() {
             player.enhancescene = player.enhancescene.sub(1)
         },
@@ -344,10 +344,10 @@ content:
            ["blank", "25px"],
            ["infobox", "jacorblog11"],
            ["blank", "25px"],
-           ["raw-html", function () { return player.enhancelayer.eq(1) && player.enhancecutscene.eq(0) ? "<h3>Time spent in meta-prestige: " + formatTime(player.i.metaprestigetime) + " -> x" + format(player.m.scorefrommetaprestigetime) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.enhancelayer.eq(1) && player.enhancecutscene.eq(0) ? "<h2>Time spent in meta-prestige: " + formatTime(player.i.metaprestigetime) + " -> x" + format(player.m.scorefrommetaprestigetime) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
            ["blank", "25px"],
            ["raw-html", function () { return player.enhancelayer.eq(1) && player.enhancecutscene.eq(0) ? "<h2>UNLOCKED ENHANCE PATH" : "" }, { "color": "#b82fbd", "font-size": "48px", "font-family": "monospace" }],
-           ["raw-html", function () { return player.enhancelayer.eq(1) && player.enhancecutscene.eq(0) ? "<h3>Do an meta-prestige reset and there will be some changes." : "" }, { "color": "#b82fbd", "font-size": "24px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.enhancelayer.eq(1) && player.enhancecutscene.eq(0) ? "<h3>Do a meta-prestige reset and there will be some changes." : "" }, { "color": "#b82fbd", "font-size": "24px", "font-family": "monospace" }],
         ]
 
 },
@@ -360,4 +360,278 @@ tabFormat: [
 ["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.enhancelayer.eq(1) }
+})
+addLayer("ti", {
+    name: "time", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "T", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Time", // Row the layer is in on the tree (0 is the first row)
+color: "#006609",
+branches: ["bo"],
+startData() { return {
+    unlocked: true,
+    timeenergy: new Decimal(0),
+    timeenergyeffect: new Decimal(0),
+    timeenergypersecond: new Decimal(0),
+    timeenergycap: new Decimal(0),
+}
+},
+update(delta) {
+    if (player.timescene.eq(30)) {
+        player.timecutscene = new Decimal(0)
+        player.inaarexcutscene = new Decimal(0)
+    }
+    if (player.timescene.gt(0) && player.timecutscene.eq(1))
+    {
+        player.inaarexcutscene = new Decimal(1)
+    }
+
+    player.ti.timeenergy = player.ti.timeenergy.add(player.ti.timeenergypersecond.mul(delta))
+    
+    player.ti.timeenergycap = player.c.timecapsules.add(1).mul(40).pow(1.25)
+
+    if (player.ti.timeenergy.lt(player.ti.timeenergycap)) player.ti.timeenergypersecond = player.c.timecapsules.pow(1.2)
+    if (player.ti.timeenergy.gte(player.ti.timeenergycap)) 
+    {
+        player.ti.timeenergypersecond = new Decimal(0)
+        player.ti.timeenergy = player.ti.timeenergycap
+    }
+
+    player.ti.timeenergyeffect = player.ti.timeenergy.plus(1).log10().pow(1.3).mul(0.3).add(1)
+},
+clickables: {
+    11: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.timecutscene.eq(1) },
+        unlocked() { return player.timescene.lte(30) },
+        onClick() {
+            player.timescene = player.timescene.add(1)
+        },
+    },
+    12: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.timecutscene.eq(1) },
+        unlocked() { return player.timescene.lte(30) && player.timescene.neq(0) },
+        onClick() {
+            player.timescene = player.timescene.sub(1)
+        },
+    },
+},
+upgrades: {
+},
+buyables: {
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+    timeenergybar: {
+        unlocked() { return player.timelayer.eq(1) && player.timecutscene.eq(0) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.ti.timeenergy.div(player.ti.timeenergycap)
+        },
+        fillStyle: {
+            "background-color": "#006609",
+        },
+        display() {
+            return "<h5>" + format(player.ti.timeenergy) + "/" + format(player.ti.timeenergycap) + " time energy until capacity<h5></h5>";
+        },
+    },
+},
+infoboxes: {
+    jacorblog15: {
+        unlocked() { return player.timecutscene.eq(0) },
+        title: "Log XV",
+        body() { return "Log XV: I haven't met the celestials before, but from what I heard from Aarex, they are pretty nice, although ????? can be pretty ominous sometimes. Hevipelle plans on making dozens of more celestials at a time after he's finished with eight. We are starting to gain ???????'s trust, but I am still slightly suspicious. Remember: The death realm is ruthless." },         
+    }, 
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#006609' } },
+unlocked() { return player.enhancelayer.eq(1) },
+content:
+
+    [
+        ["raw-html", function () { return player.timescene.eq(1) ? "<h1>All failed. Barely made it to godhood." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(2) ? "<h1>Why? Why does this keep happening?" : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(3) ? "<h1>Torture. Pain. Humiliation. Every single day." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(4) ? "<h1>The death realm's punishments grow worse every time." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(5) ? "<h1>Despite being an immortal god, I can still feel pain." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(6) ? "<h1>You... You must be the next hero." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(7) ? "<h1>Finally, I have reached contact with you." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(8) ? "<h1>You probably know who I am. I am Aarex." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(9) ? "<h1>The omnisity, knight of upgrades, blah blah blah." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(10) ? "<h1>The death realm's use of time dilation on me has screwed me up bad..." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(11) ? "<h1>They made 10 seconds feel like 10 years." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(12) ? "<h1>You better find all of those layers. This torture must end." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(13) ? "<h1>You spoke to Jacorb and Yhvr, right?" : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(14) ? "<h1>Tell them I wish them the best." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(15) ? "<h1>And Jacorb, let him know that I am sorry for what I have done." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(16) ? "<h1>I scattered the layers in FEAR. I didn't know what I was doing." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(17) ? "<h1>The death realm, they threatened to destroy the tree." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(18) ? "<h1>It's either I gave them the tree, or them destroying it." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(19) ? "<h1>But I did neither." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(20) ? "<h1>If I gave them the tree, god knows what they could have done with it." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(21) ? "<h1>Jacorb got pissed. We spent the last year working on the tree." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(22) ? "<h1>We argued and argued, but time was ticking." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(23) ? "<h1>By the time we knew it, we got captured. Taken into exile." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(24) ? "<h1>It seemed like it was over, but your predecessor gave us hope." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(25) ? "<h1>I was so optimistic, until your predecessor randomly dissapeared." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(26) ? "<h1>But you are here! You will give us hope." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(27) ? "<h1>A lot of people are counting on you to save us, and the multiverse." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(28) ? "<h1>Despite all of our setbacks, we will come back stronger." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(29) ? "<h1>Go on. Find those layers!" : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["clickable", 12], ["clickable", 11]]],
+        ["infobox", "jacorblog15"],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.timelayer.eq(1) && player.timecutscene.eq(0) ? "<h4>Unlocked time capsules! Check crafting." : "" }, { "color": "#006609", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.timelayer.eq(1) && player.timecutscene.eq(0) ? "<h3>You have " + formatWhole(player.c.timecapsules) + " time capsules." : "" }, { "color": "#006609", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.timelayer.eq(1) && player.timecutscene.eq(0) ? "<h2>You have " + format(player.ti.timeenergy) + " time energy." : "" }, { "color": "#006609", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timelayer.eq(1) && player.timecutscene.eq(0) ? "<h3>You are gaining " + format(player.ti.timeenergypersecond) + " time energy per second." : "" }, { "color": "#006609", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["bar", "timeenergybar"],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.timelayer.eq(1) && player.timecutscene.eq(0) ? "<h3>Your time energy boost meta-prestige time by x" + format(player.ti.timeenergyeffect) + "." : "" }, { "color": "#006609", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timelayer.eq(1) && player.timecutscene.eq(0) ? "<h5>(Time energy resets on meta-prestige)" : "" }, { "color": "#006609", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.timelayer.eq(1) ? "<h3>Time capsules: " + formatWhole(player.c.timecapsules) + " -> x" + format(player.m.scorefromtimecapsules) : "" }, { "color": "#006609", "font-size": "24px", "font-family": "monospace" }],
+    ]
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle && player.inaarexcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/aarexcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.timelayer.eq(1) }
+})
+addLayer("sp", {
+    name: "space", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "S", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Space", // Row the layer is in on the tree (0 is the first row)
+color: "#dfdfdf",
+branches: ["ge"],
+startData() { return {
+    unlocked: true,
+    space: new Decimal(0),
+    spacestandardeffect: new Decimal(1),
+    spaceenhancedeffect: new Decimal(1),
+    spacepersecond: new Decimal(0),
+}
+},
+update(delta) {
+    if (player.spacescene.eq(17)) {
+        player.spacecutscene = new Decimal(0)
+    }
+
+    player.sp.spacepersecond = player.c.spacebuildings.pow(1.5)
+    player.sp.space = player.sp.space.add(player.sp.spacepersecond.mul(delta))
+
+    if (player.i.standardpath.eq(0)) player.sp.spacestandardeffect = new Decimal(1)
+    if (player.i.standardpath.eq(1)) player.sp.spacestandardeffect = player.sp.space.pow(0.6).add(1)
+    if (player.i.enhancepath.eq(0)) player.sp.spaceenhancedeffect = new Decimal(1)
+    if (player.i.enhancepath.eq(1)) player.sp.spaceenhancedeffect = player.sp.space.pow(0.35).add(1)
+},
+clickables: {
+    11: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.spacecutscene.eq(1) },
+        unlocked() { return player.spacescene.lte(17) },
+        onClick() {
+            player.spacescene = player.spacescene.add(1)
+        },
+    },
+    12: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.spacecutscene.eq(1) },
+        unlocked() { return player.spacescene.lte(17) && player.spacescene.neq(0) },
+        onClick() {
+            player.spacescene = player.spacescene.sub(1)
+        },
+    },
+},
+upgrades: {
+},
+buyables: {
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+    jacorblog17: {
+        unlocked() { return player.spacecutscene.eq(0) },
+        title: "Log XVII",
+        body() { return "Log XVII: Hevipelle has accidentally created one of the most powerful incremental machines ever. The ?????? ?????????. It's so powerful that it can ????? ????????. But ????? have been placed so that the ?????? ????????? doesn't break the whole spacetime continuum. It can only be used once, and once used, it will cause a lot of damage." },         
+    },
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#dfdfdf' } },
+unlocked() { return player.spacelayer.eq(1) },
+content:
+    [
+        ["raw-html", function () { return player.spacescene.eq(1) ? "<h1>You..." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(2) ? "<h1>You spoke to Aarex?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(3) ? "<h1>And..." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(4) ? "<h1>He said he was sorry?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(5) ? "<h1>For what he done all those days back?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(6) ? "<h1>Man. That's the first time we've heard of him in a long time." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(7) ? "<h1>Torture eh, it must end now!" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(8) ? "<h1>But why him? Why not me? Or Yhvr?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(9) ? "<h1>Is it because of the tree incident?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(10) ? "<h1>You know, the prestige tree was never finished." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(11) ? "<h1>The prestige tree was meant to have an eighth row." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(12) ? "<h1>Two layers would be on this row." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(13) ? "<h1>Meta-Prestige and The Hub." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(14) ? "<h1>Meta-Prestige which is my creation," : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(15) ? "<h1>The Hub, which is Aarex's creation." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(16) ? "<h1>But v1.4 of the prestige tree never became..." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["clickable", 12], ["clickable", 11]]],
+        ["raw-html", function () { return player.spacelayer.eq(1) && player.spacecutscene.eq(0) ? "<h4>Unlocked space buildings! Check crafting." : "" }, { "color": "#dfdfdf", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.spacelayer.eq(1) && player.spacecutscene.eq(0) ? "<h3>You have " + formatWhole(player.c.spacebuildings) + " space buildings." : "" }, { "color": "#dfdfdf", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.spacelayer.eq(1) && player.spacecutscene.eq(0) ? "<h2>You have " + format(player.sp.space) + " space." : "" }, { "color": "#dfdfdf", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacelayer.eq(1) && player.spacecutscene.eq(0) ? "<h3>You are gaining " + format(player.sp.spacepersecond) + " space per second." : "" }, { "color": "#dfdfdf", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacelayer.eq(1) && player.spacecutscene.eq(0) ? "<h5>(Space is reset on meta-prestige)" : "" }, { "color": "#dfdfdf", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.spacelayer.eq(1) && player.spacecutscene.eq(0) && player.i.standardpath.eq(0) && player.i.enhancepath.eq(0) ? "<h3>You must be aligned to a path for an effect." : "" }, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacelayer.eq(1) && player.spacecutscene.eq(0) && player.i.standardpath.eq(1) ? "<h3>Space gives a x" + format(player.sp.spacestandardeffect) + " boost to prestige energy (standard path)." : "" }, { "color": "#ffffaa", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacelayer.eq(1) && player.spacecutscene.eq(0) && player.i.enhancepath.eq(1) ? "<h3>Space gives a x" + format(player.sp.spaceenhancedeffect) + " boost to prestige points (enhance path)." : "" }, { "color": "b82fbd", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+                           ["raw-html", function () { return player.spacelayer.eq(1) ? "<h3>Space buildings: " + formatWhole(player.c.spacebuildings) + " -> x" + format(player.m.scorefromspacebuildings) : "" }, { "color": "#dfdfdf", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["infobox", "jacorblog17"],
+    ]
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle && player.spacecutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.spacelayer.eq(1) }
 })

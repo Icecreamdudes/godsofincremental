@@ -18,7 +18,7 @@
         prestigeenergyeffect: new Decimal(1),
         prestigeenergyeffectonpoints: new Decimal(1),
         prestigeenergypersecond: new Decimal(0),
-        producingprestigeenergy: new Decimal(1),
+        producingprestigeenergy: new Decimal(0),
         prestigemachines: new Decimal(0),
         prestigemachineeffect: new Decimal(0),
         prestigemachinereq: new Decimal(250000),
@@ -32,9 +32,11 @@
         pureenergypause: new Decimal(0),
         pureenergyeffect: new Decimal(0),
         pureenergytoget: new Decimal(0),
+        bestgeneratorenergy: new Decimal(0),
         generatorenergy: new Decimal(0),
         generatorenergyeffect: new Decimal(1),
         generatorenergypersecond: new Decimal(0),
+        bestboosterenergy: new Decimal(0),
         boosterenergy: new Decimal(0),
         boosterenergyeffect: new Decimal(1),
         boosterenergypersecond: new Decimal(0),
@@ -46,12 +48,30 @@
         //1 - Cheaper machines, more corruption
         //2 - Stronger prestige energy
         //3 - Points up, prestige points down
+        //4 - Autogen pure energy, but lower gains
 
         corruptiondelay: new Decimal(0),
 
         //Machine Autobuy
         machineautomode: new Decimal(0),
 
+        //Super
+        superpoints: new Decimal(0),
+        superpointseffect: new Decimal(1),
+        superpointstoget: new Decimal(0),
+        superprestigeenergy: new Decimal(0),
+        superprestigeenergyeffect: new Decimal(1),
+        superprestigeenergytoget: new Decimal(0),
+        superpureenergy: new Decimal(0),
+        superpureenergyeffect: new Decimal(1),
+        superpureenergytoget: new Decimal(0),
+
+        //CELESTIAL
+        bestcelestialenergy: new Decimal(0),
+        celestialenergy: new Decimal(0),
+        celestialenergypause: new Decimal(0),
+        celestialenergytoget: new Decimal(0),
+        celestialenergyeffect: new Decimal(0),
 
         //ENHANCE PATH
         enhancepath: new Decimal(0),
@@ -82,6 +102,28 @@
         {
             buyBuyable("i", 14)
             buyBuyable("i", 15)
+        }
+        if (hasUpgrade("m", 24))
+        {
+            buyUpgrade("i", 11)
+            buyUpgrade("i", 12)
+            buyUpgrade("i", 13)
+            buyUpgrade("i", 14)
+        }
+        if (hasUpgrade("m", 26))
+        {
+            buyBuyable("i", 14)
+            buyBuyable("i", 15)
+        }
+        if (hasUpgrade("m", 28))
+        {
+            buyBuyable("i", 16)
+            buyBuyable("i", 17)
+            buyBuyable("i", 18)
+            buyBuyable("i", 19)
+            buyBuyable("i", 21)
+            buyBuyable("i", 22)
+            buyBuyable("i", 23)
         }
     },
     nodeStyle() {
@@ -132,8 +174,11 @@
     update(delta) {
         let onepersec = new Decimal(1)
 
-        if (player.i.enhancepath.eq(0)) player.i.metaprestigetime = player.i.metaprestigetime.add(onepersec.mul(delta))
-        if (player.i.enhancepath.eq(1)) player.i.metaprestigetime = player.i.metaprestigetime.add(onepersec.mul(3).mul(delta))
+        metaprestigetimemult = new Decimal(1)
+        if (player.i.enhancepath.eq(1)) metaprestigetimemult = metaprestigetimemult.mul(3)
+        metaprestigetimemult = metaprestigetimemult.mul(player.ti.timeenergyeffect)
+
+        player.i.metaprestigetime = player.i.metaprestigetime.add(onepersec.mul(metaprestigetimemult).mul(delta))
 
         if (player.prestigescene.eq(7)) {
             player.prestigecutscene = new Decimal(0)
@@ -153,9 +198,12 @@
         player.i.prestigepointstoget = player.i.prestigepointstoget.mul(buyableEffect("i", 23))
         player.i.prestigepointstoget = player.i.prestigepointstoget.mul(buyableEffect("i", 101))
         if (hasUpgrade("m", 17)) player.i.prestigepointstoget = player.i.prestigepointstoget.mul(upgradeEffect("m", 17))
+        player.i.prestigepointstoget = player.i.prestigepointstoget.mul(player.sp.spaceenhancedeffect)
         if (player.i.enhancepath.eq(1)) player.i.prestigepointstoget = player.i.prestigepointstoget.pow(0.95)
 
         if (hasUpgrade("i", 22)) player.i.prestigepoints = player.i.prestigepoints.add(player.i.prestigepointstoget.mul(delta))
+        if (hasUpgrade("m", 25) && player.i.standardpath.eq(1)) player.i.prestigepoints = player.i.prestigepoints.add(player.i.prestigepointstoget.mul(0.03).mul(delta))
+        if (hasUpgrade("m", 27) && player.i.enhancepath.eq(1)) player.i.prestigepoints = player.i.prestigepoints.add(player.i.prestigepointstoget.mul(0.25).mul(delta))
 
         if (player.i.prestigepause.gt(0)) {
             layers.i.prestigereset();
@@ -171,6 +219,9 @@
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.generatorenergyeffect)
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(buyableEffect("i", 19))
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(buyableEffect("i", 23))
+        player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.sp.spacestandardeffect)
+        player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.superprestigeenergyeffect)
+        player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.celestialenergyeffect)
 
         player.i.prestigeenergy = player.i.prestigeenergy.add(player.i.prestigeenergypersecond.mul(delta))
 
@@ -198,7 +249,7 @@
         if (!hasUpgrade("i", 23)) player.i.corruptiondelay = buyableEffect('i', 18)
         if (hasUpgrade("i", 23)) player.i.corruptiondelay = buyableEffect('i', 18).add(upgradeEffect("i", 23))
 
-        if (player.i.prestigemachines.lt(player.i.corruptiondelay)) player.i.machinecorruption = new Decimal(0)
+        if (player.i.prestigemachines.lte(player.i.corruptiondelay)) player.i.machinecorruption = new Decimal(0)
         if (player.i.currentenergizer.neq(1) && player.i.prestigemachines.gt(player.i.corruptiondelay)) player.i.machinecorruption = player.i.prestigemachines.sub(player.i.corruptiondelay).pow(1.75)
         if (player.i.currentenergizer.eq(1) && player.i.prestigemachines.gt(player.i.corruptiondelay)) player.i.machinecorruption = player.i.prestigemachines.sub(player.i.corruptiondelay).pow(1.75).pow(2)
         player.i.machinecorruptioneffect = player.i.machinecorruption.pow(0.75).add(1)
@@ -221,16 +272,23 @@
 
         player.i.pureenergytoget = player.i.prestigepoints.div(1e7).pow(0.3)
         player.i.pureenergytoget = player.i.pureenergytoget.mul(buyableEffect("i", 23))
+        player.i.pureenergytoget = player.i.pureenergytoget.mul(player.i.superpureenergyeffect)
+        player.i.pureenergytoget = player.i.pureenergytoget.mul(player.i.celestialenergyeffect)
         if (player.i.pureenergy.gte(player.i.bestpureenergy)) player.i.bestpureenergy = player.i.pureenergy
+        if (player.i.currentenergizer.eq(4)) player.i.pureenergy = player.i.pureenergy.add(player.i.pureenergytoget.mul(delta))
 
+        if (player.i.generatorenergy.gte(player.i.bestgeneratorenergy)) player.i.bestgeneratorenergy = player.i.generatorenergy
         player.i.generatorenergypersecond = buyableEffect("i", 16)
         player.i.generatorenergypersecond = player.i.generatorenergypersecond.mul(buyableEffect("i", 21))
         player.i.generatorenergypersecond = player.i.generatorenergypersecond.mul(buyableEffect("i", 23))
+        player.i.generatorenergypersecond = player.i.generatorenergypersecond.mul(player.i.celestialenergyeffect)
         player.i.generatorenergy = player.i.generatorenergy.add(player.i.generatorenergypersecond.mul(delta))
 
+        if (player.i.boosterenergy.gte(player.i.bestboosterenergy)) player.i.bestboosterenergy = player.i.boosterenergy
         player.i.boosterenergypersecond = buyableEffect("i", 17)
         player.i.boosterenergypersecond = player.i.boosterenergypersecond.mul(buyableEffect("i", 22))
         player.i.boosterenergypersecond = player.i.boosterenergypersecond.mul(buyableEffect("i", 23))
+        player.i.boosterenergypersecond = player.i.boosterenergypersecond.mul(player.i.celestialenergyeffect)
         player.i.boosterenergy = player.i.boosterenergy.add(player.i.boosterenergypersecond.mul(delta))
 
         player.i.generatorenergyeffect = player.i.generatorenergy.pow(0.3).add(1)
@@ -253,6 +311,89 @@
         {
             player.i.prestigemachines = player.i.prestigemachines.add(1)
         } 
+
+        if (player.superifierscene.eq(19)) {
+            player.superifiercutscene = new Decimal(0)
+            player.inreddiamondcutscene = new Decimal(0)
+        }
+        if (player.superifierscene.gt(0) && player.superifiercutscene.eq(1))
+        {
+            player.inreddiamondcutscene = new Decimal(1)
+        }
+
+        player.i.superpointstoget = player.points.pow(0.085)
+        player.i.superpointseffect = player.i.superpoints.pow(0.4).add(1)
+
+        player.i.superprestigeenergytoget = player.i.prestigeenergy.pow(0.2)
+        player.i.superprestigeenergyeffect = player.i.superprestigeenergy.pow(0.5).add(1)
+
+        player.i.superpureenergytoget = player.i.pureenergy.pow(0.12)
+        player.i.superpureenergyeffect = player.i.superpureenergy.pow(0.35).add(1)
+
+        if (player.ce308scene.eq(44)) {
+            player.ce308cutscene = new Decimal(0)
+            player.inartiscutscene = new Decimal(0)
+            player.injacorbcutscene = new Decimal(0)
+            player.inaarexcutscene = new Decimal(0)
+            player.inreddiamondcutscene = new Decimal(0)
+        }
+        if (player.ce308scene.gt(0) && player.ce308cutscene.eq(1))
+        {
+            if (player.ce308scene.lt(9))
+            {
+                player.crafting2scene = new Decimal(11)
+                player.inartiscutscene = new Decimal(1)
+                player.injacorbcutscene = new Decimal(0)
+                player.inaarexcutscene = new Decimal(0)
+                player.inreddiamondcutscene = new Decimal(0)
+            }
+            if (player.ce308scene.gte(9) && player.ce308scene.lt(17))
+            {
+                player.beaconscene = new Decimal(333)
+                player.boosterscene = new Decimal(333)
+                player.enhancescene = new Decimal(333)
+                player.spacescene = new Decimal(333)
+                player.inartiscutscene = new Decimal(0)
+                player.injacorbcutscene = new Decimal(1)
+                player.inaarexcutscene = new Decimal(0)
+                player.inreddiamondcutscene = new Decimal(0)
+            }
+            if (player.ce308scene.gte(17) && player.ce308scene.lt(30))
+            {
+                player.timescene = new Decimal(333)
+                player.inartiscutscene = new Decimal(0)
+                player.injacorbcutscene = new Decimal(0)
+                player.inaarexcutscene = new Decimal(1)
+                player.inreddiamondcutscene = new Decimal(0)
+            }
+            if (player.ce308scene.gte(30) && player.ce308scene.lt(44))
+            {
+                player.timescene = new Decimal(333)
+                player.inartiscutscene = new Decimal(0)
+                player.injacorbcutscene = new Decimal(0)
+                player.inaarexcutscene = new Decimal(0)
+                player.inreddiamondcutscene = new Decimal(1)
+            }
+        }
+        if (player.ce308unlockscene.eq(27)) {
+            player.ce308unlockcutscene = new Decimal(0)
+            player.ince308cutscene = new Decimal(0)
+        }
+        if (player.ce308unlockscene.gt(0) && player.ce308unlockcutscene.eq(1))
+        {
+            player.ince308cutscene = new Decimal(1)
+        }
+        
+        player.i.celestialenergytoget = player.i.pureenergy.div(1e6).pow(0.16)
+        player.i.celestialenergyeffect = player.i.celestialenergy.pow(1.8).add(1)
+
+        if (player.i.celestialenergypause.gt(0)) {
+            layers.i.celestialenergyreset();
+        }
+        player.i.celestialenergypause = player.i.celestialenergypause.sub(1)
+        if (player.i.celestialenergy.gte(player.i.bestcelestialenergy)) player.i.bestcelestialenergy = player.i.celestialenergy
+
+        //END OF STANDARD PATH
 
         //ENHANCE PATH
         let enhanceloss = new Decimal(0)
@@ -332,6 +473,50 @@
         player.i.buyables[15] = new Decimal(0)
 
         player.i.currentenergizer = player.i.nextenergizer
+    }
+    }, 
+    celestialenergyreset()
+    {
+        if (player.i.standardpath.eq(1)) {
+        for (let i = 0; i < player.i.upgrades.length; i++) {
+            if (+player.i.upgrades[i] < 27) {
+                player.i.upgrades.splice(i, 1);
+                i--;
+            }
+        }
+        player.points = new Decimal(1)
+        player.i.prestigeenergy = new Decimal(0)
+        player.i.prestigepoints = new Decimal(0)
+        player.i.prestigemachines = new Decimal(0)
+        player.i.generatorenergy = new Decimal(0)
+        player.i.boosterenergy = new Decimal(0)
+
+        player.i.buyables[11] = new Decimal(0)
+        player.i.buyables[12] = new Decimal(0)
+        player.i.buyables[13] = new Decimal(0)
+        player.i.buyables[14] = new Decimal(0)
+        player.i.buyables[15] = new Decimal(0)
+        player.i.buyables[16] = new Decimal(0)
+        player.i.buyables[17] = new Decimal(0)
+        player.i.buyables[18] = new Decimal(0)
+        player.i.buyables[19] = new Decimal(0)
+        player.i.buyables[21] = new Decimal(0)
+        player.i.buyables[22] = new Decimal(0)
+        player.i.buyables[23] = new Decimal(0)
+
+        player.i.pureenergy = new Decimal(0)
+        player.i.generatorenergy = new Decimal(0)
+        player.i.boosterenergy = new Decimal(0)
+        player.i.machineautomode = new Decimal(0)
+
+        //ENERGIZERS
+        player.i.nextenergizer = new Decimal(0)
+        player.i.currentenergizer = new Decimal(0)
+
+        //Super
+        player.i.superpoints = new Decimal(0)
+        player.i.superprestigeenergy = new Decimal(0)
+        player.i.superpureenergy = new Decimal(0)
     }
     }, 
     clickables: {
@@ -704,7 +889,142 @@
             border: '4px solid #b82fbd', // Glowing border
          },
         },
+        44: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.superifiercutscene.eq(1) },
+            unlocked() { return player.superifierscene.neq(19) },
+            onClick() {
+                player.superifierscene = player.superifierscene.add(1)
+            },
+        },
+        45: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.superifiercutscene.eq(1) },
+            unlocked() { return player.superifierscene.neq(19) && player.superifierscene.neq(0) },
+            onClick() {
+                player.superifierscene = player.superifierscene.sub(1)
+            },
+        },
+        46: {
+            title() { return "<h3>Superify your points." },
+            canClick() { return player.i.standardpath.eq(1) && player.i.superpointstoget.gte(1) },
+            unlocked() { return player.superifiercutscene.eq(0) },
+            onClick() {
+                player.i.pureenergypause = new Decimal(3)
+                player.i.superpoints = player.i.superpoints.add(player.i.superpointstoget)
+            },
+            style: { "background-color": "white", width: '200px', "min-height": '30px' },
+        },
+        47: {
+            title() { return "<h3>Superify your prestige energy." },
+            canClick() { return player.i.standardpath.eq(1) && player.i.superpointstoget.gte(1) && hasUpgrade("i", 25) },
+            unlocked() { return player.superifiercutscene.eq(0) && hasUpgrade("i", 25)},
+            onClick() {
+                player.i.pureenergypause = new Decimal(3)
+                player.i.superprestigeenergy = player.i.superprestigeenergy.add(player.i.superprestigeenergytoget)
+            },
+            style: { "background-color": "#ffffaa", width: '200px', "min-height": '30px' },
+        },
+        48: {
+            title() { return "<h3>Superify your pure energy." },
+            canClick() { return player.i.standardpath.eq(1) && player.i.superpureenergytoget.gte(1) && hasUpgrade("i", 26) },
+            unlocked() { return player.superifiercutscene.eq(0) && hasUpgrade("i", 26)},
+            onClick() {
+                player.i.pureenergypause = new Decimal(3)
+                player.i.pureenergy = new Decimal(0)
+                player.i.superpureenergy = player.i.superpureenergy.add(player.i.superpureenergytoget)
+            },
+            style: { "background-color": "#ffffaa", width: '200px', "min-height": '30px' },
+        },
+        49: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.ce308cutscene.eq(1) },
+            unlocked() { return player.ce308scene.lt(44) },
+            onClick() {
+                player.ce308scene = player.ce308scene.add(1)
+            },
+        },
+        51: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.ce308cutscene.eq(1) },
+            unlocked() { return player.ce308scene.lt(44) && player.ce308scene.neq(0) },
+            onClick() {
+                player.ce308scene = player.ce308scene.sub(1)
+            },
+        },
+        52: {
+            title() { return "<h1>SUMMON THE PSEUDO-CELESTIAL" },
+            canClick() { return player.ce308cutscene.eq(0) },
+            unlocked() { return player.ce308cutscene.eq(0) && player.m.ce308unlock.eq(0) },
+            onClick() {
+                addMistWithTextEffect(0.3, textsToShow)
+                for (let i = 0; i < 80; i++)
+                {
+                    createLightning();
+                }
+                player.m.ce308unlock = new Decimal(1)
+            },
+            style: { 
+            width: '700px',
+            minHeight: '250px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #ffffaa',
+            textShadow: '1px 1px 2px #ffffaa', // Text shadow
+            border: '4px solid #ffffaa', // Glowing border
+            "background-color": "#ffc863",
+opacity: "0.9",
+"background-image":  "linear-gradient(30deg, #ffffaa 12%, transparent 12.5%, transparent 87%, #ffffaa 87.5%, #ffffaa), linear-gradient(150deg, #ffffaa 12%, transparent 12.5%, transparent 87%, #ffffaa 87.5%, #ffffaa), linear-gradient(30deg, #ffffaa 12%, transparent 12.5%, transparent 87%, #ffffaa 87.5%, #ffffaa), linear-gradient(150deg, #ffffaa 12%, transparent 12.5%, transparent 87%, #ffffaa 87.5%, #ffffaa), linear-gradient(60deg, #ffffaa77 25%, transparent 25.5%, transparent 75%, #ffffaa77 75%, #ffffaa77), linear-gradient(60deg, #ffffaa77 25%, transparent 25.5%, transparent 75%, #ffffaa77 75%, #ffffaa77)",
+"background-size": "24px 42px",
+"background-position": "0 0, 0 0, 12px 21px, 12px 21px, 0 0, 12px 21px",
+         },
+        },
+        53: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.ce308unlockcutscene.eq(1) },
+            unlocked() { return player.ce308unlockscene.lt(27) },
+            onClick() {
+                player.ce308unlockscene = player.ce308unlockscene.add(1)
+            },
+        },
+        54: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.ce308unlockcutscene.eq(1) },
+            unlocked() { return player.ce308unlockscene.lt(27) && player.ce308unlockscene.neq(0) },
+            onClick() {
+                player.ce308unlockscene = player.ce308unlockscene.sub(1)
+            },
+        },
+        55: {
+            title() { return "+" + format(player.i.celestialenergytoget) + " CE" },
+            canClick() { return player.i.standardpath.eq(1) && player.i.celestialenergytoget.gte(1) },
+            unlocked() { return player.i.standardpath.eq(1) && player.ce308unlockcutscene.eq(0) && hasUpgrade("i", 27) },
+            onClick() {
+                player.i.celestialenergypause = new Decimal(3)
+                player.i.celestialenergy = player.i.celestialenergy.add(player.i.celestialenergytoget)
+            },
+            style: {  width: '150px', "min-height": '60px', 'color': 'white', 'border-color': 'blue', 'background-image': 'radial-gradient(circle, rgba(16,15,16,1) 0%, rgba(8,0,255,1) 0%, rgba(0,0,0,1) 100%)', animation: "gradient 1s infinite" }
+        },
+        56: {
+            title() { return "<h2>Feed Ce308 to produce celestial energy." },
+            canClick() { return player.i.standardpath.eq(1) && player.i.celestialenergytoget.gte(1) },
+            unlocked() { return player.i.standardpath.eq(1) && player.ce308unlockcutscene.eq(0) && hasUpgrade("i", 27) },
+            onClick() {
+                player.i.celestialenergypause = new Decimal(3)
+                player.i.celestialenergy = player.i.celestialenergy.add(player.i.celestialenergytoget)
+            },
+            style: { 'color': 'white', 'border-color': 'blue', 'background-image': 'radial-gradient(circle, rgba(16,15,16,1) 0%, rgba(8,0,255,1) 0%, rgba(0,0,0,1) 100%)', animation: "gradient 1s infinite", width: '400px', "min-height": '100px' },
+        },
+        57: {
+            title() { return "Passive Pure Energy"/*"<img src='resources/strongprestigeenergy.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>"*/ },
+            canClick() { return true },
+            unlocked() { return hasUpgrade("i", 28) && player.i.standardpath.eq(1) },
+            onClick() {
+                player.i.nextenergizer = new Decimal(4)
+            },
+        },
         //ENHANCE PATH
+
         101: {
             title() { return "<h2>Enhance Your Prestige Points" },
             canClick() { return player.i.prestigepoints.gte(1) },
@@ -730,7 +1050,7 @@
         103: {
             title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
             canClick() { return player.beaconcutscene.eq(1) },
-            unlocked() { return player.beaconscene.neq(11) },
+            unlocked() { return player.beaconscene.lt(11) },
             onClick() {
                 player.beaconscene = player.beaconscene.add(1)
             },
@@ -738,7 +1058,7 @@
         104: {
             title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
             canClick() { return player.beaconcutscene.eq(1) },
-            unlocked() { return player.beaconscene.neq(11) && player.beaconscene.neq(0) },
+            unlocked() { return player.beaconscene.lt(11) && player.beaconscene.neq(0) },
             onClick() {
                 player.beaconscene = player.beaconscene.sub(1)
             },
@@ -957,7 +1277,7 @@
         {
             title: "Pure Energy Upgrade VIII",
             unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 22) },
-            description: "Gives extra corruption delay based on enhancers",
+            description: "Gives extra corruption delay based on enhancers.",
             cost: new Decimal(100000),
             canAfford() { return player.i.standardpath.eq(1)},
             currencyLocation() { return player.i },
@@ -970,7 +1290,75 @@
             effectDisplay() { return "+" + format(upgradeEffect(this.layer, this.id)) }, // Add formatting to the effect
             onPurchase() {},
         },
-
+        24:
+        {
+            title: "Pure Energy Upgrade IX",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 23) && player.m.craftingunlock.eq(1) },
+            description: "Unlocks the superifier.",
+            cost: new Decimal(1e6),
+            canAfford() { return player.i.standardpath.eq(1)},
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Pure Energy",
+            currencyInternalName: "pureenergy",
+        },
+        25:
+        {
+            title: "Pure Energy Upgrade X",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 24) },
+            description: "Unlocks super prestige energy.",
+            cost: new Decimal(2.5e6),
+            canAfford() { return player.i.standardpath.eq(1)},
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Pure Energy",
+            currencyInternalName: "pureenergy",
+        },
+        26:
+        {
+            title: "Pure Energy Upgrade XI",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 25) },
+            description: "Unlocks super pure energy.",
+            cost: new Decimal(6e6),
+            canAfford() { return player.i.standardpath.eq(1)},
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Pure Energy",
+            currencyInternalName: "pureenergy",
+        },
+        27:
+        {
+            title: "Pure Energy Upgrade XII",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 26) },
+            description: "Unlocks THE CELESTIAL. (Remember, you need the battery!)",
+            cost: new Decimal(3e7),
+            canAfford() { return player.i.standardpath.eq(1) && player.c.celestialbatteries.gte(1) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Pure Energy",
+            currencyInternalName: "pureenergy",
+            onPurchase()
+            {
+                    if (player.yhvrcutscene7.eq(0))
+                    {
+                   alert("Finally. You are here now. The pseudo-celestial.")
+                   alert("It's name is Ce308. Despite it being a pseudo-celestial, it is still quite powerful.")
+                   alert("Don't you dare die. We can't afford another casualty.")
+                   alert("Whatever you do, just make sure that at any moment you can die.")
+                   alert("Even if the celestial goes rouge, just stick with your gut.")
+                   alert("Keep progressing through the standard path, no matter what it throws at you.")
+                   alert("Good luck.")
+                  }
+                   player.yhvrcutscene7 = new Decimal(1)
+            },
+        },
+        28:
+        {
+            title: "Pseudo-Celestial Upgrade I",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 27) },
+            description: "Unlocks a new energizer.",
+            cost: new Decimal(4),
+            canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Celestial Energy",
+            currencyInternalName: "celestialenergy",
+        },
         //ENHANCE PATH
 
         101:
@@ -1124,7 +1512,10 @@
                 let growth = 1.3
                 let max = Decimal.affordGeometricSeries(player.i.prestigepoints, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 26))
+                {
                 if (!hasUpgrade("i", 16)) player.i.prestigepoints = player.i.prestigepoints.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#31aeb0",}
@@ -1150,7 +1541,10 @@
                 let growth = 1.5
                 let max = Decimal.affordGeometricSeries(player.i.prestigepoints, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 26))
+                {
                 if (!hasUpgrade("i", 16)) player.i.prestigepoints = player.i.prestigepoints.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#31aeb0",}
@@ -1175,7 +1569,7 @@
                 let growth = 1.5
                 let max = Decimal.affordGeometricSeries(player.i.pureenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.pureenergy = player.i.pureenergy.sub(cost)
+                if (!hasUpgrade("m", 28)) player.i.pureenergy = player.i.pureenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a3d9a5",}
@@ -1200,7 +1594,7 @@
                 let growth = 1.5
                 let max = Decimal.affordGeometricSeries(player.i.pureenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.pureenergy = player.i.pureenergy.sub(cost)
+                if (!hasUpgrade("m", 28)) player.i.pureenergy = player.i.pureenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#6e64c4",}
@@ -1225,7 +1619,7 @@
                 let growth = 1.5
                 let max = Decimal.affordGeometricSeries(player.i.boosterenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.boosterenergy = player.i.boosterenergy.sub(cost)
+                if (!hasUpgrade("m", 28)) player.i.boosterenergy = player.i.boosterenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#6e64c4",}
@@ -1250,7 +1644,7 @@
                 let growth = 1.5
                 let max = Decimal.affordGeometricSeries(player.i.generatorenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.generatorenergy = player.i.generatorenergy.sub(cost)
+                if (!hasUpgrade("m", 28)) player.i.generatorenergy = player.i.generatorenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a3d9a5",}
@@ -1260,7 +1654,7 @@
             effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.1).add(1) },
             unlocked() { return player.pureenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
             canAfford() { return player.i.boosterenergy.gte(this.cost()) },
-            title() {
+            title() {        
                 return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Generator Synergy"
             },
             tooltip() {
@@ -1275,7 +1669,7 @@
                 let growth = 1.75
                 let max = Decimal.affordGeometricSeries(player.i.boosterenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.boosterenergy = player.i.boosterenergy.sub(cost)
+                if (!hasUpgrade("m", 28)) player.i.boosterenergy = player.i.boosterenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#6e64c4",}
@@ -1300,7 +1694,7 @@
                 let growth = 1.75
                 let max = Decimal.affordGeometricSeries(player.i.generatorenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.generatorenergy = player.i.generatorenergy.sub(cost)
+                if (!hasUpgrade("m", 28)) player.i.generatorenergy = player.i.generatorenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a3d9a5",}
@@ -1325,7 +1719,7 @@
                 let growth = 1.5
                 let max = Decimal.affordGeometricSeries(player.i.pureenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.pureenergy = player.i.pureenergy.sub(cost)
+                if (!hasUpgrade("m", 28)) player.i.pureenergy = player.i.pureenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#b82fbd",}
@@ -1410,6 +1804,16 @@
             title: "Log XIII",
             body() { return "Log XIII: I can't imagine how ???????? is feeling. Getting your rank challenged by ????, who has been working harder than ever. I don't know. This might be the second time this is happening. Even if ???????? loses his spot we will all stay determined to win this war. Apparently, ??????? is a ?????? ?????. He can also manipulate the forces of ?????, ?????, and has defeated the ancient ?????????? ?????????. ??????? and ???? are starting to get along." },         
         }, 
+        jacorblog18: {
+            unlocked() { return player.energizercutscene.eq(0) && player.i.nextenergizer.eq(4) && player.i.currentenergizer.eq(4) },
+            title: "Log XVIII",
+            body() { return "Log XVIII: ??????? seems like a good guy. He is very freindly and all that, but its the DEATH REALM. Time and time again they keep fooling us. Whatever. If anything happens, then I will use the prestige tree for what it is. Even if its not at it's fullest potential." },         
+        }, 
+        jacorblog19: {
+            unlocked() { return player.energizercutscene.eq(0) && player.i.nextenergizer.eq(4) && player.i.currentenergizer.neq(4) },
+            title: "Log XIX",
+            body() { return "Log XIX: This war is making me fatigued. I'm taking a break, and Aarex is getting some work done. I remembered why I am journaling. It's because one day, a hero will avenge all of us. This hero will be reading my logs. Well, to you, whatever you do, don't ever go to the ????. There's a lot of secrets, like the ???????? ?????. You aren't allowed to know. " },         
+        }, 
     },
     microtabs: {
         stuff: {
@@ -1452,6 +1856,16 @@
                 
                     [
          ["microtabs", "pureenergy", { 'border-width': '0px' }],
+        ]
+
+            },
+            "Celestials": {
+                buttonStyle() { return { 'border-color': 'blue', 'background-image': 'radial-gradient(circle, rgba(16,15,16,1) 0%, rgba(8,0,255,1) 0%, rgba(0,0,0,1) 100%)', animation: "gradient 1s infinite"} },
+                unlocked() { return hasUpgrade("i", 27) },
+                content:
+                
+                    [
+         ["microtabs", "celestials", { 'border-width': '0px' }],
         ]
 
             },
@@ -1658,7 +2072,8 @@
                         ["row", [["clickable", 26]]],
                         ["blank", "25px"],
                         ["row", [["upgrade", 15], ["upgrade", 16], ["upgrade", 17], ["upgrade", 18], ["upgrade", 19]]],
-                        ["row", [["upgrade", 21], ["upgrade", 22], ["upgrade", 23]]],
+                        ["row", [["upgrade", 21], ["upgrade", 22], ["upgrade", 23], ["upgrade", 24], ["upgrade", 25]]],
+                        ["row", [["upgrade", 26], ["upgrade", 27]]],
                     ]
             },
             "Energy": {
@@ -1708,16 +2123,19 @@
                         ["raw-html", function () { return player.i.currentenergizer.eq(1) && player.energizercutscene.eq(0) ? '<h2>You are energizing with "Cheaper machines, more corruption."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.currentenergizer.eq(2) && player.energizercutscene.eq(0) ? '<h2>You are energizing with "Stronger prestige energy."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.currentenergizer.eq(3) && player.energizercutscene.eq(0) ? '<h2>You are energizing with "More points, less prestige."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.currentenergizer.eq(4) && player.energizercutscene.eq(0) ? '<h2>You are energizing with "Passive pure energy"' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.nextenergizer.eq(0) && player.energizercutscene.eq(0) ? "<h3>Next reset, you will energize with nothing. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.nextenergizer.eq(1) && player.energizercutscene.eq(0) ? '<h3>Next reset, you will energize with "Cheaper machines, more corruption."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.nextenergizer.eq(2) && player.energizercutscene.eq(0) ? '<h3>Next reset, you will energize with "Stronger prestige energy."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.nextenergizer.eq(3) && player.energizercutscene.eq(0) ? '<h3>Next reset, you will energize with "More points, less prestige."' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.nextenergizer.eq(4) && player.energizercutscene.eq(0) ? '<h3>Next reset, you will energize with "Passive pure energy"' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["raw-html", function () { return player.i.nextenergizer.eq(1) && player.energizercutscene.eq(0) ? '<h3>Prestige machines scale less (x3 -> x1.5), but machine corruptions are squared.' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.nextenergizer.eq(2) && player.energizercutscene.eq(0) ? "<h3>Prestige Energy's good effect is multiplied by 8, but its downside is squared." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.nextenergizer.eq(3) && player.energizercutscene.eq(0) ? "<h3>Points are multiplied by x100,000, while prestige points are divided by /1,000." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.nextenergizer.eq(4) && player.energizercutscene.eq(0) ? "<h3>Gain 100% of pure energy per second, but without the buffs of an energizer." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
-                        ["row", [["clickable", 32], ["clickable", 33], ["clickable", 34], ["clickable", 41]]],
+                        ["row", [["clickable", 32], ["clickable", 33], ["clickable", 34], ["clickable", 41], ["clickable", 57]]],
                         ["blank", "50px"],
                         ["infobox", "jacorblog1"],
                         ["infobox", "jacorblog2"],
@@ -1726,6 +2144,8 @@
                         ["infobox", "jacorblog8"],
                         ["infobox", "jacorblog9"],
                         ["infobox", "jacorblog10"],
+                        ["infobox", "jacorblog18"],
+                        ["infobox", "jacorblog19"],
                     ]
             },
             "Buyables": {
@@ -1743,21 +2163,173 @@
                         ["row", [["buyable", 23], ["clickable", 42]]],
                     ]
             },
+            "Superifier": {
+                buttonStyle() { return { 'color': '#ffffaa' } },
+                unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 24) },
+                content:
+                    [
+                        ["raw-html", function () { return player.superifierscene.eq(1) ? "<h1>The celestial is really close." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(2) ? "<h1>Just a little bit of crafting, right?" : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(3) ? "<h1>Remember. This is no ordinary celestial." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(4) ? "<h1>This celestial is a pseudo-celestial. Should be weaker than usual." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(5) ? "<h1>Artis and Sitra have built this celestial." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(6) ? "<h1>It's purpose is to whip you into shape to fight the real ones." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(7) ? "<h1>You know, your predecessor could still be out there." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(8) ? "<h1>For all we know, it could have been an extreme case of time dilation." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(9) ? "<h1>But if you find your predecessor, work together and save the multiverse together." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(10) ? "<h1>Just remember, you weren't the first hero." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(11) ? "<h1>There was one before your predecessor. The developer." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(12) ? "<h1>The developer made games, but one day, they stopped." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(13) ? "<h1>In a similar fashion to your predecessor." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(14) ? "<h1>So before you fight this celestial," : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(15) ? "<h1>You should accept your fate." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(16) ? "<h1>The presence of a celestial, even a pseudo-celestial is extreme." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(17) ? "<h1>Even if you go missing or die, we will never give up on our goal." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifierscene.eq(18) ? "<h1>We won't stop. Even if you don't make it. This war will end." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 45], ["clickable", 44]]],
+                        ["raw-html", function () { return player.superifiercutscene.eq(0) ? "<h3>Superificiation will cause pure energy reset." : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.superifiercutscene.eq(0) ? "<h4>Super resources boost it's counterpart's role in providing meta-prestige score." : ""}, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.superifiercutscene.eq(0) ? "<h3>You have " + format(player.i.superpoints) + "<h3> super points, which boost point gain by x" + format(player.i.superpointseffect) : ""}, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["row", [["raw-html", function () { return player.superifiercutscene.eq(0) ? "<h3>" + format(player.points) + " points" + " -> " + format(player.i.superpointstoget) + " super points" : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }], ["blank", "25px"], ["clickable", 46]]],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.superifiercutscene.eq(0) && hasUpgrade("i", 25) ? "<h3>You have " + format(player.i.superprestigeenergy) + "<h3> super prestige energy, which boost prestige energy gain by x" + format(player.i.superprestigeenergyeffect) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["row", [["raw-html", function () { return player.superifiercutscene.eq(0) && hasUpgrade("i", 25) ? "<h3>" + format(player.i.prestigeenergy) + " prestige energy" + " -> " + format(player.i.superprestigeenergytoget) + " super prestige energy" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }], ["blank", "25px"], ["clickable", 47]]],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.superifiercutscene.eq(0) && hasUpgrade("i", 26) ? "<h3>You have " + format(player.i.superpureenergy) + "<h3> super pure energy, which boost pure energy gain by x" + format(player.i.superpureenergyeffect) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["row", [["raw-html", function () { return player.superifiercutscene.eq(0) && hasUpgrade("i", 26) ? "<h3>" + format(player.i.pureenergy) + " pure energy" + " -> " + format(player.i.superpureenergytoget) + " super pure energy" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }], ["blank", "25px"], ["clickable", 48]]],
+                        ["row", [["raw-html", function () { return player.superifiercutscene.eq(0) && hasUpgrade("i", 26) ? "<h5>(Resets pure energy amount)" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }], ["blank", "25px"]]],
+                    ]
+            },
+        },
+        celestials: {
+            "Ce308, The Pseudo-Celestial": {
+                buttonStyle() { return { 'border-color': 'yellow', 'background-color': '#ffffaa', "color": 'black' } },
+                unlocked() { return player.i.standardpath.eq(1) },
+                content:
+                    [
+                        ["microtabs", "ce308", { 'border-width': '0px' }],
+                    ]
+            },
+        },
+        ce308: {
+            "Unlock": {
+                buttonStyle() { return { 'border-color': 'yellow', 'background-color': '#ffffaa', "color": 'black' } },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(0) },
+                content:
+                    [
+                        ["raw-html", function () { return player.ce308scene.eq(1) ? "<h1>Finally. You made the battery." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308scene.eq(2) ? "<h1>It took you long enough. Now you are up against the celestial." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308scene.eq(3) ? "<h1>As a reward for making this battery, I will give you access to more crafting recipes." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308scene.eq(4) ? "<h1>Eventually, you will be the greatest crafter, even better than me." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308scene.eq(5) ? "<h1>Just kidding! No one is better at crafting than me!" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308scene.eq(6) ? "<h1>Anyways, that sure must have been one hell of a grind to make that battery." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308scene.eq(7) ? "<h1>You deserve some rest, but the celestial will be here." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308scene.eq(8) ? "<h1>Hopefully my new recipes will help you in your battles." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308scene.eq(9) ? "<h1>So you've actually made it." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(10) ? "<h1>You can power up the celestial." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(11) ? "<h1>Just don't die." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(12) ? "<h1>You should be able to collect more layers in the process." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(13) ? "<h1>This celestial is the weakest one." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(14) ? "<h1>After this celestial, there will be much more celestials." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(15) ? "<h1>You must stay focused." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(16) ? "<h1>Don't put your guard down." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(17) ? "<h1>What if you don't make it?" : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(18) ? "<h1>What if you die?" : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(19) ? "<h1>My suffering will never end." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(20) ? "<h1>But no matter what happens, you did your job." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(21) ? "<h1>We all did our job." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(22) ? "<h1>No matter how long we stay in exile, there will be a day." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(23) ? "<h1>There will be a day were we finally get free." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(24) ? "<h1>Life will be normal again. Making mods, watching BFDI." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(25) ? "<h1>Hanging out with Jacorb and Hevi and all of my friends." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(26) ? "<h1>It's been so long. It's been forever." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(27) ? "<h1>Me and Jacorb will finally finish the prestige tree." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(28) ? "<h1>I will finally finish NG+3R." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(29) ? "<h1>And peace will be restored between the realms." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(30) ? "<h1>Of course. I'm here to wish you luck." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(31) ? "<h1>The truth is, I've never really known what my identity is." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(32) ? "<h1>One day, I magically appeared in the higher plane with no memories, and intelligence." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(33) ? "<h1>The people there treated me as their kind." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(34) ? "<h1>But I had a dying urge to seek more." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(35) ? "<h1>So I went to the incremental base, and found a great team of people." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(36) ? "<h1>I never looked back since." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(37) ? "<h1>Very little of my memories are coming back. I can't explain it." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(38) ? "<h1>Thank you for dedicating yourself to us, and to your mission." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(39) ? "<h1>But during your celestial conquest," : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(40) ? "<h1>Most of your communication will be blocked off." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(41) ? "<h1>Except for maybe Yhvr of course." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(42) ? "<h1>But before you head off, I will remind you one thing:" : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308scene.eq(43) ? "<h1>The grind is on, my friend." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 51], ["clickable", 49]]],
+                        ["raw-html", function () { return player.ce308scene.lt(9) ? " <div class=spinning-symbol>☭</div>" : "" }],
+                        ["row", [["clickable", 52]]],
+                    ]
+            },
+            "Main": {
+                buttonStyle() { return { 'border-color': 'yellow', 'background-color': '#ffffaa', "color": 'black' } },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) },
+                content:
+                    [
+                        ["raw-html", function () { return player.ce308unlockscene.eq(1) ? "<h1>Oh! Hello there!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(2) ? "<h1>I am Ce308. The pseudo-celestial of pure energy." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(3) ? "<h1>That pure energy energy is amazing. It gives me so much energy." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(4) ? "<h1>I DEMAND YOU GIVE ME YOUR ENTIRE STASH..." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(5) ? "<h1>In return, I'll give you an abundance of N E W  M A C H I N E S!!!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(6) ? "<h1>These new materials will help you make the stuff ARTIS wants you to make." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(7) ? "<h1>They are the best! Them creating me is the best thing to ever happen." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(8) ? "<h1>I know they really care about me. Make sure to give them respect." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(9) ? "<h1>You know, I have a quote for you." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(10) ? "<h1>Life is like a balloon: It goes up until it pops (aka you dying)." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(11) ? "<h1>But since you are a hero, your life is like an U N S T O P P A B L E B A L L O O N." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(12) ? '<h1>But for me, I am the sky. Being a "celestial" is like that and stuff. ' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(13) ? "<h1>One day I hope I can be a REAL celestial." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(14) ? "<h1>Yesterday I learned that the word pseudo means fake..." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(15) ? "<h1>Maybe if I try hard enough, even with my ai generated brain." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(16) ? "<h1>You are the third person I have ever met." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(17) ? "<h1>But it feels like I have seen the whole world." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(18) ? "<h1>You know, I still don't clearly understand why you are here," : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(19) ? "<h1>And why I am talking to you like this. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(20) ? "<h1>Well. If you need any help, just give me more pure energy." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(21) ? "<h1>I need that stuff, it's the only way I can think of ways to help you." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(22) ? "<h1>I'll try to give you the greatest help." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(23) ? "<h1>You were the one who powered me up!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(24) ? "<h1>But if you are not that generous," : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(25) ? "<h1>Then things will be settled." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308unlockscene.eq(26) ? "<h1>I WILL KILL YOU WITHOUT A SECOND THOUGHT." : "" }, { "color": "#8a0303", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 54], ["clickable", 53]]],
+                        ["raw-html", function () { return player.ce308unlockcutscene.eq(1) ? " <div class=spinning-symbol2>Θ</div>" : "" }],
+                        ["raw-html", function () { return "<h2>You have " + format(player.i.celestialenergy) + "<h2> celestial energy. " }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h3>which boosts pure, prestige, generator, and booster energy by x" + format(player.i.celestialenergyeffect) + "<h3>." }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h3>You will gain " + format(player.i.celestialenergytoget) + "<h3> celestial energy on reset." }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 56]]],
+                        ["blank", "25px"],
+                        ["row", [["upgrade", 28]]],
+                    ]
+            },
         },
     },
 
     tabFormat: [
                            ["raw-html", function () { return "You have " + format(player.points) + " points." }, { "color": "white", "font-size": "32px", "font-family": "monospace" }],
         ["raw-html", function () { return "You are gaining " + format(player.gain) + " points per second."}, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
-        ["row", [["clickable", 14], ["clickable", 23], ["clickable", 27], ["clickable", 102]]],
+        ["row", [["clickable", 14], ["clickable", 23], ["clickable", 27], ["clickable", 55], ["clickable", 102]]],
          ["microtabs", "stuff", { 'border-width': '0px' }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(1) && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/reddiamond.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pathless.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(1) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/energeticsong.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(1) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(1) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/reddiamond.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(1) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/craftingcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(1) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/aarexcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/pseudocutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pathless.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(1) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/energeticsong.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
         ],
     layerShown() { return true }
 })
+
 function createParticles() {
     const particlesContainer = document.createElement('div');
     particlesContainer.style.position = 'fixed';
@@ -1857,76 +2429,79 @@ styleSheet2.innerHTML = `
 
 document.head.appendChild(styleSheet2);
 
-function createLightning()
-{
-  // Create a canvas element
-  const canvas = document.createElement("canvas");
-  canvas.style.position = "absolute";
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  // Adjust the position of the canvas based on your needs
-  const canvasPositionX = 0; // Adjust the X-coordinate
-  const canvasPositionY = 0; // Adjust the Y-coordinate
-  canvas.style.left = `${canvasPositionX}px`;
-  canvas.style.top = `${canvasPositionY}px`;
-
-  // Append the canvas element to the document body
-  document.body.appendChild(canvas);
-
-  // Draw the lightning bolt on the canvas
-  const context = canvas.getContext("2d");
-
-  function drawLightning() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    context.shadowBlur = 10; // Adjust the shadow blur
-    context.shadowColor = "white"; // Adjust the shadow color
-
-    const startX = Math.random() * canvas.width; // Starting position of the lightning bolt
-    const startY = 0; // Top of the screen
-    const endY = canvas.height; // Bottom of the screen
-
-    const segments = [];
-
-    segments.push({ x: startX, y: startY });
-
-    let prevX = startX;
-    let prevY = startY;
-    let currentX, currentY;
-
-    while (prevY < endY - 20) {
-      const deviationX = Math.random() * 80 - 40; // Adjust the randomness of the X-coordinate deviation
-      const deviationY = Math.random() * 40 + 20; // Adjust the randomness and length of the Y-coordinate deviation
-      currentX = prevX + deviationX;
-      currentY = prevY + deviationY;
-      segments.push({ x: currentX, y: currentY });
-      prevX = currentX;
-      prevY = currentY;
+function createLightning() {
+    // Create a canvas element
+    const canvas = document.createElement("canvas");
+    canvas.style.position = "absolute";
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  
+    // Adjust the position of the canvas based on your needs
+    const canvasPositionX = 0; // Adjust the X-coordinate
+    const canvasPositionY = 0; // Adjust the Y-coordinate
+    canvas.style.left = `${canvasPositionX}px`;
+    canvas.style.top = `${canvasPositionY}px`;
+  
+    // Append the canvas element to the document body
+    document.body.appendChild(canvas);
+  
+    // Make the canvas transparent to mouse events
+    canvas.style.pointerEvents = "none";
+  
+    // Draw the lightning bolt on the canvas
+    const context = canvas.getContext("2d");
+  
+    function drawLightning() {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+  
+      context.shadowBlur = 10; // Adjust the shadow blur
+      context.shadowColor = "white"; // Adjust the shadow color
+  
+      const startX = Math.random() * canvas.width; // Starting position of the lightning bolt
+      const startY = 0; // Top of the screen
+      const endY = canvas.height; // Bottom of the screen
+  
+      const segments = [];
+  
+      segments.push({ x: startX, y: startY });
+  
+      let prevX = startX;
+      let prevY = startY;
+      let currentX, currentY;
+  
+      while (prevY < endY - 20) {
+        const deviationX = Math.random() * 80 - 40; // Adjust the randomness of the X-coordinate deviation
+        const deviationY = Math.random() * 40 + 20; // Adjust the randomness and length of the Y-coordinate deviation
+        currentX = prevX + deviationX;
+        currentY = prevY + deviationY;
+        segments.push({ x: currentX, y: currentY });
+        prevX = currentX;
+        prevY = currentY;
+      }
+  
+      segments.push({ x: startX, y: endY });
+  
+      context.beginPath();
+      context.moveTo(segments[0].x, segments[0].y);
+  
+      for (let i = 1; i < segments.length; i++) {
+        const segment = segments[i];
+        context.lineTo(segment.x, segment.y);
+      }
+  
+      context.lineWidth = 8; // Adjust the line width of the lightning bolt
+      context.strokeStyle = "rgba(255, 255, 255, 0.5)"; // Adjust the color and transparency of the lightning bolt stroke
+      context.stroke();
+  
+      // Remove the canvas element after a second
+      setTimeout(() => {
+        document.body.removeChild(canvas);
+      }, 1000); // Adjust the duration of the lightning bolt effect
     }
-
-    segments.push({ x: startX, y: endY });
-
-    context.beginPath();
-    context.moveTo(segments[0].x, segments[0].y);
-
-    for (let i = 1; i < segments.length; i++) {
-      const segment = segments[i];
-      context.lineTo(segment.x, segment.y);
-    }
-
-    context.lineWidth = 8; // Adjust the line width of the lightning bolt
-    context.strokeStyle = "rgba(255, 255, 255, 0.5)"; // Adjust the color and transparency of the lightning bolt stroke
-    context.stroke();
+  
+    // Start drawing the lightning effect
+    drawLightning();
   }
-
-  drawLightning();
-
-  // Remove the canvas element after a certain duration
-  setTimeout(() => {
-    document.body.removeChild(canvas);
-  }, 1000); // Adjust the duration of the lightning bolt effect
-}
 function generateMist(durationInSeconds) {
     const mistColor = "#b82fbd";
     const mistOpacity = 2; // Change this value to adjust the opacity of the mist

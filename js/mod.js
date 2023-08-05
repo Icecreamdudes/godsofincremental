@@ -14,7 +14,7 @@
 // Set your version in num and name
 let VERSION = {
 	num: "1.0b",
-	name: "Beta Update 1 - Remember, you werent the first hero."
+	name: "Beta Update 1 - Remember, you weren't the first hero."
 }
 
 let changelog = `<h1>Changelog:</h1><br>
@@ -25,7 +25,7 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset"]
+var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset", "celestialenergyreset"]
 
 function getStartPoints() {
 	return new Decimal(modInfo.initialStartPoints)
@@ -54,6 +54,7 @@ function getPointGen() {
 	gain = gain.mul(player.i.boosterenergyeffect)
 	if (player.i.currentenergizer.eq(3)) gain = gain.mul(100000)
 	if (player.i.enhancepath.eq(1)) gain = gain.mul(player.i.enhancepointseffect)
+	if (player.i.standardpath.eq(1)) gain = gain.mul(player.i.superpointseffect)
 	player.gain = gain
 	return gain
 }
@@ -65,10 +66,15 @@ function addedPlayerData() {
 		bestpoints: new Decimal(0),
 		unlockedmetaprestige: new Decimal(0),
 
+		//BGFX
+		lightningtimer: new Decimal(0),
+
 		//Cutscene Song Optimization
 		inreddiamondcutscene: new Decimal(0),
 		injacorbcutscene: new Decimal(0),
 		inartiscutscene: new Decimal(0),
+		inaarexcutscene: new Decimal(0),
+		ince308cutscene: new Decimal(0),
 
 		//Cutscenes
 		prestigecutscene: new Decimal(1),
@@ -89,6 +95,16 @@ function addedPlayerData() {
 		craftingscene: new Decimal(0),
 		crafting2cutscene: new Decimal(1),
 		crafting2scene: new Decimal(0),
+		timecutscene: new Decimal(1),
+		timescene: new Decimal(0),
+		spacecutscene: new Decimal(1),
+		spacescene: new Decimal(0),
+		superifiercutscene: new Decimal(1),
+		superifierscene: new Decimal(0),
+		ce308cutscene: new Decimal(1),
+		ce308scene: new Decimal(0),
+		ce308unlockcutscene: new Decimal(1),
+		ce308unlockscene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),
@@ -97,12 +113,16 @@ function addedPlayerData() {
 		yhvrcutscene4: new Decimal(0),
 		yhvrcutscene5: new Decimal(0),
 		yhvrcutscene6: new Decimal(0),
+		yhvrcutscene7: new Decimal(0),
 
 		//PT layers
 		prestigelayer: new Decimal(0),
 		boosterlayer: new Decimal(0),
 		generatorlayer: new Decimal(0),
 		enhancelayer: new Decimal(0),
+		timelayer: new Decimal(0),
+		spacelayer: new Decimal(0),
+		superboosterlayer: new Decimal(0),
 	}
 }
 

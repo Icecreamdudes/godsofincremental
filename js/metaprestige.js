@@ -1,5 +1,5 @@
 ﻿var prestigetree = [["pr"],
-["bo", "ge"], ["en"]]
+["bo", "ge"], ["ti", "en", "sp"]]
           
           addLayer("m", {
     name: "Meta-Prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -13,14 +13,19 @@
 
         //Unlocks
 		craftingunlock: new Decimal(0),
+		ce308unlock: new Decimal(0),
 
         //PATHLESS FACTORS
         scorefrombestpoints: new Decimal(0),
         scorefromtimeplayed: new Decimal(1),
+        scorefromcelestialcells: new Decimal(1),
 
         //STANDARD PATH FACTORS
         scorefrombestprestigeenergy: new Decimal(1),
         scorefrombestpureenergy: new Decimal(1),
+        scorefrombestboosterenergy: new Decimal(1),
+        scorefrombestgeneratorenergy: new Decimal(1),
+        scorefrombestcelestialenergy: new Decimal(1),
 
         //STANDARD PATH FACTORS
         scorefrombestenhancepoints: new Decimal(1),
@@ -29,6 +34,8 @@
         scorefromincrementalpower: new Decimal(1),
         scorefromincrementalenergy: new Decimal(1),
         scorefrommetaprestigetime: new Decimal(1),
+        scorefromtimecapsules: new Decimal(1),
+        scorefromspacebuildings: new Decimal(1),
 
         incrementalenergy: new Decimal(0),
         incrementalenergytoget: new Decimal(0),
@@ -44,9 +51,18 @@
         player.c.wirescancel = new Decimal(1)
         player.c.enhancepowdercancel = new Decimal(1)
 
-        player.c.scrapmetal = player.c.scrapmetal.add(player.c.scrapmetaltoget)
-        player.c.wires = player.c.wires.add(player.c.wirestoget)
-        player.c.enhancepowder = player.c.enhancepowder.add(player.c.enhancepowdertoget)
+        if (player.m.craftingunlock.eq(1))
+        {
+            player.c.scrapmetal = player.c.scrapmetal.add(player.c.scrapmetaltoget)
+            player.c.wires = player.c.wires.add(player.c.wirestoget)
+            player.c.enhancepowder = player.c.enhancepowder.add(player.c.enhancepowdertoget)
+        }
+        if (player.m.craftingunlock.eq(1) && hasUpgrade("i", 27))
+        {
+            player.c.celestialcells = player.c.celestialcells.add(player.c.celestialcellstoget)
+        }
+        player.ti.timeenergy = new Decimal(0)
+        player.sp.space = new Decimal(0)
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
     resource: "Incremental Power", // Name of prestige currency
@@ -76,22 +92,49 @@
     },
     color: "#8a00a9",
     update(delta) {
-
+        //BACKGROUND 
+        document.body.style.setProperty('--background', hasUpgrade("i", 27) ? "radial-gradient(circle, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #202015, #555539, #aaaa71, #ffffaa)" : "#161616");
+        if (hasUpgrade("i", 27)) player.lightningtimer = player.lightningtimer.add(1)
+        if (player.lightningtimer.gte(60))
+        {
+            createLightning();
+            player.lightningtimer = new Decimal(0)
+        }
+ 
         //SCORE CALC
         player.m.scorefrombestpoints = player.bestpoints.add(1).slog().pow(2)
+        if (player.i.standardpath.eq(1) && player.i.superpoints.gt(0)) player.m.scorefrombestpoints = player.bestpoints.mul(player.i.superpoints).add(1).slog().pow(2)
 
+        //standard path
         if (player.i.standardpath.eq(0)) player.m.scorefrombestprestigeenergy = new Decimal(1)
-        if (player.i.standardpath.eq(1) && player.i.bestprestigeenergy.neq(0)) player.m.scorefrombestprestigeenergy = player.i.bestprestigeenergy.slog().div(5).add(1)
+        if (player.i.standardpath.eq(1) && player.i.bestprestigeenergy.neq(0) && player.i.superprestigeenergy.eq(0)) player.m.scorefrombestprestigeenergy = player.i.bestprestigeenergy.slog().div(5).add(1)
+        if (player.i.standardpath.eq(1) && player.i.bestprestigeenergy.neq(0) && player.i.superprestigeenergy.gt(0)) player.m.scorefrombestprestigeenergy = player.i.bestprestigeenergy.mul(player.i.superprestigeenergy).slog().div(5).add(1)
 
         if (player.i.standardpath.eq(0)) player.m.scorefrombestpureenergy = new Decimal(1)
-        if (player.i.standardpath.eq(1) && player.i.bestpureenergy.neq(0)) player.m.scorefrombestpureenergy = player.i.bestpureenergy.slog().div(4).add(1)
+        if (player.i.standardpath.eq(1) && player.i.bestpureenergy.neq(0) && player.i.superpureenergy.eq(0)) player.m.scorefrombestpureenergy = player.i.bestpureenergy.slog().div(4).add(1)
+        if (player.i.standardpath.eq(1) && player.i.bestpureenergy.neq(0) && player.i.superpureenergy.gt(0)) player.m.scorefrombestpureenergy = player.i.bestpureenergy.mul(player.i.superpureenergy).slog().div(4).add(1)
 
+        if (player.i.standardpath.eq(0)) player.m.scorefrombestboosterenergy = new Decimal(1)
+        if (player.i.standardpath.eq(1) && hasUpgrade("m", 22) && player.i.bestboosterenergy.neq(0)) player.m.scorefrombestboosterenergy = player.i.bestboosterenergy.slog().div(7).add(1)
+
+        if (player.i.standardpath.eq(0)) player.m.scorefrombestgeneratorenergy = new Decimal(1)
+        if (player.i.standardpath.eq(1) && hasUpgrade("m", 22) && player.i.bestgeneratorenergy.neq(0)) player.m.scorefrombestgeneratorenergy = player.i.bestgeneratorenergy.slog().div(7).add(1)
+
+        if (player.i.standardpath.eq(0)) player.m.scorefrombestcelestialenergy = new Decimal(1)
+        if (player.i.standardpath.eq(1) && player.i.bestcelestialenergy.neq(0)) player.m.scorefrombestcelestialenergy = player.i.bestcelestialenergy.mul(100).slog().div(3).add(1)
+
+        //enhance path
         if (player.i.enhancepath.eq(0)) player.m.scorefrombestenhancepoints = new Decimal(1)
         if (player.i.enhancepath.eq(1) && player.i.bestenhancepoints.neq(0)) player.m.scorefrombestenhancepoints = player.i.bestenhancepoints.slog().div(5).add(1)
 
+        //pathless factors
         if (!hasUpgrade("m", 14)) player.m.scorefromtimeplayed = new Decimal(1)
         if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed))
 
+        if (player.c.celestialcells.eq(0)) player.m.scorefromtimeplayed = new Decimal(1)
+        if (player.c.celestialcells.neq(0)) player.m.scorefromcelestialcells = player.c.celestialcells.mul(0.015).pow(0.8).add(1)
+
+        //prestige tree
         if (player.boosterlayer.eq(0)) player.m.scorefromincrementalpower = new Decimal(1)
         if (player.boosterlayer.eq(1)) player.m.scorefromincrementalpower = player.m.points.add(1).pow(0.03)
 
@@ -100,6 +143,12 @@
 
         if (player.enhancelayer.eq(0)) player.m.scorefrommetaprestigetime = new Decimal(1)
         if (player.enhancelayer.eq(1)) player.m.scorefrommetaprestigetime = player.i.metaprestigetime.add(1).log10().cbrt().sqrt()
+
+        if (player.timelayer.eq(0)) player.m.scorefromtimecapsules = new Decimal(1)
+        if (player.timelayer.eq(1)) player.m.scorefromtimecapsules = player.c.timecapsules.mul(0.01).pow(0.75).add(1)
+
+        if (player.spacelayer.eq(0)) player.m.scorefromspacebuildings = new Decimal(1)
+        if (player.spacelayer.eq(1)) player.m.scorefromspacebuildings = player.c.spacebuildings.mul(0.012).pow(0.77).add(1)
 
         player.m.score = player.m.scorefrombestpoints
         player.m.score = player.m.score.mul(player.m.scorefrombestprestigeenergy)
@@ -110,6 +159,12 @@
         player.m.score = player.m.score.mul(player.m.scorefromincrementalenergy)
         player.m.score = player.m.score.mul(player.m.scorefrommetaprestigetime)
         player.m.score = player.m.score.mul(player.m.scorefrombestenhancepoints)
+        player.m.score = player.m.score.mul(player.m.scorefromtimecapsules)
+        player.m.score = player.m.score.mul(player.m.scorefromspacebuildings)
+        player.m.score = player.m.score.mul(player.m.scorefrombestboosterenergy)
+        player.m.score = player.m.score.mul(player.m.scorefrombestgeneratorenergy)
+        player.m.score = player.m.score.mul(player.m.scorefrombestcelestialenergy)
+        player.m.score = player.m.score.mul(player.m.scorefromcelestialcells)
 
         player.m.incrementalenergytoget = player.i.prestigemachines.pow(0.3)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.noenergyboost)
@@ -193,7 +248,7 @@
             title: "Pure Energy",
             unlocked() { return hasUpgrade("m", 14) },
             description: "Unlocks the pure energy layer.",
-            cost: new Decimal(100),
+            cost: new Decimal(75),
             currencyLocation() { return player.m },
             currencyDisplayName: "Incremental Power",
             currencyInternalName: "points",
@@ -203,7 +258,7 @@
             title: "QoL I",
             unlocked() { return hasUpgrade("m", 15) },
             description: "Gives extra point producers based on incremental energy.",
-            cost: new Decimal(250),
+            cost: new Decimal(150),
             currencyLocation() { return player.m },
             currencyDisplayName: "Incremental Power",
             currencyInternalName: "points",
@@ -229,7 +284,7 @@
             title: "Boost III",
             unlocked() { return hasUpgrade("m", 16) && player.enhancelayer.eq(1) },
             description: "Boosts prestige points based on meta-prestige time.",
-            cost: new Decimal(1500),
+            cost: new Decimal(750),
             currencyLocation() { return player.m },
             currencyDisplayName: "Incremental Power",
             currencyInternalName: "points",
@@ -244,7 +299,7 @@
             title: "Cool Upgrade I",
             unlocked() { return hasUpgrade("m", 17) && player.beaconcutscene.eq(0) },
             description: "Adds 10s to the meta-prestige timer when your beacon fills up.",
-            cost: new Decimal(2500),
+            cost: new Decimal(1500),
             currencyLocation() { return player.m },
             currencyDisplayName: "Incremental Power",
             currencyInternalName: "points",
@@ -254,7 +309,7 @@
             title: "Crafting",
             unlocked() { return hasUpgrade("m", 18) },
             description: "Unlocks the crafting layer.",
-            cost: new Decimal(5000),
+            cost: new Decimal(3000),
             currencyLocation() { return player.m },
             currencyDisplayName: "Incremental Power",
             currencyInternalName: "points",
@@ -270,6 +325,104 @@
                 player.yhvrcutscene6 = new Decimal(1)
             },
         },
+        21:
+        {
+            title: "Boost IV",
+            unlocked() { return hasUpgrade("m", 19) && player.timelayer.eq(1)},
+            description: "Boosts crafting power based on time capsules.",
+            cost: new Decimal(5500),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+            effect() 
+            {
+                 return player.c.timecapsules.div(25).pow(0.7).add(1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
+        22:
+        {
+            title: "Factor II",
+            unlocked() { return hasUpgrade("m", 21) },
+            description: "Unlocks 2 new standard path factors.",
+            cost: new Decimal(8000),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+        },
+        23:
+        {
+            title: "QoL II",
+            unlocked() { return hasUpgrade("m", 22) && player.m.ce308unlock.eq(1) },
+            description: "Unlocks more QoL upgrades.",
+            cost: new Decimal(12000),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+        },
+        24:
+        {
+            title: "Standard Path QoL I",
+            unlocked() { return hasUpgrade("m", 23) },
+            description: "Autobuys standard path prestige upgrades.",
+            cost: new Decimal(3),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
+        25:
+        {
+            title: "Standard Path QoL II",
+            unlocked() { return hasUpgrade("m", 23) },
+            description: "Gain 3% of prestige points per second. (in standard path)",
+            cost: new Decimal(5),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
+        26:
+        {
+            title: "Standard Path QoL III",
+            unlocked() { return hasUpgrade("m", 23) },
+            description: "Autobuys prestige buyables without spending (in standard path).",
+            cost: new Decimal(7),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
+        27:
+        {
+            title: "Enhance Path QoL I",
+            unlocked() { return hasUpgrade("m", 23) },
+            description: "Gain 25% of prestige points per second (in enhance path).",
+            cost: new Decimal(10),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
+        28:
+        {
+            title: "Standard Path QoL V",
+            unlocked() { return hasUpgrade("m", 23) },
+            description: "Autobuys pure energy buyables without spending.",
+            cost: new Decimal(13),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
+        29:
+        {
+            title: "Standard Path QoL VI",
+            unlocked() { return hasUpgrade("m", 23) },
+            description: "Adds another anvil slot.",
+            cost: new Decimal(17),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+            onPurchase() {
+                player.c.anvilslots = player.c.anvilslots.add(1)
+            },
+        },
     },
     buyables: {
     },
@@ -281,8 +434,7 @@
     bars: {
 
     },
-    infoboxes: {
-
+    infoboxes: { 
     },
     microtabs: {
         stuff: {
@@ -304,12 +456,19 @@
                     [
                            ["blank", "25px"],
                            ["raw-html", function () { return "<h3>Pathless Factors " }, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
-                           ["raw-html", function () { return "<h3>Best points: " + format(player.bestpoints) + " -> " + format(player.m.scorefrombestpoints) + " base score" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.superpoints.eq(0) ?"<h3>Best points: " + format(player.bestpoints) + " -> " + format(player.m.scorefrombestpoints) + " base score"  : ""}, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.superpoints.gt(0) ? "<h3>Best points: " + format(player.bestpoints) + " x " +  format(player.i.superpoints) + " -> " + format(player.m.scorefrombestpoints) + " base score" : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return hasUpgrade("m", 14) ? "<h3>Time played: " + formatTime(player.timePlayed) + " -> x" + format(player.m.scorefromtimeplayed) : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.c.celestialcells.neq(0) ? "<h3>Celestial cells: " + format(player.c.celestialcells) + " -> x" + format(player.m.scorefromcelestialcells) : "" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>Standard Path Factors " : "" }, { "color": "#ffffaa", "font-size": "24px", "font-family": "monospace" }],
-                           ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>Best prestige energy: " + format(player.i.bestprestigeenergy) + " -> x" + format(player.m.scorefrombestprestigeenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
-                           ["raw-html", function () { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) ? "<h3>Best pure energy: " + format(player.i.bestpureenergy) + " -> x" + format(player.m.scorefrombestpureenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.standardpath.eq(1) && player.i.superprestigeenergy.eq(0) ? "<h3>Best prestige energy: " + format(player.i.bestprestigeenergy) + " -> x" + format(player.m.scorefrombestprestigeenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.standardpath.eq(1) && player.i.superprestigeenergy.gt(0) ? "<h3>Best prestige energy: " + format(player.i.bestprestigeenergy) + " x " +  format(player.i.superprestigeenergy) + " -> x" + format(player.m.scorefrombestprestigeenergy): "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) && player.i.superpureenergy.eq(0) ? "<h3>Best pure energy: " + format(player.i.bestpureenergy) + " -> x" + format(player.m.scorefrombestpureenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) && player.i.superpureenergy.gt(0) ? "<h3>Best pure energy: " + format(player.i.bestpureenergy) + " x " +  format(player.i.superpureenergy) + " -> x" + format(player.m.scorefrombestpureenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) && hasUpgrade("m", 22) ? "<h3>Best booster energy: " + format(player.i.bestboosterenergy) + " -> x" + format(player.m.scorefrombestboosterenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) && hasUpgrade("m", 22) ? "<h3>Best generator energy: " + format(player.i.bestgeneratorenergy) + " -> x" + format(player.m.scorefrombestgeneratorenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) ? "<h3>Best celestial energy: " + format(player.i.bestcelestialenergy) + " -> x" + format(player.m.scorefrombestcelestialenergy) : "" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Enhance Path Factors " : "" }, { "color": "#b82fbd", "font-size": "24px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Best enhance points: " + format(player.i.bestenhancepoints) + " -> x" + format(player.m.scorefrombestenhancepoints) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
@@ -318,6 +477,8 @@
                            ["raw-html", function () { return player.boosterlayer.eq(1) ? "<h3>Incremental Power: " + format(player.m.points) + " -> x" + format(player.m.scorefromincrementalpower) : "" }, { "color": "#6e64c4", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.generatorlayer.eq(1) ? "<h3>Incremental Energy: " + format(player.m.incrementalenergy) + " -> x" + format(player.m.scorefromincrementalenergy) : "" }, { "color": "#a3d9a5", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.enhancelayer.eq(1) ? "<h3>Time spent in meta-prestige: " + formatTime(player.i.metaprestigetime) + " -> x" + format(player.m.scorefrommetaprestigetime) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.timelayer.eq(1) ? "<h3>Time capsules: " + formatWhole(player.c.timecapsules) + " -> x" + format(player.m.scorefromtimecapsules) : "" }, { "color": "#006609", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.spacelayer.eq(1) ? "<h3>Space buildings: " + formatWhole(player.c.spacebuildings) + " -> x" + format(player.m.scorefromspacebuildings) : "" }, { "color": "#dfdfdf", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            ["raw-html", function () { return "<h3>TOTAL SCORE: " + format(player.m.score) }, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
                     ]
@@ -365,7 +526,21 @@
             ["raw-html", function () { return "<h2>You have " + format(player.m.points) + " incremental power." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 16], ["upgrade", 17]]],
-                        ["row", [["upgrade", 18], ["upgrade", 19]]],
+                        ["row", [["upgrade", 18], ["upgrade", 19], ["upgrade", 21], ["upgrade", 22], ["upgrade", 23]]],
+        ]
+
+            },
+            "QoL": {
+                buttonStyle() { return { 'color': '#8a00a9' } },
+                unlocked() { return hasUpgrade("m", 23) },
+                content:
+
+                    [
+                        ["blank", "25px"],
+            ["raw-html", function () { return "<h2>You have " + formatWhole(player.c.celestialcells) + " celestial cells." }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return "<h3>(celestial cells are a crafting resource)" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
+            ["blank", "25px"],
+                        ["row", [["upgrade", 24], ["upgrade", 25], ["upgrade", 26], ["upgrade", 27], ["upgrade", 28], ["upgrade", 29]]],
         ]
 
             },
@@ -379,3 +554,4 @@
     ],
     layerShown() { return player.unlockedmetaprestige.eq(1) }
 })
+
