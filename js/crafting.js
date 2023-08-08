@@ -99,6 +99,14 @@ startData() { return {
     craftingcelestialbatteries: new Decimal(0),
     celestialbatterycraftingtime: new Decimal(0),
     celestialbatterycraftingtimereq: new Decimal(400),
+
+    //Quirk Layer
+    quirklayers: new Decimal(0),
+    quirklayerstoget: new Decimal(1),
+    quirklayercosts: [new Decimal(2), new Decimal(8), new Decimal(3)],
+    craftingquirklayers: new Decimal(0),
+    quirklayercraftingtime: new Decimal(0),
+    quirklayercraftingtimereq: new Decimal(100),
 }
 },
 update(delta) {
@@ -150,6 +158,8 @@ update(delta) {
     let craftingspeed = new Decimal(1)
     craftingspeed = new Decimal(1)
     if (hasUpgrade("m", 21)) craftingspeed = craftingspeed.mul(upgradeEffect("m", 21))
+    craftingspeed = craftingspeed.mul(buyableEffect("sb", 11))
+    craftingspeed = craftingspeed.mul(player.sg.supergeneratorpowereffect)
     if (player.c.anvilslots.gt(player.c.maxanvilslots)) player.c.anvilslots = player.c.maxanvilslots
 
     player.c.craftingspeed = craftingspeed
@@ -245,6 +255,24 @@ update(delta) {
         player.c.celestialbatterycraftingtime = new Decimal(0)
         player.c.anvilslots = player.c.anvilslots.add(1)
     }
+
+    //quirk layer
+    player.c.quirklayercosts[0] = new Decimal(2)
+    player.c.quirklayercosts[1] = new Decimal(8)
+    player.c.quirklayercosts[2] = new Decimal(3)
+    if (player.c.craftingquirklayers.eq(1))
+    {
+        player.c.quirklayercraftingtime = player.c.quirklayercraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.quirklayercraftingtimereq = new Decimal(150)
+    player.c.quirklayerstoget = new Decimal(1)
+    if (player.c.quirklayercraftingtime.gte(player.c.quirklayercraftingtimereq))
+    {
+        player.c.quirklayers = player.c.quirklayers.add(player.c.quirklayerstoget)
+        player.c.craftingquirklayers = new Decimal(0)
+        player.c.quirklayercraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+    }
 },
 clickables: {
     11: {
@@ -291,7 +319,7 @@ clickables: {
         },
     },
     17: {
-        title() { return format(player.c.scrapmetal, 0) + "<br>Scrap Metal" },
+        title() { return format(player.c.scrapmetal, 0) + "<img src='resources/scrapmetal'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
         unlocked() { return true },
         onClick() {
@@ -300,7 +328,7 @@ clickables: {
         style: { "background-color": "#ffffaa", width: '100px', "min-height": '100px' },
     },
     18: {
-        title() { return format(player.c.wires, 0) + "<br>Wires" },
+        title() { return format(player.c.wires, 0) + "<img src='resources/wires.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
         unlocked() { return true },
         onClick() {
@@ -309,7 +337,7 @@ clickables: {
         style: { "background-color": "#ffffaa", width: '100px', "min-height": '100px' },
     },
     19: {
-        title() { return format(player.c.enhancepowder, 0) + "<br>Enhance Powder" },
+        title() { return format(player.c.enhancepowder, 0) + "<img src='resources/enhancepowder'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
         unlocked() { return true },
         onClick() {
@@ -318,7 +346,7 @@ clickables: {
         style: { "background-color": "#b82fbd", width: '100px', "min-height": '100px' },
     },
     21: {
-        title() { return format(player.c.timemetal, 0) + "<br>Time Metal" },
+        title() { return format(player.c.timemetal, 0) + "<img src='resources/timemetal'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
         unlocked() { return player.crafting2cutscene.eq(0) },
         onClick() {
@@ -327,7 +355,7 @@ clickables: {
         style: { "background-color": "#006609", width: '100px', "min-height": '100px' },
     },
     22: {
-        title() { return format(player.c.spacemetal, 0) + "<br>Space Metal" },
+        title() { return format(player.c.spacemetal, 0) + "<img src='resources/spacemetal'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
         unlocked() { return player.crafting2cutscene.eq(0) },
         onClick() {
@@ -336,7 +364,7 @@ clickables: {
         style: { "background-color": "#dfdfdf", width: '100px', "min-height": '100px' },
     },
     23: {
-        title() { return format(player.c.celestialbatteries, 0) + "<br>Celestial Battery" },
+        title() { return format(player.c.celestialbatteries, 0) + "<img src='resources/celestialbattery'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
         unlocked() { return player.crafting2cutscene.eq(0) },
         onClick() {
@@ -427,7 +455,7 @@ clickables: {
         },
     },
     29: {
-        title() { return format(player.c.timecapsules, 0) + "<br>Time Capsule" },
+        title() { return format(player.c.timecapsules, 0) + "<img src='resources/timecapsule'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
         unlocked() { return player.timelayer.eq(1) },
         onClick() {
@@ -491,7 +519,7 @@ clickables: {
         },
     },
     34: {
-        title() { return format(player.c.spacebuildings, 0) + "<br>Space Building" },
+        title() { return format(player.c.spacebuildings, 0) + "<img src='resources/spacebuilding'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
         unlocked() { return player.spacecutscene.eq(0) },
         onClick() {
@@ -575,6 +603,45 @@ clickables: {
             player.c.currentresourcedisplay = new Decimal(4)
         },
         style: { "background-color": "#72a4d4", width: '100px', "min-height": '100px' },
+    },
+    41: {
+        title() { return format(player.c.quirklayers, 0) + "<img src='resources/quirklayer'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return player.quirkenergycutscene.eq(0) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(6)
+        },
+        style: { "background-color": "#c20282", width: '100px', "min-height": '100px' },
+    },
+    42: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingquirklayers.eq(0) && player.c.spacemetal.gte(player.c.quirklayercosts[0]) && player.c.enhancepowder.gte(player.c.quirklayercosts[1]) && player.c.celestialcells.gte(player.c.quirklayercosts[2]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) },
+        onClick() {
+            player.c.craftingquirklayers = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.spacemetal = player.c.spacemetal.sub(player.c.quirklayercosts[0])
+            player.c.enhancepowder = player.c.enhancepowder.sub(player.c.quirklayercosts[1])
+            player.c.celestialcells = player.c.celestialcells.sub(player.c.quirklayercosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    43: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingquirklayers.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) },
+        onClick() {
+            
+            player.c.quirklayercraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingquirklayers = new Decimal(0)
+
+            player.c.spacemetal = player.c.spacemetal.add(player.c.quirklayercosts[0])
+            player.c.enhancepowder = player.c.enhancepowder.add(player.c.quirklayercosts[1])
+            player.c.celestialcells = player.c.celestialcells.add(player.c.quirklayercosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
     },
 },
 upgrades: {
@@ -660,6 +727,21 @@ bars: {
         },
         display() {
             return "<h5>" + format(player.c.celestialbatterycraftingtime) + "/" + format(player.c.celestialbatterycraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
+    quirklayerbar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.quirklayercraftingtime.div(player.c.quirklayercraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.quirklayercraftingtime) + "/" + format(player.c.quirklayercraftingtimereq) + " crafting power<h5></h5>";
         },
     },
 },
@@ -802,6 +884,7 @@ content:
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h2>You have " + formatWhole(player.c.timecapsules) + "<h2> time capsules (+" + formatWhole(player.c.timecapsulestoget) + ")<br><h5>(Check time layer on prestige tree for details)": "" }, { "color": "#006609", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) ? "<h2>You have " + formatWhole(player.c.spacebuildings) + "<h2> space buildings (+" + formatWhole(player.c.spacebuildingstoget) + ")<br><h5>(Check space layer on prestige tree for details)": "" }, { "color": "#dfdfdf", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h2>You have " + formatWhole(player.c.celestialbatteries) + "<h2> celestial batteries (+" + formatWhole(player.c.spacebuildingstoget) + ")<br><h5>(Buy the standard path upgrade to unlock the celestial)": "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h2>You have " + formatWhole(player.c.quirklayers) + "<h2> quirk layers (+" + formatWhole(player.c.quirklayerstoget) + ")<br><h5>(Check the quirk layers in the celestial tab)": "" }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
             ["blank", "25px"],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h4>" + formatWhole(player.c.timemetalcosts[0]) + " scrap metal (you have " + formatWhole(player.c.scrapmetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
@@ -825,6 +908,10 @@ content:
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[4]) + " space metal (you have " + formatWhole(player.c.spacemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[5]) + " time capsules (you have " + formatWhole(player.c.timecapsules) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h4>" + formatWhole(player.c.celestialbatterycosts[6]) + " space buildings (you have " + formatWhole(player.c.spacebuildings) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h4>" + formatWhole(player.c.quirklayercosts[0]) + " space metal (you have " + formatWhole(player.c.spacemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h4>" + formatWhole(player.c.quirklayercosts[1]) + " enhance powder (you have " + formatWhole(player.c.enhancepowder) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h4>" + formatWhole(player.c.quirklayercosts[2]) + " celestial cells (you have " + formatWhole(player.c.celestialcells) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["blank", "25px"],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimemetal.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimemetal.eq(1) && player.c.currentcraftingdisplay.eq(1) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
@@ -836,20 +923,24 @@ content:
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingspacebuildings.eq(1) && player.c.currentcraftingdisplay.eq(5) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingcelestialbatteries.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingcelestialbatteries.eq(1) && player.c.currentcraftingdisplay.eq(3) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingquirklayers.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingquirklayers.eq(1) && player.c.currentcraftingdisplay.eq(6) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["blank", "25px"],
             ["row", [["clickable", 24], ["clickable", 25]]],
             ["row", [["clickable", 26], ["clickable", 27]]],
             ["row", [["clickable", 31], ["clickable", 32]]],
             ["row", [["clickable", 35], ["clickable", 36]]],
             ["row", [["clickable", 37], ["clickable", 38]]],
+            ["row", [["clickable", 42], ["clickable", 43]]],
             ["blank", "25px"],
             ["bar", "timemetalbar"],
             ["bar", "spacemetalbar"],
             ["bar", "timecapsulebar"],
             ["bar", "spacebuildingbar"],
             ["bar", "celestialbatterybar"],
+            ["bar", "quirklayerbar"],
             ["blank", "25px"],
-            ["row", [["clickable", 21], ["clickable", 29], ["clickable", 22], ["clickable", 34], ["clickable", 23]]],
+            ["row", [["clickable", 21], ["clickable", 29], ["clickable", 22], ["clickable", 34], ["clickable", 23], ["clickable", 41]]],
             ["blank", "25px"],          
             ["row", [["clickable", 28], ["infobox", "jacorblog16"], ["infobox", "timemetal"]]],
             ["row", [["clickable", 33], ["infobox", "jacorblog14"], ["infobox", "spacemetal"]]],

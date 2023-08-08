@@ -635,3 +635,174 @@ tabFormat: [
 ],
 layerShown() { return player.spacelayer.eq(1) }
 })
+addLayer("sb", {
+    name: "Super Booster", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "SB", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Super Booster", // Row the layer is in on the tree (0 is the first row)
+branches: ["bo"],
+color: "#504899",
+update(delta) {
+
+},
+clickables: {
+},
+upgrades: {
+},
+buyables: {
+    11: {
+        cost(x) { return new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(1000) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.04).add(1) },
+        unlocked() { return true },
+        canAfford() { return player.m.points.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Super Booster"
+        },
+        tooltip() {
+            return "<h5>Ah yes, the super-layers. Jacorb and Aarex placed them in as reinforcement. But the more forgettable layers..."
+        },
+        display() {
+            return "which are multiplying crafting power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Incremental Power"
+        },
+        buy() {
+            let base = new Decimal(1000)
+            let growth = 1.5
+            let max = Decimal.affordGeometricSeries(player.m.points, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.m.points = player.m.points.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "#504899", }
+    },
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+    jacorblog20: {
+        unlocked() { return player.spacecutscene.eq(0) },
+        title: "Log XX",
+        body() { return "Log XX: Our base has been raided by a secret attack. Now the death realm has our documents about the ???????? ????? and the ??????????? ??????. This is really bad. If the death realm wants to enter the ???????? ?????, they must pass through the void. I don't think they've seen it yet. Me and Aarex are now working overtime. My health has improved and so has my motivation to work." },         
+    },
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#504899' } },
+unlocked() { return player.superboosterlayer.eq(1) },
+content:
+
+    [
+        ["blank", "25px"],
+        ["raw-html", function () { return "<h2>Incremental Power: " + format(player.m.points)  }, { "color": "#504899", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["buyable", 11]]],
+        ["blank", "25px"],
+        ["infobox", "jacorblog20"],
+    ]
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+//["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.superboosterlayer.eq(1) }
+})
+addLayer("sg", {
+    name: "Super Generator", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "SG", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Super Generator", // Row the layer is in on the tree (0 is the first row)
+branches: ["ge"],
+color: "#248239",
+startData() { return {
+    unlocked: true,
+    supergeneratorpower: new Decimal(0),
+    supergeneratorpowereffect: new Decimal(0),
+    supergeneratorpowerpersecond: new Decimal(0),
+}
+},
+update(delta) {
+    player.sg.supergeneratorpowerpersecond = buyableEffect("i", 11)
+    player.sg.supergeneratorpower = player.sg.supergeneratorpower.add(player.sg.supergeneratorpowerpersecond.mul(delta))
+    player.sg.supergeneratorpowereffect = player.sg.supergeneratorpower.div(1e7).pow(0.2).add(1)
+},
+clickables: {
+},
+upgrades: {
+},
+buyables: {
+    11: {
+        cost(x) { return new Decimal(1.25).pow(x || getBuyableAmount(this.layer, this.id)).mul(1000) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.5) },
+        unlocked() { return true },
+        canAfford() { return player.m.points.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Super Generator"
+        },
+        tooltip() {
+            return "<h5>Suprised some of them still remained in the rewrite. The classic tree was much weaker."
+        },
+        display() {
+            return "which are producing +" + format(tmp[this.layer].buyables[this.id].effect) + " super generator power per second.\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Incremental Power"
+        },
+        buy() {
+            let base = new Decimal(1000)
+            let growth = 1.25
+            let max = Decimal.affordGeometricSeries(player.m.points, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.m.points = player.m.points.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "#248239", }
+    },
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#248239' } },
+unlocked() { return player.superboosterlayer.eq(1) },
+content:
+
+    [
+        ["blank", "25px"],
+        ["raw-html", function () { return "<h2>Incremental Power: " + format(player.m.points) }, { "color": "#248239", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["buyable", 11]]],
+        ["blank", "25px"],
+        ["raw-html", function () { return "<h2>You have " + format(player.sg.supergeneratorpower) + " super generator power, which boosts crafting power by x" + format(player.sg.supergeneratorpowereffect) + "."  }, { "color": "#248239", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return "<h3>(Super generator power resets on meta-prestige)"  }, { "color": "#248239", "font-size": "18px", "font-family": "monospace" }],
+    ]
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+//["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.supergeneratorlayer.eq(1) }
+})

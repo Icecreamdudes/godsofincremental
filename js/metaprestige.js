@@ -1,5 +1,5 @@
 ﻿var prestigetree = [["pr"],
-["bo", "ge"], ["ti", "en", "sp"]]
+["bo", "ge"], ["sb", "ti", "en", "sp", "sg"]]
           
           addLayer("m", {
     name: "Meta-Prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -60,9 +60,17 @@
         if (player.m.craftingunlock.eq(1) && hasUpgrade("i", 27))
         {
             player.c.celestialcells = player.c.celestialcells.add(player.c.celestialcellstoget)
+            createLightning();
+            createLightning();
+            createLightning();
+            createLightning();
+            createLightning();
+            createLightning();
+            createLightning();
         }
         player.ti.timeenergy = new Decimal(0)
         player.sp.space = new Decimal(0)
+        player.sg.supergeneratorpower = new Decimal(0)
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
     resource: "Incremental Power", // Name of prestige currency
@@ -129,7 +137,7 @@
 
         //pathless factors
         if (!hasUpgrade("m", 14)) player.m.scorefromtimeplayed = new Decimal(1)
-        if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed))
+        if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed + 5000))
 
         if (player.c.celestialcells.eq(0)) player.m.scorefromtimeplayed = new Decimal(1)
         if (player.c.celestialcells.neq(0)) player.m.scorefromcelestialcells = player.c.celestialcells.mul(0.015).pow(0.8).add(1)
@@ -412,7 +420,7 @@
         },
         29:
         {
-            title: "Standard Path QoL VI",
+            title: "Crafting QoL I",
             unlocked() { return hasUpgrade("m", 23) },
             description: "Adds another anvil slot.",
             cost: new Decimal(17),

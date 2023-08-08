@@ -55,6 +55,7 @@ function getPointGen() {
 	if (player.i.currentenergizer.eq(3)) gain = gain.mul(100000)
 	if (player.i.enhancepath.eq(1)) gain = gain.mul(player.i.enhancepointseffect)
 	if (player.i.standardpath.eq(1)) gain = gain.mul(player.i.superpointseffect)
+	gain = gain.mul(player.i.quirkenergyeffect)
 	player.gain = gain
 	return gain
 }
@@ -105,6 +106,8 @@ function addedPlayerData() {
 		ce308scene: new Decimal(0),
 		ce308unlockcutscene: new Decimal(1),
 		ce308unlockscene: new Decimal(0),
+		quirkenergycutscene: new Decimal(1),
+		quirkenergyscene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),
@@ -123,6 +126,7 @@ function addedPlayerData() {
 		timelayer: new Decimal(0),
 		spacelayer: new Decimal(0),
 		superboosterlayer: new Decimal(0),
+		supergeneratorlayer: new Decimal(0),
 	}
 }
 

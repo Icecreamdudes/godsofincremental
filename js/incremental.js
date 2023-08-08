@@ -73,6 +73,11 @@
         celestialenergytoget: new Decimal(0),
         celestialenergyeffect: new Decimal(0),
 
+        //Standard Path Quirks
+        quirkenergy: new Decimal(0),
+        quirkenergytoget: new Decimal(0),
+        quirklayereffect: new Decimal(1),
+
         //ENHANCE PATH
         enhancepath: new Decimal(0),
         bestenhancepoints: new Decimal(0),
@@ -323,12 +328,15 @@
 
         player.i.superpointstoget = player.points.pow(0.085)
         player.i.superpointseffect = player.i.superpoints.pow(0.4).add(1)
+        if (hasUpgrade("i", 34)) player.i.superpoints = player.i.superpoints.add(player.i.superpointstoget.mul(0.25).mul(delta))
 
         player.i.superprestigeenergytoget = player.i.prestigeenergy.pow(0.2)
         player.i.superprestigeenergyeffect = player.i.superprestigeenergy.pow(0.5).add(1)
+        if (hasUpgrade("i", 34)) player.i.superprestigeenergy = player.i.superprestigeenergy.add(player.i.superprestigeenergytoget.mul(0.25).mul(delta))
 
         player.i.superpureenergytoget = player.i.pureenergy.pow(0.12)
         player.i.superpureenergyeffect = player.i.superpureenergy.pow(0.35).add(1)
+        if (hasUpgrade("i", 34)) player.i.superpureenergy = player.i.superpureenergy.add(player.i.superpureenergytoget.mul(0.25).mul(delta))
 
         if (player.ce308scene.eq(44)) {
             player.ce308cutscene = new Decimal(0)
@@ -385,6 +393,9 @@
         }
         
         player.i.celestialenergytoget = player.i.pureenergy.div(1e6).pow(0.16)
+        player.i.celestialenergytoget = player.i.celestialenergytoget.mul(buyableEffect("i", 24))
+        if (hasUpgrade("i", 32)) player.i.celestialenergytoget = player.i.celestialenergytoget.mul(upgradeEffect("i", 32))
+
         player.i.celestialenergyeffect = player.i.celestialenergy.pow(1.8).add(1)
 
         if (player.i.celestialenergypause.gt(0)) {
@@ -392,6 +403,21 @@
         }
         player.i.celestialenergypause = player.i.celestialenergypause.sub(1)
         if (player.i.celestialenergy.gte(player.i.bestcelestialenergy)) player.i.bestcelestialenergy = player.i.celestialenergy
+
+        if (player.quirkenergyscene.eq(15)) {
+            player.quirkenergycutscene = new Decimal(0)
+            player.ince308cutscene = new Decimal(0)
+        }
+        if (player.quirkenergyscene.gt(0) && player.quirkenergycutscene.eq(1))
+        {
+            player.ince308cutscene = new Decimal(1)
+        }
+
+        player.i.quirkenergypersecond = player.c.quirklayers.pow(1.75)
+        player.i.quirkenergypersecond = player.i.quirkenergypersecond.mul(buyableEffect("i", 25))
+
+        player.i.quirkenergy = player.i.quirkenergy.add(player.i.quirkenergypersecond.mul(delta))
+        player.i.quirkenergyeffect = player.i.quirkenergy.pow(1.4).add(1)
 
         //END OF STANDARD PATH
 
@@ -402,7 +428,7 @@
         player.i.enhancepoints = player.i.enhancepoints.add(player.i.enhancepointspersecond.mul(delta))
         player.i.enhancepointseffect = player.i.enhancepoints.pow(0.5).add(1)
 
-        player.i.enhancepointspersecond = player.i.enhancedprestigepoints.div(1e7).pow(0.25)
+        player.i.enhancepointspersecond = player.i.enhancedprestigepoints.div(3e6).pow(0.25)
         player.i.enhancedprestigepoints = player.i.enhancedprestigepoints.sub(enhanceloss.mul(delta))
 
         if (player.i.enhancepoints.gte(player.i.bestenhancepoints)) player.i.bestenhancepoints = player.i.enhancepoints
@@ -478,11 +504,13 @@
     celestialenergyreset()
     {
         if (player.i.standardpath.eq(1)) {
+        if (!hasUpgrade("i", 33)) {
         for (let i = 0; i < player.i.upgrades.length; i++) {
             if (+player.i.upgrades[i] < 27) {
                 player.i.upgrades.splice(i, 1);
                 i--;
             }
+        }
         }
         player.points = new Decimal(1)
         player.i.prestigeenergy = new Decimal(0)
@@ -510,8 +538,11 @@
         player.i.machineautomode = new Decimal(0)
 
         //ENERGIZERS
+        if (!hasUpgrade("i", 31))
+        {
         player.i.nextenergizer = new Decimal(0)
         player.i.currentenergizer = new Decimal(0)
+        }
 
         //Super
         player.i.superpoints = new Decimal(0)
@@ -907,7 +938,7 @@
         },
         46: {
             title() { return "<h3>Superify your points." },
-            canClick() { return player.i.standardpath.eq(1) && player.i.superpointstoget.gte(1) },
+            canClick() { return player.i.standardpath.eq(1) && player.i.superpointstoget.gte(1) && hasUpgrade("i", 24) },
             unlocked() { return player.superifiercutscene.eq(0) },
             onClick() {
                 player.i.pureenergypause = new Decimal(3)
@@ -1021,6 +1052,72 @@ opacity: "0.9",
             unlocked() { return hasUpgrade("i", 28) && player.i.standardpath.eq(1) },
             onClick() {
                 player.i.nextenergizer = new Decimal(4)
+            },
+        },
+        58: {
+            title() { return "<h2>Layer 7: Super Booster <br><h3>Req: 1e11 booster energy, 500,000 super points." },
+            canClick() { return player.i.boosterenergy.gte(1e11) && player.i.superpoints.gte(500000) },
+            unlocked() { return hasUpgrade("i", 27) && player.superboosterlayer.eq(0) },
+            onClick() {
+                player.superboosterlayer = new Decimal(1)
+                // Particle effect
+                alert("Ah, how are you doing with the celestial?")
+                alert("You know, I am the only one who can speak to you.")
+                alert("Oh yeah. Super boosters.")
+                alert("One of the more forgettable layers.")
+                alert("Well whatever. At least you're not dead...")
+                createParticles();
+                createParticles();
+                createParticles();
+            },
+            style: {   background: '#504899',
+            width: '275px', height: '150px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #504899',
+            textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+            },
+        },
+        59: {
+            title() { return "<h2>Layer 8: Super Generator <br><h3>Req: 3e11 generator energy, 8 time capsules, 4 space buildings." },
+            canClick() { return player.i.generatorenergy.gte(3e11) && player.c.timecapsules.gte(8) && player.c.spacebuildings.gte(4) },
+            unlocked() { return hasUpgrade("i", 27) && player.superboosterlayer.eq(1) && player.supergeneratorlayer.eq(0) },
+            onClick() {
+                player.supergeneratorlayer = new Decimal(1)
+                // Particle effect
+                alert("So, you are now 25% done with the prestige tree!")
+                alert("See, it really does go by quick.")
+                alert("75% more, and you are done, and you can free us all.")
+                alert("Well, this layer is like the most forgotten.")
+                alert("Whatever. At least it's not like hyper-boosters, super prestige, or life essence.")
+                createParticles();
+                createParticles();
+                createParticles();
+            },
+            style: {   background: '#248239',
+            width: '275px', height: '150px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #248239',
+            textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+            },
+        },
+        61: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.quirkenergycutscene.eq(1) },
+            unlocked() { return player.quirkenergyscene.lt(15) },
+            onClick() {
+                player.quirkenergyscene = player.quirkenergyscene.add(1)
+            },
+        },
+        62: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.quirkenergycutscene.eq(1) },
+            unlocked() { return player.quirkenergyscene.lt(15) && player.quirkenergyscene.neq(0) },
+            onClick() {
+                player.quirkenergyscene = player.quirkenergyscene.sub(1)
             },
         },
         //ENHANCE PATH
@@ -1354,6 +1451,77 @@ opacity: "0.9",
             unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 27) },
             description: "Unlocks a new energizer.",
             cost: new Decimal(4),
+            canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Celestial Energy",
+            currencyInternalName: "celestialenergy",
+        },
+        29:
+        {
+            title: "Pseudo-Celestial Upgrade II",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 28) },
+            description: "Unlocks quirk energy.",
+            cost: new Decimal(28),
+            canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Celestial Energy",
+            currencyInternalName: "celestialenergy",
+        },
+        31:
+        {
+            title: "Pseudo-Celestial Upgrade III",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 29) },
+            description: "You don't reset energizers on celestial reset.",
+            cost: new Decimal(340),
+            canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Celestial Energy",
+            currencyInternalName: "celestialenergy",
+        },
+        32:
+        {
+            title: "Pseudo-Celestial Upgrade IV",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 31) },
+            description: "Celestial energy boosts it's own gain.",
+            cost: new Decimal(999),
+            canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Celestial Energy",
+            currencyInternalName: "celestialenergy",
+            effect() 
+            {
+                 return player.i.celestialenergy.pow(0.2).add(1)
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) }, // Add formatting to the effect
+        },
+        33:
+        {
+            title: "Pseudo-Celestial Upgrade V",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 32) },
+            description: "Keep pure energy upgrades on reset.",
+            cost: new Decimal(4444),
+            canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Celestial Energy",
+            currencyInternalName: "celestialenergy",
+        },
+        34:
+        {
+            title: "Pseudo-Celestial Upgrade VI",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 33) },
+            description: "Gain 25% of super resources every second.",
+            cost: new Decimal(33333),
+            canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Celestial Energy",
+            currencyInternalName: "celestialenergy",
+        },
+        35:
+        {
+            title: "Pseudo-Celestial Upgrade VII",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 34) },
+            description: "Unlocks celestial tasks.",
+            cost: new Decimal(100000),
             canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
             currencyLocation() { return player.i },
             currencyDisplayName: "Celestial Energy",
@@ -1708,7 +1876,7 @@ opacity: "0.9",
                 return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Enhancers"
             },
             tooltip() {
-                return "<h5>Enchance points. A crude form of jacorbian energy."
+                return "<h5>Enhance points. A crude form of jacorbian energy."
             },
             display() {
                 return "which are boosting prestige points and pure, prestige, generator, and booster energy by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
@@ -1723,6 +1891,56 @@ opacity: "0.9",
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#b82fbd",}
+        },
+        24: {
+            cost(x) { return new Decimal(1.3).pow(x || getBuyableAmount(this.layer, this.id)).mul(100) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.4).pow(0.6).add(1)},
+            unlocked() { return player.quirkenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.quirkenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Celestial Amplifier"
+            },
+            tooltip() {
+                return "<h5>The power of quirks can be found within the cells of celestials."
+            },
+            display() {
+                return "which are boosting celestial energy by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Quirk Energy"
+            },
+            buy() {
+                let base = new Decimal(100)
+                let growth = 1.3
+                let max = Decimal.affordGeometricSeries(player.i.quirkenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.quirkenergy = player.i.quirkenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#c20282",}
+        },
+        25: {
+            cost(x) { return new Decimal(1.25).pow(x || getBuyableAmount(this.layer, this.id)).mul(25) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.5).pow(0.65).add(1)},
+            unlocked() { return player.quirkenergycutscene.eq(0) && (player.i.standardpath.eq(1)) && hasUpgrade("i", 31) },
+            canAfford() { return player.i.celestialenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Quirk Booster"
+            },
+            tooltip() {
+                return "<h5>Despite this, it's still hard to study them. Only a certain group of people know their properties."
+            },
+            display() {
+                return "which are boosting quirk energy by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Celestial Energy"
+            },
+            buy() {
+                let base = new Decimal(25)
+                let growth = 1.25
+                let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', 'color': 'white', 'border-color': 'blue', 'background-image': 'radial-gradient(circle, rgba(16,15,16,1) 0%, rgba(8,0,255,1) 0%, rgba(0,0,0,1) 100%)', animation: "gradient 1s infinite", }
         },
 
         //ENHANCE PATH
@@ -2200,6 +2418,9 @@ opacity: "0.9",
                         ["raw-html", function () { return player.superifiercutscene.eq(0) && hasUpgrade("i", 26) ? "<h3>You have " + format(player.i.superpureenergy) + "<h3> super pure energy, which boost pure energy gain by x" + format(player.i.superpureenergyeffect) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["row", [["raw-html", function () { return player.superifiercutscene.eq(0) && hasUpgrade("i", 26) ? "<h3>" + format(player.i.pureenergy) + " pure energy" + " -> " + format(player.i.superpureenergytoget) + " super pure energy" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }], ["blank", "25px"], ["clickable", 48]]],
                         ["row", [["raw-html", function () { return player.superifiercutscene.eq(0) && hasUpgrade("i", 26) ? "<h5>(Resets pure energy amount)" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }], ["blank", "25px"]]],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 58]]],
+                        ["row", [["clickable", 59]]],
                     ]
             },
         },
@@ -2308,7 +2529,47 @@ opacity: "0.9",
                         ["blank", "25px"],
                         ["row", [["clickable", 56]]],
                         ["blank", "25px"],
-                        ["row", [["upgrade", 28]]],
+                        ["row", [["upgrade", 28], ["upgrade", 29], ["upgrade", 31], ["upgrade", 32], ["upgrade", 33], ["upgrade", 34]]],
+                        ["row", [["upgrade", 35]]],
+                    ]
+            },
+            "Quirk Energy": {
+                buttonStyle() { return { 'border-color': 'purple', 'background-color': '#c20282', "color": 'black' } },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 29) },
+                content:
+                    [
+                        ["raw-html", function () { return player.quirkenergyscene.eq(1) ? "<h1>Ah yes! Quirks!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(2) ? "<h1>Artis and Sitra have been wanting to study these for a while." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(3) ? "<h1>The dissapearence of the prestige tree has really shifted things." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(4) ? "<h1>Quirks are the building blocks of the fantastical elements of this multiverse." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(5) ? "<h1>Magic. Fictional beings. Monsters. All of fiction is dependent on quirks." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(6) ? "<h1>Yes there are other things that make fiction, but quirks says the most." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(7) ? "<h1>After you finish this path, The enhance path will be waiting for you!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(8) ? "<h1>Don't worry, I won't die! Just keep giving me pure energy and I'm immortal!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(9) ? "<h1>Anyways, quirks are really important to understanding this universe." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(10) ? "<h1>Jacorb was a genius when he added them to the tree." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(11) ? "<h1>But since the tree's gone, theres only one place with them." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(12) ? "<h1>Most of the information is locked in M*** S*****, but us celestials are exiled from there." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(13) ? "<h1>Hey! Why can't I use that phrase? Am I being programed so?" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergyscene.eq(14) ? "<h1>And even more strange, HOW DO I KNOW ALL OF THESE INFORMATION????" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergycutscene.eq(0) ? "<h3>This feature is heavily dependent on crafting. Check crafting for details." : ""}, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 62], ["clickable", 61]]],
+                        ["raw-html", function () { return player.quirkenergycutscene.eq(0) ? "<h2>You have " + formatWhole(player.c.quirklayers) + "<h2> quirk layers. " : "" }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergycutscene.eq(0) ? "<h3>which are producing " + format(player.i.quirkenergypersecond) + "<h3> quirk energy per second. " : ""  }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.quirkenergycutscene.eq(0) ? "<h2>You have " + format(player.i.quirkenergy) + "<h2> quirk energy. " : ""  }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.quirkenergycutscene.eq(0) ? "<h3>which gives a x" + format(player.i.quirkenergyeffect) + " boost to points. " : ""  }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["buyable", 24], ["buyable", 25]]],
+                    ]
+            },
+            "Tasks": {
+                buttonStyle() { return { 'border-color': 'yellow', 'background-color': '#ffffaa', "color": 'black' } },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 35) },
+                content:
+                    [
+   
                     ]
             },
         },
