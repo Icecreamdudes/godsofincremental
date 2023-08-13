@@ -107,6 +107,14 @@ startData() { return {
     craftingquirklayers: new Decimal(0),
     quirklayercraftingtime: new Decimal(0),
     quirklayercraftingtimereq: new Decimal(100),
+
+    //Quirk Star
+    quirkstars: new Decimal(0),
+    quirkstarstoget: new Decimal(1),
+    quirkstarcosts: [new Decimal(2), new Decimal(4), new Decimal(5)],
+    craftingquirkstars: new Decimal(0),
+    quirkstarcraftingtime: new Decimal(0),
+    quirkstarcraftingtimereq: new Decimal(220),
 }
 },
 update(delta) {
@@ -138,7 +146,7 @@ update(delta) {
     {
         player.c.scrapmetalcancel = new Decimal(0)
     }
-    player.c.scrapmetaltoget = player.i.prestigemachines.pow(0.4).mul(player.c.scrapmetalcancel).floor()
+    player.c.scrapmetaltoget = player.i.prestigemachines.pow(0.4).mul(2).mul(player.c.scrapmetalcancel).floor()
 
     if (player.i.prestigemachines.gt(0))
     {
@@ -172,6 +180,7 @@ update(delta) {
         player.c.timemetalcraftingtime = player.c.timemetalcraftingtime.add(player.c.craftingspeed.mul(delta))
     }
     player.c.timemetalcraftingtimereq = new Decimal(20)
+    if (hasUpgrade("m", 32)) player.c.timemetalcraftingtimereq = new Decimal(12)
     player.c.timemetaltoget = new Decimal(1)
     if (player.c.timemetalcraftingtime.gte(player.c.timemetalcraftingtimereq))
     {
@@ -189,6 +198,7 @@ update(delta) {
         player.c.spacemetalcraftingtime = player.c.spacemetalcraftingtime.add(player.c.craftingspeed.mul(delta))
     }
     player.c.spacemetalcraftingtimereq = new Decimal(25)
+    if (hasUpgrade("m", 32)) player.c.spacemetalcraftingtimereq = new Decimal(16)
     player.c.spacemetaltoget = new Decimal(1)
     if (player.c.spacemetalcraftingtime.gte(player.c.spacemetalcraftingtimereq))
     {
@@ -207,6 +217,7 @@ update(delta) {
         player.c.timecapsulecraftingtime = player.c.timecapsulecraftingtime.add(player.c.craftingspeed.mul(delta))
     }
     player.c.timecapsulecraftingtimereq = new Decimal(80)
+    if (hasUpgrade("m", 33)) player.c.timecapsulecraftingtimereq = new Decimal(50)
     player.c.timecapsulestoget = new Decimal(1)
     if (player.c.timecapsulecraftingtime.gte(player.c.timecapsulecraftingtimereq))
     {
@@ -225,6 +236,7 @@ update(delta) {
         player.c.spacebuildingcraftingtime = player.c.spacebuildingcraftingtime.add(player.c.craftingspeed.mul(delta))
     }
     player.c.spacebuildingcraftingtimereq = new Decimal(150)
+    if (hasUpgrade("m", 33)) player.c.spacebuildingcraftingtimereq = new Decimal(80)
     player.c.spacebuildingstoget = new Decimal(1)
     if (player.c.spacebuildingcraftingtime.gte(player.c.spacebuildingcraftingtimereq))
     {
@@ -271,6 +283,24 @@ update(delta) {
         player.c.quirklayers = player.c.quirklayers.add(player.c.quirklayerstoget)
         player.c.craftingquirklayers = new Decimal(0)
         player.c.quirklayercraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+    }
+
+    //quirk star
+    player.c.quirkstarcosts[0] = new Decimal(2)
+    player.c.quirkstarcosts[1] = new Decimal(4)
+    player.c.quirkstarcosts[2] = new Decimal(5)
+    if (player.c.craftingquirkstars.eq(1))
+    {
+        player.c.quirkstarcraftingtime = player.c.quirkstarcraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.quirkstarcraftingtimereq = new Decimal(220)
+    player.c.quirkstarstoget = new Decimal(1)
+    if (player.c.quirkstarcraftingtime.gte(player.c.quirkstarcraftingtimereq))
+    {
+        player.c.quirkstars = player.c.quirkstars.add(player.c.quirkstarstoget)
+        player.c.craftingquirkstars = new Decimal(0)
+        player.c.quirkstarcraftingtime = new Decimal(0)
         player.c.anvilslots = player.c.anvilslots.add(1)
     }
 },
@@ -596,7 +626,7 @@ clickables: {
         style: { width: '150px', "min-height": '100px' },
     },
     39: {
-        title() { return format(player.c.celestialcells, 0) + "<br>Celestial Cells" },
+        title() { return format(player.c.celestialcells, 0)  + "<img src='resources/celestialcell'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
         unlocked() { return player.m.ce308unlock.eq(1) },
         onClick() {
@@ -640,6 +670,45 @@ clickables: {
             player.c.spacemetal = player.c.spacemetal.add(player.c.quirklayercosts[0])
             player.c.enhancepowder = player.c.enhancepowder.add(player.c.quirklayercosts[1])
             player.c.celestialcells = player.c.celestialcells.add(player.c.quirklayercosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    44: {
+        title() { return format(player.c.quirkstars, 0) + "<img src='resources/quirkstar'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return player.quirklayer.eq(1) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(7)
+        },
+        style: { "background-color": "#c20282", width: '100px', "min-height": '100px' },
+    },
+    45: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingquirkstars.eq(0) && player.c.quirklayers.gte(player.c.quirkstarcosts[0]) && player.c.timemetal.gte(player.c.quirkstarcosts[1]) && player.c.celestialcells.gte(player.c.quirkstarcosts[2]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(7) },
+        onClick() {
+            player.c.craftingquirkstars = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.quirklayers = player.c.quirklayers.sub(player.c.quirkstarcosts[0])
+            player.c.timemetal = player.c.timemetal.sub(player.c.quirkstarcosts[1])
+            player.c.celestialcells = player.c.celestialcells.sub(player.c.quirkstarcosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    46: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingquirkstars.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(7) },
+        onClick() {
+            
+            player.c.quirkstarcraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingquirkstars = new Decimal(0)
+
+            player.c.quirklayers = player.c.quirklayers.add(player.c.quirkstarcosts[0])
+            player.c.timemetal = player.c.timemetal.add(player.c.quirkstarcosts[1])
+            player.c.celestialcells = player.c.celestialcells.add(player.c.quirkstarcosts[2])
         },
         style: { width: '150px', "min-height": '100px' },
     },
@@ -744,6 +813,21 @@ bars: {
             return "<h5>" + format(player.c.quirklayercraftingtime) + "/" + format(player.c.quirklayercraftingtimereq) + " crafting power<h5></h5>";
         },
     },
+    quirkstarbar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(7) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.quirkstarcraftingtime.div(player.c.quirkstarcraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.quirkstarcraftingtime) + "/" + format(player.c.quirkstarcraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
 },
 infoboxes: {
     scrapmetal: {
@@ -800,6 +884,16 @@ infoboxes: {
         unlocked() { return player.c.currentresourcedisplay.eq(4) },
         title: "Item Description",
         body() { return "Celestials are made out of these cells. Hevipelle designed it to be durable and regenerative. Has strange manipulative properties to incremental power. Can also improve quality of life. About the size of an apple. Really shows the true size of celestials..." },         
+    }, 
+    quirklayer: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(6) },
+        title: "Item Description",
+        body() { return "Quirk layers are made out of many quirks that form folds on top of each other. They produce quirk energy. It's state of matter is unknown, as it seems to clip through solid objects and float on air, whilst taking up no mass." },         
+    }, 
+    quirkstar: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(7) },
+        title: "Item Description",
+        body() { return "Quirk stars are made out of quirk layers and other materials. They are more powerful than quirk layers, as they generate quirk radiation which produces quirk energy. Sitra was the first to design such technology." },         
     }, 
 },
 microtabs: {
@@ -884,7 +978,8 @@ content:
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h2>You have " + formatWhole(player.c.timecapsules) + "<h2> time capsules (+" + formatWhole(player.c.timecapsulestoget) + ")<br><h5>(Check time layer on prestige tree for details)": "" }, { "color": "#006609", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(5) ? "<h2>You have " + formatWhole(player.c.spacebuildings) + "<h2> space buildings (+" + formatWhole(player.c.spacebuildingstoget) + ")<br><h5>(Check space layer on prestige tree for details)": "" }, { "color": "#dfdfdf", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h2>You have " + formatWhole(player.c.celestialbatteries) + "<h2> celestial batteries (+" + formatWhole(player.c.spacebuildingstoget) + ")<br><h5>(Buy the standard path upgrade to unlock the celestial)": "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h2>You have " + formatWhole(player.c.quirklayers) + "<h2> quirk layers (+" + formatWhole(player.c.quirklayerstoget) + ")<br><h5>(Check the quirk layers in the celestial tab)": "" }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h2>You have " + formatWhole(player.c.quirklayers) + "<h2> quirk layers (+" + formatWhole(player.c.quirklayerstoget) + ")<br><h5>(Check the quirk energy tab in the celestial tab)": "" }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(7) ? "<h2>You have " + formatWhole(player.c.quirkstars) + "<h2> quirk stars (+" + formatWhole(player.c.quirkstarstoget) + ")<br><h5>(Check the quirk prestige tree tab)": "" }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
             ["blank", "25px"],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h4>" + formatWhole(player.c.timemetalcosts[0]) + " scrap metal (you have " + formatWhole(player.c.scrapmetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
@@ -912,41 +1007,28 @@ content:
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h4>" + formatWhole(player.c.quirklayercosts[0]) + " space metal (you have " + formatWhole(player.c.spacemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h4>" + formatWhole(player.c.quirklayercosts[1]) + " enhance powder (you have " + formatWhole(player.c.enhancepowder) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h4>" + formatWhole(player.c.quirklayercosts[2]) + " celestial cells (you have " + formatWhole(player.c.celestialcells) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(7) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(7) ? "<h4>" + formatWhole(player.c.quirkstarcosts[0]) + " quirk layers (you have " + formatWhole(player.c.quirklayers) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(7) ? "<h4>" + formatWhole(player.c.quirkstarcosts[1]) + " time metal (you have " + formatWhole(player.c.timemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(7) ? "<h4>" + formatWhole(player.c.quirkstarcosts[2]) + " celestial cells (you have " + formatWhole(player.c.celestialcells) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["blank", "25px"],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimemetal.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimemetal.eq(1) && player.c.currentcraftingdisplay.eq(1) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingspacemetal.eq(0) && player.c.currentcraftingdisplay.eq(2) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingspacemetal.eq(1) && player.c.currentcraftingdisplay.eq(2) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimecapsules.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingtimecapsules.eq(1) && player.c.currentcraftingdisplay.eq(4) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingspacebuildings.eq(0) && player.c.currentcraftingdisplay.eq(5) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingspacebuildings.eq(1) && player.c.currentcraftingdisplay.eq(5) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingcelestialbatteries.eq(0) && player.c.currentcraftingdisplay.eq(3) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingcelestialbatteries.eq(1) && player.c.currentcraftingdisplay.eq(3) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingquirklayers.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h3>Not currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
-            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.craftingquirklayers.eq(1) && player.c.currentcraftingdisplay.eq(6) ? "<h3>Currently crafting this item.": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["row", [["clickable", 24], ["clickable", 25], ["bar", "timemetalbar"]]],
+            ["row", [["clickable", 26], ["clickable", 27], ["bar", "spacemetalbar"]]],
+            ["row", [["clickable", 31], ["clickable", 32] ,["bar", "timecapsulebar"]]],
+            ["row", [["clickable", 35], ["clickable", 36], ["bar", "spacebuildingbar"]]],
+            ["row", [["clickable", 37], ["clickable", 38] ,["bar", "celestialbatterybar"]]],
+            ["row", [["clickable", 42], ["clickable", 43], ["bar", "quirklayerbar"]]],
+            ["row", [["clickable", 45], ["clickable", 46], ["bar", "quirkstarbar"]]],
             ["blank", "25px"],
-            ["row", [["clickable", 24], ["clickable", 25]]],
-            ["row", [["clickable", 26], ["clickable", 27]]],
-            ["row", [["clickable", 31], ["clickable", 32]]],
-            ["row", [["clickable", 35], ["clickable", 36]]],
-            ["row", [["clickable", 37], ["clickable", 38]]],
-            ["row", [["clickable", 42], ["clickable", 43]]],
-            ["blank", "25px"],
-            ["bar", "timemetalbar"],
-            ["bar", "spacemetalbar"],
-            ["bar", "timecapsulebar"],
-            ["bar", "spacebuildingbar"],
-            ["bar", "celestialbatterybar"],
-            ["bar", "quirklayerbar"],
-            ["blank", "25px"],
-            ["row", [["clickable", 21], ["clickable", 29], ["clickable", 22], ["clickable", 34], ["clickable", 23], ["clickable", 41]]],
+            ["row", [["clickable", 21], ["clickable", 29], ["clickable", 22], ["clickable", 34], ["clickable", 23], ["clickable", 41], ["clickable", 44]]],
             ["blank", "25px"],          
             ["row", [["clickable", 28], ["infobox", "jacorblog16"], ["infobox", "timemetal"]]],
             ["row", [["clickable", 33], ["infobox", "jacorblog14"], ["infobox", "spacemetal"]]],
             ["infobox", "celestialbattery"],
             ["infobox", "timecapsule"],
             ["infobox", "spacebuilding"],
+            ["infobox", "quirklayer"],
+            ["infobox", "quirkstar"],
     ]
     
     },

@@ -1,5 +1,5 @@
 ﻿var prestigetree = [["pr"],
-["bo", "ge"], ["sb", "ti", "en", "sp", "sg"]]
+["bo", "ge"], ["sb", "ti", "en", "sp", "sg"], ["hi", "qu"]]
           
           addLayer("m", {
     name: "Meta-Prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -15,6 +15,12 @@
 		craftingunlock: new Decimal(0),
 		ce308unlock: new Decimal(0),
 
+        //ce308 tasks
+        energytask: new Decimal(0),
+        metatask: new Decimal(0),
+        challengetask: new Decimal(0),
+        craftingtask: new Decimal(0),
+
         //PATHLESS FACTORS
         scorefrombestpoints: new Decimal(0),
         scorefromtimeplayed: new Decimal(1),
@@ -27,8 +33,9 @@
         scorefrombestgeneratorenergy: new Decimal(1),
         scorefrombestcelestialenergy: new Decimal(1),
 
-        //STANDARD PATH FACTORS
+        //ENHANCE PATH FACTORS
         scorefrombestenhancepoints: new Decimal(1),
+        scorefrombestbeaconpoints: new Decimal(1),
 
         //PT Factors
         scorefromincrementalpower: new Decimal(1),
@@ -36,6 +43,8 @@
         scorefrommetaprestigetime: new Decimal(1),
         scorefromtimecapsules: new Decimal(1),
         scorefromspacebuildings: new Decimal(1),
+        scorefromquirklayers: new Decimal(1),
+        scorefromhindrancespirits: new Decimal(1),
 
         incrementalenergy: new Decimal(0),
         incrementalenergytoget: new Decimal(0),
@@ -71,6 +80,8 @@
         player.ti.timeenergy = new Decimal(0)
         player.sp.space = new Decimal(0)
         player.sg.supergeneratorpower = new Decimal(0)
+
+        player.i.tasksleft = new Decimal(2)
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
     resource: "Incremental Power", // Name of prestige currency
@@ -135,6 +146,9 @@
         if (player.i.enhancepath.eq(0)) player.m.scorefrombestenhancepoints = new Decimal(1)
         if (player.i.enhancepath.eq(1) && player.i.bestenhancepoints.neq(0)) player.m.scorefrombestenhancepoints = player.i.bestenhancepoints.slog().div(5).add(1)
 
+        if (player.i.enhancepath.eq(0)) player.m.scorefrombestbeaconpoints = new Decimal(1)
+        if (player.i.enhancepath.eq(1) && player.i.bestbeaconpoints.neq(0)) player.m.scorefrombestbeaconpoints = player.i.bestbeaconpoints.slog().div(4).add(1)
+
         //pathless factors
         if (!hasUpgrade("m", 14)) player.m.scorefromtimeplayed = new Decimal(1)
         if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed + 5000))
@@ -157,6 +171,12 @@
 
         if (player.spacelayer.eq(0)) player.m.scorefromspacebuildings = new Decimal(1)
         if (player.spacelayer.eq(1)) player.m.scorefromspacebuildings = player.c.spacebuildings.mul(0.012).pow(0.77).add(1)
+        
+        if (player.quirklayer.eq(0)) player.m.scorefromquirklayers = new Decimal(1)
+        if (player.quirklayer.eq(1)) player.m.scorefromquirklayers = player.c.quirklayers.mul(0.011).pow(0.76).add(1)
+
+        if (player.hindrancelayer.eq(0)) player.m.scorefromhindrancespirits = new Decimal(1)
+        if (player.hindrancelayer.eq(1)) player.m.scorefromhindrancespirits = player.hi.hindrancespirits.add(1).pow(0.055)
 
         player.m.score = player.m.scorefrombestpoints
         player.m.score = player.m.score.mul(player.m.scorefrombestprestigeenergy)
@@ -173,9 +193,13 @@
         player.m.score = player.m.score.mul(player.m.scorefrombestgeneratorenergy)
         player.m.score = player.m.score.mul(player.m.scorefrombestcelestialenergy)
         player.m.score = player.m.score.mul(player.m.scorefromcelestialcells)
+        player.m.score = player.m.score.mul(player.m.scorefromquirklayers)
+        player.m.score = player.m.score.mul(player.m.scorefrombestbeaconpoints)
+        player.m.score = player.m.score.mul(player.m.scorefromhindrancespirits)
 
         player.m.incrementalenergytoget = player.i.prestigemachines.pow(0.3)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.noenergyboost)
+        player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.metataskeffect)
 
         player.m.incrementalenergyeffect = player.m.incrementalenergy.pow(0.8).add(1)
     },
@@ -390,9 +414,9 @@
         },
         26:
         {
-            title: "Standard Path QoL III",
+            title: "Universal QoL I",
             unlocked() { return hasUpgrade("m", 23) },
-            description: "Autobuys prestige buyables without spending (in standard path).",
+            description: "Autobuys prestige buyables without spending (in all paths).",
             cost: new Decimal(7),
             currencyLocation() { return player.c },
             currencyDisplayName: "Celestial Cells",
@@ -410,7 +434,7 @@
         },
         28:
         {
-            title: "Standard Path QoL V",
+            title: "Standard Path QoL III",
             unlocked() { return hasUpgrade("m", 23) },
             description: "Autobuys pure energy buyables without spending.",
             cost: new Decimal(13),
@@ -430,6 +454,36 @@
             onPurchase() {
                 player.c.anvilslots = player.c.anvilslots.add(1)
             },
+        },
+        31:
+        {
+            title: "Boost V",
+            unlocked() { return hasUpgrade("m", 24) && player.m.ce308unlock.eq(1) },
+            description: "Boosts enhance beacon efficiency by x5.",
+            cost: new Decimal(60000),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+        },
+        32:
+        {
+            title: "Crafting QoL II",
+            unlocked() { return hasUpgrade("m", 31) },
+            description: "Lowers time and space metals's crafting power requirements.",
+            cost: new Decimal(25),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
+        33:
+        {
+            title: "Crafting QoL III",
+            unlocked() { return hasUpgrade("m", 31) },
+            description: "Lowers time capsule and space building's crafting power requirements.",
+            cost: new Decimal(36),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
         },
     },
     buyables: {
@@ -479,6 +533,7 @@
                            ["raw-html", function () { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) ? "<h3>Best celestial energy: " + format(player.i.bestcelestialenergy) + " -> x" + format(player.m.scorefrombestcelestialenergy) : "" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Enhance Path Factors " : "" }, { "color": "#b82fbd", "font-size": "24px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Best enhance points: " + format(player.i.bestenhancepoints) + " -> x" + format(player.m.scorefrombestenhancepoints) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.enhancepath.eq(1) && hasUpgrade("i", 105) ? "<h3>Best beacon points: " + format(player.i.bestbeaconpoints) + " -> x" + format(player.m.scorefrombestbeaconpoints) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            ["raw-html", function () { return player.prestigelayer.eq(1) ? "<h3>Prestige Tree Factors " : "" }, { "color": "#31aeb0", "font-size": "24px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.prestigelayer.eq(1) && player.pr.buyables[11].gt(0) ? "<h3>Score amplifier: " + format(player.pr.buyables[11]) + " -> x" + format(buyableEffect("pr", 11)) : "" }, { "color": "#31aeb0", "font-size": "18px", "font-family": "monospace" }],
@@ -487,6 +542,8 @@
                            ["raw-html", function () { return player.enhancelayer.eq(1) ? "<h3>Time spent in meta-prestige: " + formatTime(player.i.metaprestigetime) + " -> x" + format(player.m.scorefrommetaprestigetime) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.timelayer.eq(1) ? "<h3>Time capsules: " + formatWhole(player.c.timecapsules) + " -> x" + format(player.m.scorefromtimecapsules) : "" }, { "color": "#006609", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.spacelayer.eq(1) ? "<h3>Space buildings: " + formatWhole(player.c.spacebuildings) + " -> x" + format(player.m.scorefromspacebuildings) : "" }, { "color": "#dfdfdf", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.quirklayer.eq(1) ? "<h3>Quirk layers: " + formatWhole(player.c.quirklayers) + " -> x" + format(player.m.scorefromquirklayers) : "" }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.hindrancelayer.eq(1) ? "<h3>Hindrance spirits: " + formatWhole(player.hi.hindrancespirits) + " -> x" + format(player.m.scorefromhindrancespirits) : "" }, { "color": "#a14040", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            ["raw-html", function () { return "<h3>TOTAL SCORE: " + format(player.m.score) }, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
                     ]
@@ -534,7 +591,7 @@
             ["raw-html", function () { return "<h2>You have " + format(player.m.points) + " incremental power." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 16], ["upgrade", 17]]],
-                        ["row", [["upgrade", 18], ["upgrade", 19], ["upgrade", 21], ["upgrade", 22], ["upgrade", 23]]],
+                        ["row", [["upgrade", 18], ["upgrade", 19], ["upgrade", 21], ["upgrade", 22], ["upgrade", 23], ["upgrade", 31]]],
         ]
 
             },
@@ -549,6 +606,7 @@
             ["raw-html", function () { return "<h3>(celestial cells are a crafting resource)" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
             ["blank", "25px"],
                         ["row", [["upgrade", 24], ["upgrade", 25], ["upgrade", 26], ["upgrade", 27], ["upgrade", 28], ["upgrade", 29]]],
+                        ["row", [["upgrade", 32], ["upgrade", 33]]],
         ]
 
             },

@@ -25,7 +25,7 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset", "celestialenergyreset"]
+var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset", "celestialenergyreset", "hindrancereset"]
 
 function getStartPoints() {
 	return new Decimal(modInfo.initialStartPoints)
@@ -56,6 +56,8 @@ function getPointGen() {
 	if (player.i.enhancepath.eq(1)) gain = gain.mul(player.i.enhancepointseffect)
 	if (player.i.standardpath.eq(1)) gain = gain.mul(player.i.superpointseffect)
 	gain = gain.mul(player.i.quirkenergyeffect)
+	gain = gain.mul(player.i.challengetaskeffect)
+	gain = gain.mul(buyableEffect("i", 102))
 	player.gain = gain
 	return gain
 }
@@ -108,6 +110,16 @@ function addedPlayerData() {
 		ce308unlockscene: new Decimal(0),
 		quirkenergycutscene: new Decimal(1),
 		quirkenergyscene: new Decimal(0),
+		taskcutscene: new Decimal(1),
+		taskscene: new Decimal(0),
+		quirkcutscene: new Decimal(1),
+		quirkscene: new Decimal(0),
+		beaconpointcutscene: new Decimal(1),
+		beaconpointscene: new Decimal(0),
+		hindranceenergycutscene: new Decimal(1),
+		hindranceenergyscene: new Decimal(0),
+		hindrancecutscene: new Decimal(1),
+		hindrancescene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),
@@ -127,6 +139,9 @@ function addedPlayerData() {
 		spacelayer: new Decimal(0),
 		superboosterlayer: new Decimal(0),
 		supergeneratorlayer: new Decimal(0),
+		quirklayer: new Decimal(0),
+		hindrancelayer: new Decimal(0),
+		subspacelayer: new Decimal(0),
 	}
 }
 

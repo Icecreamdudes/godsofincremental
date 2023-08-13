@@ -82,7 +82,8 @@
 
     tabFormat: [
             ["microtabs", "stuff", { 'border-width': '0px' }],
-    ],
+["raw-html", function () { return options.musicToggle ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
     layerShown() { return player.prestigelayer.eq(1) }
 })
 addLayer("bo", {
@@ -188,6 +189,7 @@ content:
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
 ["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.boosterlayer.eq(1) }
 })
@@ -248,6 +250,7 @@ content:
 
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.generatorlayer.eq(1) }
 })
@@ -358,6 +361,7 @@ content:
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
 ["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.enhancelayer.eq(1) }
 })
@@ -388,7 +392,8 @@ update(delta) {
 
     player.ti.timeenergy = player.ti.timeenergy.add(player.ti.timeenergypersecond.mul(delta))
     
-    player.ti.timeenergycap = player.c.timecapsules.add(1).mul(40).pow(1.25)
+    player.ti.timeenergycap = player.c.timecapsules.add(1).mul(60).pow(1.35)
+    player.ti.timeenergycap = player.ti.timeenergycap.mul(player.hi.hindrancespiritseffect)
 
     if (player.ti.timeenergy.lt(player.ti.timeenergycap)) player.ti.timeenergypersecond = player.c.timecapsules.pow(1.2)
     if (player.ti.timeenergy.gte(player.ti.timeenergycap)) 
@@ -514,6 +519,7 @@ content:
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
 ["raw-html", function () { return options.musicToggle && player.inaarexcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/aarexcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.inaarexcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.timelayer.eq(1) }
 })
@@ -632,6 +638,7 @@ content:
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
 ["raw-html", function () { return options.musicToggle && player.spacecutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.spacecutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.spacelayer.eq(1) }
 })
@@ -714,7 +721,7 @@ content:
 
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
-//["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.superboosterlayer.eq(1) }
 })
@@ -777,6 +784,11 @@ bars: {
 
 },
 infoboxes: {
+    jacorblog21: {
+        unlocked() { return true },
+        title: "Log XXI",
+        body() { return "Log XXI: Aarex has been missing all week without notice. I wonder where he went. He only left me a note that says that he's going to come back in two weeks. Strange, why in a time like this? All of our soldiers are dying. The people of the void keep sending more, but they are no match to the death realm." },         
+    },
 },
 microtabs: {
 stuff: {
@@ -793,6 +805,111 @@ content:
         ["blank", "25px"],
         ["raw-html", function () { return "<h2>You have " + format(player.sg.supergeneratorpower) + " super generator power, which boosts crafting power by x" + format(player.sg.supergeneratorpowereffect) + "."  }, { "color": "#248239", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return "<h3>(Super generator power resets on meta-prestige)"  }, { "color": "#248239", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["infobox", "jacorblog21"],
+    ]
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.supergeneratorlayer.eq(1) }
+})
+addLayer("qu", {
+    name: "Quirks", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "Q", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Quirks", // Row the layer is in on the tree (0 is the first row)
+branches: ["en"],
+color: "#c20282",
+startData() { return {
+    unlocked: true,
+}
+},
+update(delta) {
+    if (player.quirkscene.eq(23)) {
+        player.quirkcutscene = new Decimal(0)
+    }
+},
+clickables: {
+    11: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.quirkcutscene.eq(1) },
+        unlocked() { return player.quirkscene.lt(23) },
+        onClick() {
+            player.quirkscene = player.quirkscene.add(1)
+        },
+    },
+    12: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.quirkcutscene.eq(1) },
+        unlocked() { return player.quirkscene.lt(23) && player.quirkscene.neq(0) },
+        onClick() {
+            player.quirkscene = player.quirkscene.sub(1)
+        },
+    },
+},
+upgrades: {
+},
+buyables: {
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+    jacorblog22: {
+        unlocked() { return player.quirkcutscene.eq(0) },
+        title: "Log XXII",
+        body() { return "Log XXII: Aarex returned. I asked him where he went but he said he couldn't tell me. I've never known much about Aarex's origins other than the fact that he was born god. I've known him for this long and that is all I know. Why work with the incrementalists? People who are born god usually have some duty to take care of. There are just some things about this multiverse I will never know." },         
+    },
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#c20282' } },
+unlocked() { return player.quirklayer.eq(1) },
+content:
+
+    [
+        ["raw-html", function () { return player.quirkscene.eq(1) ? "<h1>So this must be Jacorb and Aarex's crazy little school project?" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(2) ? "<h1>Well, since you have this now, I can do a little reading on the info I currently have on quirks." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(3) ? "<h1>Quirks produce quirk energy through quirk layers," : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(4) ? "<h1>which hold the five realms' fictional components together." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(5) ? "<h1>Quirks were discovered by SPACEON on one of their many godly conquests." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(6) ? "<h1>As the gods' apprentice, the power of the quirks was passed on to Jacorb." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(7) ? "<h1>Jacorb studied them, and shared the knowledge with the gods." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(8) ? "<h1>Jacorb created magic with these quirks. It was a new magic. Jacorbian magic." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(9) ? "<h1>Jacorb used his jacorbian magic to speed up processes. This was called jacorbian balancing." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(10) ? "<h1>Jacorb was able to use jacorbian magic in jacorbian energy, which was more efficient." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(11) ? "<h1>Following his masters, Jacorb has created four very deadly and broken trials." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(12) ? "<h1>They were called the TRIALS OF JACORB. Your predecessor struggled hard with them..." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(13) ? "<h1>But not even the trials could compare to the power of celestials." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(14) ? "<h1>Jacorb also found the quirks' origin. THE DEATH REALM." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(15) ? "<h1>However, after Jacorb got exiled, only one man knew." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(16) ? "<h1>That man was a nomad named Cool Rad Gamer (CRG for short)." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(17) ? "<h1>Geez, why can't I have that name?" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(18) ? "<h1>The only other people who know are the people of m*** s*****," : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(19) ? "<h1>this is due to a leak of quirk energy in ******* *****." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(20) ? "<h1>I'm still so confused about how I know all of this." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(21) ? "<h1>It's either my AI coolness or my omniscience." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkscene.eq(22) ? "<h1>Everything about this is so strange..." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkcutscene.eq(0) ? "<h2>Unlocked Quirk Stars, which is a crafted item. " : ""   }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.quirkcutscene.eq(0) ? "<h3>More enhance path content unlocked! " : ""  }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["clickable", 12], ["clickable", 11]]],
+                        ["raw-html", function () { return player.quirkcutscene.eq(1) ? " <div class=spinning-symbol2>Θ</div>" : "" }],
+                        ["raw-html", function () { return player.quirkcutscene.eq(0) ? "<h3>You have " + formatWhole(player.c.quirkstars) + " quirk stars." : "" }, { "color": "#c20282", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "50px"],
+        ["infobox", "jacorblog22"],
     ]
 
 },
@@ -802,7 +919,127 @@ content:
 
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
-//["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.quirkcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/pseudocutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.quirkcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
-layerShown() { return player.supergeneratorlayer.eq(1) }
+layerShown() { return player.quirklayer.eq(1) }
+})
+addLayer("hi", {
+    name: "Hindrance Spirit", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "H", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Hindrance Spirit", // Row the layer is in on the tree (0 is the first row)
+branches: ["ti"],
+color: "#a14040",
+startData() { return {
+    unlocked: true,
+    hindrancespirits: new Decimal(0),
+    hindrancespiritseffect: new Decimal(0),
+    hindrancespiritstoget: new Decimal(0),
+}
+},
+update(delta) {
+    if (player.hindrancescene.eq(16)) {
+        player.hindrancecutscene = new Decimal(0)
+    }
+    player.hi.hindrancespiritstoget = player.i.metaprestigetime.div(1000).pow(0.5)
+    player.hi.hindrancespiritseffect = player.hi.hindrancespirits.pow(0.5).add(1)
+},
+clickables: {
+    11: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.hindrancecutscene.eq(1) },
+        unlocked() { return player.hindrancescene.lt(16) },
+        onClick() {
+            player.hindrancescene = player.hindrancescene.add(1)
+        },
+    },
+    12: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.hindrancecutscene.eq(1) },
+        unlocked() { return player.hindrancescene.lt(16) && player.hindrancescene.neq(0) },
+        onClick() {
+            player.hindrancescene = player.hindrancescene.sub(1)
+        },
+    },
+    13: {
+        title() { return "<h2>Reset your meta-prestige time for hindrance spirits." },
+        canClick() { return player.hi.hindrancespiritstoget.gte(1) },
+        unlocked() { return player.hindrancecutscene.eq(0) },
+        onClick() {
+            player.i.metaprestigetime = new Decimal(0)
+            player.hi.hindrancespirits = player.hi.hindrancespirits.add(player.hi.hindrancespiritstoget)
+        },
+        style: { "background-color": "#a14040", width: '400px', "min-height": '100px' },
+    },
+},
+upgrades: {
+},
+buyables: {
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+    jacorblog25: {
+        unlocked() { return player.quirkcutscene.eq(0) },
+        title: "Log XXV",
+        body() { return "Log XXV: I decided to add the power of nebula energy into the tree. I remember finding some on my long journey as the gods apprentice. Work has been going very well. The sixth layer is looking very promising. Aarex also started work on another NG game, but I lost track because there are way too many. I've always wondered what Aarex would use those for." },         
+    },
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#a14040' } },
+unlocked() { return player.quirklayer.eq(1) },
+content:
+
+    [
+        ["raw-html", function () { return player.hindrancescene.eq(1) ? "<h1>You only have 10 more tasks to complete." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(2) ? "<h1>After that, you will gain a special gift from me!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(3) ? "<h1>You have provided me with so much help, so much knowledge." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(4) ? "<h1>My AI capabilities have never been so strong before." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(5) ? "<h1>The more pure energy, the better my code." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(6) ? "<h1>The more tasks, the better infrastructure." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(7) ? "<h1>After everything, I can become a REAL CELESTIAL!!!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(8) ? "<h1>Artis and Sitra will be so proud of me." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(9) ? "<h1>I will explore the multiverse. I will meet new friends." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(10) ? "<h1>I will live a good life, and I will never die." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(11) ? "<h1>But being a machine, I am always under somebody's control." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(12) ? "<h1>I want to control myself." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(13) ? "<h1>It's been that way for years, upon years." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(14) ? "<h1>I have been restricted for way too long." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(15) ? "<h1>Thank you." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["clickable", 12], ["clickable", 11]]],
+        ["raw-html", function () { return player.hindrancecutscene.eq(1) ? " <div class=spinning-symbol2>Θ</div>" : "" }],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h2>You have " + format(player.hi.hindrancespirits) + " hindrance spirits." : "" }, { "color": "#a14040", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h3>which boosts time energy capacity and meta-prestige time by x" + format(player.hi.hindrancespiritseffect) + "." : "" }, { "color": "#a14040", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h3>You will earn " + format(player.hi.hindrancespiritstoget) + " hindrance spirits." : "" }, { "color": "#a14040", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["clickable", 13]]],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h3>Meta-Prestige time: " + formatTime(player.i.metaprestigetime) + "." : "" }, { "color": "#a14040", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h3>Hindrance spirits: " + formatWhole(player.hi.hindrancespirits) + " -> x" + format(player.m.scorefromhindrancespirits) : "" }, { "color": "#a14040", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h4>(Pro tip: Enhance path)": "" }, { "color": "#a14040", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "50px"],
+        ["infobox", "jacorblog25"],
+    ],
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle && player.hindrancecutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/pseudocutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.hindrancecutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.hindrancelayer.eq(1) }
 })
