@@ -155,6 +155,17 @@
             buyBuyable("i", 22)
             buyBuyable("i", 23)
         }
+        if (hasUpgrade("i", 39))
+        {
+            buyBuyable("i", 26)
+            buyBuyable("i", 27)
+            buyBuyable("i", 28)
+            buyBuyable("i", 29)
+            buyBuyable("i", 31)
+            buyBuyable("i", 32)
+            buyBuyable("i", 33)
+            buyBuyable("i", 34)
+        }
     },
     nodeStyle() {
 
@@ -426,6 +437,10 @@
         player.i.celestialenergytoget = player.i.celestialenergytoget.mul(buyableEffect("i", 24))
         if (hasUpgrade("i", 32)) player.i.celestialenergytoget = player.i.celestialenergytoget.mul(upgradeEffect("i", 32))
         player.i.celestialenergytoget = player.i.celestialenergytoget.mul(player.i.energytaskeffect)
+        player.i.celestialenergytoget = player.i.celestialenergytoget.mul(buyableEffect("i", 35))
+        player.i.celestialenergytoget = player.i.celestialenergytoget.mul(buyableEffect("i", 36))
+        player.i.celestialenergytoget = player.i.celestialenergytoget.mul(buyableEffect("i", 37))
+        player.i.celestialenergytoget = player.i.celestialenergytoget.mul(buyableEffect("i", 38))
 
         player.i.celestialenergyeffect = player.i.celestialenergy.pow(1.6).add(1)
 
@@ -502,9 +517,10 @@
         player.i.hindranceenergypersecond = player.i.hindranceenergypersecond.mul(buyableEffect("i", 33))
         player.i.hindranceenergypersecond = player.i.hindranceenergypersecond.mul(buyableEffect("i", 34))
         player.i.hindranceenergypersecond = player.i.hindranceenergypersecond.mul(player.i.hindrancepointseffect)
+        if (hasUpgrade("i", 41)) player.i.hindranceenergypersecond = player.i.hindranceenergypersecond.mul(upgradeEffect("i", 41))
 
-        player.i.hindrancepointstoget = player.i.hindranceenergy.pow(0.08)
-        player.i.hindrancepointseffect = player.i.hindrancepoints.pow(0.8).add(1)
+        player.i.hindrancepointstoget = player.i.hindranceenergy.pow(0.12)
+        player.i.hindrancepointseffect = player.i.hindrancepoints.mul(10).pow(0.8).add(1)
 
         if (player.i.hindrancepointpause.gt(0)) {
             layers.i.hindrancereset();
@@ -514,7 +530,8 @@
 
         //ENHANCE PATH
         let enhanceloss = new Decimal(0)
-        enhanceloss = player.i.enhancedprestigepoints.mul(0.1)
+        if (player.i.enhancedprestigepoints.gt(0)) enhanceloss = player.i.enhancedprestigepoints.mul(0.1)
+        if (player.i.enhancedprestigepoints.lt(0)) enhanceloss = new Decimal(0)
 
         player.i.enhancepoints = player.i.enhancepoints.add(player.i.enhancepointspersecond.mul(delta))
         player.i.enhancepointseffect = player.i.enhancepoints.pow(0.5).add(1)
@@ -524,6 +541,11 @@
         player.i.enhancedprestigepoints = player.i.enhancedprestigepoints.sub(enhanceloss.mul(delta))
 
         if (player.i.enhancepoints.gte(player.i.bestenhancepoints)) player.i.bestenhancepoints = player.i.enhancepoints
+
+        if (player.i.enhancedprestigepoints.lt(0))
+        {
+            player.i.enhancedprestigepoints = new Decimal(0)
+        }
 
         if (player.beaconscene.eq(11)) {
             player.beaconcutscene = new Decimal(0)
@@ -1471,8 +1493,8 @@ opacity: "0.9",
             },
         },
         82: {
-            title() { return "<h3>Energy task 4: " + format(player.i.hindranceenergy) + "/1e25 hindrance energy" },
-            canClick() { return player.i.tasksleft.gt(0) && player.i.hindranceenergy.gt(1e25) && player.m.energytask.eq(3) },
+            title() { return "<h3>Energy task 4: " + format(player.i.hindranceenergy) + "/1e26 hindrance energy" },
+            canClick() { return player.i.tasksleft.gt(0) && player.i.hindranceenergy.gt(1e26) && player.m.energytask.eq(3) },
             unlocked() { return player.taskcutscene.eq(0) && player.m.energytask.eq(3) },
             onClick() {
                 player.i.tasksleft = player.i.tasksleft.sub(1)
@@ -1491,8 +1513,8 @@ opacity: "0.9",
             style: { "background-color": "#8a00a9", width: '500px', "min-height": '100px' },
         },
         84: {
-            title() { return "<h3>Challenge task 4: " + format(player.points) + "/1e65 prestige points, no prestige machines or prestige energy." },
-            canClick() { return player.i.tasksleft.gt(0) && player.points.gte(1e65) && player.i.prestigeenergy.eq(0) && player.i.prestigemachines.eq(0) && player.m.challengetask.eq(3) },
+            title() { return "<h3>Challenge task 4: " + format(player.i.prestigepoints) + "/1e115 prestige points, no prestige machines or prestige energy." },
+            canClick() { return player.i.tasksleft.gt(0) && player.i.prestigepoints.gte(1e115) && player.i.prestigeenergy.eq(0) && player.i.prestigemachines.eq(0) && player.m.challengetask.eq(3) },
             unlocked() { return player.taskcutscene.eq(0) && player.m.challengetask.eq(3) },
             onClick() {
                 player.i.tasksleft = player.i.tasksleft.sub(1)
@@ -2021,6 +2043,33 @@ opacity: "0.9",
             currencyDisplayName: "Celestial Energy",
             currencyInternalName: "celestialenergy",
         },
+        39:
+        {
+            title: "Pseudo-Celestial Upgrade XI",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 38) && player.hindrancelayer.gte(1) },
+            description: "Autobuys hindrance factors without spending.",
+            cost: new Decimal(1e16),
+            canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Celestial Energy",
+            currencyInternalName: "celestialenergy",
+        },
+        41:
+        {
+            title: "Pseudo-Celestial Upgrade XII",
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 39) },
+            description: "Boosts hindrance energy based on points.",
+            cost: new Decimal(1e20),
+            canAfford() { return player.i.standardpath.eq(1) && hasUpgrade("i", 27) },
+            currencyLocation() { return player.i },
+            currencyDisplayName: "Celestial Energy",
+            currencyInternalName: "celestialenergy",
+            effect() 
+            {
+                 return player.points.plus(1).log10().add(1)
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) }, // Add formatting to the effect
+        },
         //ENHANCE PATH
 
         101:
@@ -2475,7 +2524,7 @@ opacity: "0.9",
                 let growth = 1.2
                 let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                if (!hasUpgrade("i", 39)) player.i.celestialenergy = player.i.celestialenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -2497,7 +2546,7 @@ opacity: "0.9",
                 let growth = 1.225
                 let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                if (!hasUpgrade("i", 39)) player.i.celestialenergy = player.i.celestialenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -2519,7 +2568,7 @@ opacity: "0.9",
                 let growth = 1.25
                 let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                if (!hasUpgrade("i", 39)) player.i.celestialenergy = player.i.celestialenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -2541,7 +2590,7 @@ opacity: "0.9",
                 let growth = 1.275
                 let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                if (!hasUpgrade("i", 39)) player.i.celestialenergy = player.i.celestialenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -2563,7 +2612,7 @@ opacity: "0.9",
                 let growth = 1.15
                 let max = Decimal.affordGeometricSeries(player.i.hindranceenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
+                if (!hasUpgrade("i", 39)) player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -2585,7 +2634,7 @@ opacity: "0.9",
                 let growth = 1.2
                 let max = Decimal.affordGeometricSeries(player.i.hindranceenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
+                if (!hasUpgrade("i", 39)) player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -2607,7 +2656,7 @@ opacity: "0.9",
                 let growth = 1.15
                 let max = Decimal.affordGeometricSeries(player.i.hindranceenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
+                if (!hasUpgrade("i", 39)) player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -2629,7 +2678,95 @@ opacity: "0.9",
                 let growth = 1.3
                 let max = Decimal.affordGeometricSeries(player.i.hindranceenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
+                if (!hasUpgrade("i", 39)) player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#a14040",}
+        },
+        35: {
+            cost(x) { return new Decimal(1.45).pow(x || getBuyableAmount(this.layer, this.id)).mul(10) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).add(1)},
+            unlocked() { return player.hindranceenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.hindrancepoints.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Celestial Factor I"
+            },
+            display() {
+                return "which are boosting celestial energy by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Hindrance Points"
+            },
+            buy() {
+                let base = new Decimal(10)
+                let growth = 1.45
+                let max = Decimal.affordGeometricSeries(player.i.hindrancepoints, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.hindrancepoints = player.i.hindrancepoints.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#a14040",}
+        },
+        36: {
+            cost(x) { return new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(100) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).add(1)},
+            unlocked() { return player.hindranceenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.hindrancepoints.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Celestial Factor II"
+            },
+            display() {
+                return "which are boosting celestial energy by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Hindrance Points"
+            },
+            buy() {
+                let base = new Decimal(100)
+                let growth = 1.5
+                let max = Decimal.affordGeometricSeries(player.i.hindrancepoints, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.hindrancepoints = player.i.hindrancepoints.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#a14040",}
+        },
+        37: {
+            cost(x) { return new Decimal(1.55).pow(x || getBuyableAmount(this.layer, this.id)).mul(1000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).add(1)},
+            unlocked() { return player.hindranceenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.hindrancepoints.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Celestial Factor III"
+            },
+            display() {
+                return "which are boosting celestial energy by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Hindrance Points"
+            },
+            buy() {
+                let base = new Decimal(1000)
+                let growth = 1.55
+                let max = Decimal.affordGeometricSeries(player.i.hindrancepoints, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.hindrancepoints = player.i.hindrancepoints.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#a14040",}
+        },
+        38: {
+            cost(x) { return new Decimal(1.6).pow(x || getBuyableAmount(this.layer, this.id)).mul(10000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).add(1)},
+            unlocked() { return player.hindranceenergycutscene.eq(0) && (player.i.standardpath.eq(1)) },
+            canAfford() { return player.i.hindrancepoints.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Celestial Factor IV"
+            },
+            display() {
+                return "which are boosting celestial energy by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Hindrance Points"
+            },
+            buy() {
+                let base = new Decimal(10000)
+                let growth = 1.6
+                let max = Decimal.affordGeometricSeries(player.i.hindrancepoints, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.hindrancepoints = player.i.hindrancepoints.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3341,7 +3478,7 @@ opacity: "0.9",
                         ["row", [["clickable", 56]]],
                         ["blank", "25px"],
                         ["row", [["upgrade", 28], ["upgrade", 29], ["upgrade", 31], ["upgrade", 32], ["upgrade", 33], ["upgrade", 34]]],
-                        ["row", [["upgrade", 35], ["upgrade", 36], ["upgrade", 37], ["upgrade", 38]]],
+                        ["row", [["upgrade", 35], ["upgrade", 36], ["upgrade", 37], ["upgrade", 38], ["upgrade", 39], ["upgrade", 41]]],
                     ]
             },
             "Quirk Energy": {
@@ -3471,11 +3608,13 @@ opacity: "0.9",
                     [
                         ["blank", "25px"],
                         ["raw-html", function () { return "<h2>You have " + format(player.i.hindrancepoints) + "<h2> hindrance points. " }, { "color": "#a14040", "font-size": "18px", "font-family": "monospace" }],
-                        ["raw-html", function () { return "<h3>which are boosting hindrance point gain by x" + format(player.i.hindrancepointseffect) + "<h3>." }, { "color": "#a14040", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h3>which are boosting hindrance energy gain by x" + format(player.i.hindrancepointseffect) + "<h3>." }, { "color": "#a14040", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return "<h3>You will gain " + format(player.i.hindrancepointstoget) + "<h3> on reset. " }, { "color": "#a14040", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return "<h4>(Resets hindrance energy, buyables, celestial energy, and does a celestial energy reset.) " }, { "color": "#a14040", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["clickable", 87]]],
+                        ["blank", "25px"],
+                        ["row", [["buyable", 35], ["buyable", 36], ["buyable", 37], ["buyable", 38]]],
                     ]
             },
         },
