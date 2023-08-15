@@ -565,7 +565,7 @@
 
         player.i.beaconpowerreq = new Decimal(25)
         player.i.incrementalpowergain = new Decimal(0.3)
-        if (hasUpgrade("m", 31)) player.i.incrementalpowergain = player.i.incrementalpowergain.mul(5)
+        if (hasUpgrade("m", 31)) player.i.incrementalpowergain = player.i.incrementalpowergain.mul(2)
         if (player.i.beaconpower.gt(player.i.beaconpowerreq))
         {
             player.m.points = player.m.points.add(player.m.score.mul(player.i.incrementalpowergain))
@@ -1326,8 +1326,8 @@ opacity: "0.9",
             style: { "background-color": "#ffffaa", width: '500px', "min-height": '100px' },
         },
         64: {
-            title() { return "<h3>Meta task 1: " + format(player.sg.supergeneratorpower) + "/1,000,000 super generator power" },
-            canClick() { return player.i.tasksleft.gt(0) && player.sg.supergeneratorpower.gte(1000000) && player.m.metatask.eq(0) },
+            title() { return "<h3>Meta task 1: " + format(player.sg.supergeneratorpower) + "/40,000 super generator power" },
+            canClick() { return player.i.tasksleft.gt(0) && player.sg.supergeneratorpower.gte(40000) && player.m.metatask.eq(0) },
             unlocked() { return player.taskcutscene.eq(0) && player.m.metatask.eq(0) },
             onClick() {
                 player.i.tasksleft = player.i.tasksleft.sub(1)
@@ -1666,6 +1666,32 @@ opacity: "0.9",
             unlocked() { return player.beaconpointscene.lt(17) && player.beaconpointscene.neq(0) },
             onClick() {
                 player.beaconpointscene = player.beaconpointscene.sub(1)
+            },
+        },
+        111: {
+            title() { return "<h2>Layer 11: Subspace <br><h3>Req: 100,000 beacon points, 25 hindrance spirits, 400,000 incremental power." },
+            canClick() { return player.i.beaconpoints.gte(100000) && player.hi.hindrancespirits.gte(25) && player.m.points.gte(400000)},
+            unlocked() { return player.subspacelayer.eq(0) },
+            onClick() {
+                player.subspacelayer = new Decimal(1)
+                // Particle effect
+                alert("You have obtained the subspace layer.")
+                alert("It was dedicated to Spaceon. One of the gods of incremental.")
+                alert("It's main goal was to amplify the main space layer.")
+                alert("Despite many efforts, there were never any subspace buildings.")
+                alert("You are so close to the end of this celestial.")
+                alert("We are all glad you are not dead.")
+                createParticles();
+                createParticles();
+                createParticles();
+            },
+            style: {   background: '#e8ffff',
+            width: '275px', height: '150px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #e8ffff',
+            textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
             },
         },
     },
@@ -3203,6 +3229,8 @@ opacity: "0.9",
                         ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>You gain " + format(player.i.beaconpointstoget) + "<h3> beacon points on beacon fill (based on enhance points). " : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["buyable", 102], ["buyable", 103], ["buyable", 104]]],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 111]]],
                     ]
 
             },

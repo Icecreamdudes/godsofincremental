@@ -396,6 +396,7 @@ update(delta) {
     player.ti.timeenergycap = player.ti.timeenergycap.mul(player.hi.hindrancespiritseffect)
 
     if (player.ti.timeenergy.lt(player.ti.timeenergycap)) player.ti.timeenergypersecond = player.c.timecapsules.pow(1.2)
+    player.ti.timeenergypersecond = player.ti.timeenergypersecond.mul(player.ss.subspaceeffect)
     if (player.ti.timeenergy.gte(player.ti.timeenergycap)) 
     {
         player.ti.timeenergypersecond = new Decimal(0)
@@ -544,6 +545,7 @@ update(delta) {
     }
 
     player.sp.spacepersecond = player.c.spacebuildings.pow(1.5)
+    player.sp.spacepersecond = player.sp.spacepersecond.mul(player.ss.subspaceeffect)
     player.sp.space = player.sp.space.add(player.sp.spacepersecond.mul(delta))
 
     if (player.i.standardpath.eq(0)) player.sp.spacestandardeffect = new Decimal(1)
@@ -740,7 +742,7 @@ startData() { return {
 }
 },
 update(delta) {
-    player.sg.supergeneratorpowerpersecond = buyableEffect("i", 11)
+    player.sg.supergeneratorpowerpersecond = buyableEffect("sg", 11)
     player.sg.supergeneratorpower = player.sg.supergeneratorpower.add(player.sg.supergeneratorpowerpersecond.mul(delta))
     player.sg.supergeneratorpowereffect = player.sg.supergeneratorpower.div(1e7).pow(0.2).add(1)
 },
@@ -1042,4 +1044,129 @@ tabFormat: [
 ["raw-html", function () { return options.musicToggle && player.hindrancecutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.hindrancelayer.eq(1) }
+})
+addLayer("ss", {
+    name: "Subspace", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "SS", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Subspace", // Row the layer is in on the tree (0 is the first row)
+branches: ["sp"],
+color: "#e8ffff",
+startData() { return {
+    unlocked: true,
+    subspace: new Decimal(0),
+    subspacepersecond: new Decimal(0),
+    subspaceeffect: new Decimal(1),
+}
+},
+update(delta) {
+    player.ss.subspacepersecond = buyableEffect("ss", 11)
+    player.ss.subspacepersecond = player.ss.subspacepersecond.mul(buyableEffect("ss", 12))
+
+    player.ss.subspace = player.ss.subspace.add(player.ss.subspacepersecond.mul(delta))
+    player.ss.subspaceeffect = player.ss.subspace.pow(0.25).div(3.5).add(1)
+},
+clickables: {
+
+},
+upgrades: {
+},
+buyables: {
+    11: {
+        cost(x) { return new Decimal(1.4).pow(x || getBuyableAmount(this.layer, this.id)).mul(200) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id) },
+        unlocked() { return true },
+        canAfford() { return player.sp.space.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Subspace Building"
+        },
+        tooltip() {
+            return "<h5>Wait subspace buildings exist? That's weird."
+        },
+        display() {
+            return "which are producing +" + format(tmp[this.layer].buyables[this.id].effect) + " subspace per second.\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Space"
+        },
+        buy() {
+            let base = new Decimal(200)
+            let growth = 1.4
+            let max = Decimal.affordGeometricSeries(player.sp.space, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.sp.space = player.sp.space.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "#e8ffff",}
+    },
+    12: {
+        cost(x) { return new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(1000) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).add(1) },
+        unlocked() { return true },
+        canAfford() { return player.ti.timeenergy.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Subspace Time Capsule"
+        },
+        tooltip() {
+            return "<h5>What the heck? Subspace time capsules?"
+        },
+        display() {
+            return "which are boosting subspace gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Time Energy"
+        },
+        buy() {
+            let base = new Decimal(1000)
+            let growth = 1.5
+            let max = Decimal.affordGeometricSeries(player.ti.timeenergy, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.ti.timeenergy = player.ti.timeenergy.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "#e8ffff",}
+    },
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+    jacorblog26: {
+        unlocked() { return player.quirkcutscene.eq(0) },
+        title: "Log XXVI",
+        body() { return "Log XXVI: Aarex left off again. I am actually starting to get suspicious about him. I wonder who he's seeing, what he needs, and why? Every time I try to communicate with him I can't. I'm just working by myself right now. ??????? gave us a lot of information on the death realm, which is good. ???? is almost done with ??????. Hevipelle is starting to mass produce celestials, which I don't think is a very good idea. We'll just see how things go." },         
+    },
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#e8ffff' } },
+unlocked() { return player.quirklayer.eq(1) },
+content:
+
+    [
+        ["blank", "25px"],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h2>You have " + format(player.ss.subspace) + " subspace." : "" }, { "color": "#e8ffff", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h3>which boosts time energy and space gain by x" + format(player.ss.subspaceeffect) + "." : "" }, { "color": "#e8ffff", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h3>You are gaining " + format(player.ss.subspacepersecond) + " subspace per second." : "" }, { "color": "#e8ffff", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h4>You have " + format(player.sp.space) + " space." : "" }, { "color": "#dfdfdf", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancecutscene.eq(0) ? "<h4>You have " + format(player.ti.timeenergy) + " time energy." : "" }, { "color": "#006609", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["buyable", 11], ["buyable", 12]]],   
+        ["blank", "25px"],
+        ["infobox", "jacorblog26"],
+    ],
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.subspacelayer.eq(1) }
 })

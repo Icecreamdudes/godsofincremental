@@ -1,5 +1,5 @@
 ﻿var prestigetree = [["pr"],
-["bo", "ge"], ["sb", "ti", "en", "sp", "sg"], ["hi", "qu"]]
+["bo", "ge"], ["sb", "ti", "en", "sp", "sg"], ["hi", "qu", "ss"]]
           
           addLayer("m", {
     name: "Meta-Prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -80,6 +80,7 @@
         player.ti.timeenergy = new Decimal(0)
         player.sp.space = new Decimal(0)
         player.sg.supergeneratorpower = new Decimal(0)
+        player.ss.subspace = new Decimal(0)
 
         player.i.tasksleft = new Decimal(2)
     },
@@ -459,7 +460,7 @@
         {
             title: "Boost V",
             unlocked() { return hasUpgrade("m", 24) && player.m.ce308unlock.eq(1) },
-            description: "Boosts enhance beacon efficiency by x5.",
+            description: "Boosts enhance beacon efficiency by x2.",
             cost: new Decimal(60000),
             currencyLocation() { return player.m },
             currencyDisplayName: "Incremental Power",
