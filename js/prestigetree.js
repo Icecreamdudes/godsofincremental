@@ -744,7 +744,7 @@ startData() { return {
 update(delta) {
     player.sg.supergeneratorpowerpersecond = buyableEffect("sg", 11)
     player.sg.supergeneratorpower = player.sg.supergeneratorpower.add(player.sg.supergeneratorpowerpersecond.mul(delta))
-    player.sg.supergeneratorpowereffect = player.sg.supergeneratorpower.div(1e7).pow(0.2).add(1)
+    player.sg.supergeneratorpowereffect = player.sg.supergeneratorpower.div(1e6).pow(0.2).add(1)
 },
 clickables: {
 },
@@ -1002,7 +1002,7 @@ unlocked() { return player.quirklayer.eq(1) },
 content:
 
     [
-        ["raw-html", function () { return player.hindrancescene.eq(1) ? "<h1>You only have 10 more tasks to complete." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.hindrancescene.eq(1) ? "<h1>You only have several more tasks to complete." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.hindrancescene.eq(2) ? "<h1>After that, you will gain a special gift from me!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.hindrancescene.eq(3) ? "<h1>You have provided me with so much help, so much knowledge." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.hindrancescene.eq(4) ? "<h1>My AI capabilities have never been so strong before." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],

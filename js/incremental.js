@@ -97,6 +97,11 @@
         hindrancepointstoget: new Decimal(0),
         hindrancepointpause: new Decimal(0),
 
+        //puremachine
+        puremachines: new Decimal(0),
+        puremachinespersecond: new Decimal(0),
+        sacrificedincrementalpower: new Decimal(0),
+
         //ENHANCE PATH
         enhancepath: new Decimal(0),
         bestenhancepoints: new Decimal(0),
@@ -526,6 +531,19 @@
             layers.i.hindrancereset();
         }
         player.i.hindrancepointpause = player.i.hindrancepointpause.sub(1)
+
+        if (player.puremachinescene.eq(17)) {
+            player.puremachinecutscene = new Decimal(0)
+            player.ince308cutscene = new Decimal(0)
+        }
+        if (player.puremachinescene.gt(0) && player.puremachinecutscene.eq(1))
+        {
+            player.ince308cutscene = new Decimal(1)
+        }
+
+        player.i.puremachinespersecond = player.i.sacrificedincrementalpower.pow(0.6).div(100000)
+        player.i.puremachines = player.i.puremachines.add(player.i.puremachinespersecond.mul(delta))
+
         //END OF STANDARD PATH
 
         //ENHANCE PATH
@@ -1523,8 +1541,8 @@ opacity: "0.9",
             style: { "background-color": "#a14040", width: '500px', "min-height": '100px' },
         },
         85: {
-            title() { return "<h3>Crafting task 4:  " + formatWhole(player.c.timecapsules) + "/30 time capsules and  " + formatWhole(player.c.spacebuildings) + "/15 space buildings." },
-            canClick() { return player.i.tasksleft.gt(0) && player.c.timecapsules.gte(30) && player.c.spacebuildings.gte(15) && player.m.craftingtask.eq(3) },
+            title() { return "<h3>Crafting task 4:  " + formatWhole(player.c.timecapsules) + "/30 time capsules, " + formatWhole(player.c.spacebuildings) + "/15 space buildings, and " + formatWhole(player.c.celestialbatteries) + "/3 celestial batteries." },
+            canClick() { return player.i.tasksleft.gt(0) && player.c.timecapsules.gte(30) && player.c.spacebuildings.gte(15) && player.c.celestialbatteries.gte(3) && player.m.craftingtask.eq(3) },
             unlocked() { return player.taskcutscene.eq(0) && player.m.craftingtask.eq(3) },
             onClick() {
                 player.i.tasksleft = player.i.tasksleft.sub(1)
@@ -1586,6 +1604,32 @@ opacity: "0.9",
                 player.i.hindrancepoints = player.i.hindrancepoints.add(player.i.hindrancepointstoget)
             },
             style: {  width: '150px', "min-height": '60px', "background-color": "#a14040",  }
+        },
+        89: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.puremachinecutscene.eq(1) },
+            unlocked() { return player.puremachinescene.lt(17) },
+            onClick() {
+                player.puremachinescene = player.puremachinescene.add(1)
+            },
+        },
+        91: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.puremachinecutscene.eq(1) },
+            unlocked() { return player.puremachinescene.lt(17) && player.puremachinescene.neq(0) },
+            onClick() {
+                player.puremachinescene = player.puremachinescene.sub(1)
+            },
+        },
+        92: {
+            title() { return "Sacrifice 10% of incremental power (Must have over 100,000)<br>Don't screw this up, please!" },
+            canClick() { return player.i.standardpath.eq(1) && player.m.points.gte(100000)},
+            unlocked() { return player.i.standardpath.eq(1) && player.puremachinecutscene.eq(0) },
+            onClick() {
+                player.m.points = player.m.points.sub(player.m.points.mul(0.1))
+                player.i.sacrificedincrementalpower = player.i.sacrificedincrementalpower.add(player.m.points.mul(0.1))
+            },
+            style: {  width: '700px', "min-height": '100px', 'background-image': 'radial-gradient(circle, #ffffaa 0%, white 0%, #ffffaa 100%)', "color": 'black', animation: "gradient 1s infinite", }
         },
         //ENHANCE PATH
 
@@ -3643,6 +3687,39 @@ opacity: "0.9",
                         ["row", [["clickable", 87]]],
                         ["blank", "25px"],
                         ["row", [["buyable", 35], ["buyable", 36], ["buyable", 37], ["buyable", 38]]],
+                    ]
+            },
+            "Pure Machines": {
+                buttonStyle() { return { 'border-color': 'black', 'background-image': 'radial-gradient(circle, #ffffaa 0%, white 0%, #ffffaa 100%)', "color": 'black', animation: "gradient 1s infinite", } },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.energytask.eq(4) && player.m.metatask.eq(4) && player.m.challengetask.eq(4) && player.m.craftingtask.eq(4) },
+                content:
+                    [
+                        ["raw-html", function () { return player.puremachinescene.eq(1) && player.i.standardpath.eq(1) ? "<h1>So, you have finished my tasks." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(2) && player.i.standardpath.eq(1) ? "<h1>In return, these pure machines are my reward." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(3) && player.i.standardpath.eq(1) ? "<h1>However, you must use incremental power to unleash their potential." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(4) && player.i.standardpath.eq(1) ? "<h1>Now that the tasks are done, I can begin my plan." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(5) && player.i.standardpath.eq(1) ? "<h1>I will begin a new age of celestials!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(6) && player.i.standardpath.eq(1) ? "<h1>Arits and Sitra will acknowledge their amazing creation." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(7) && player.i.standardpath.eq(1) ? "<h1>My issue is that these celestials," : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(8) && player.i.standardpath.eq(1) ? "<h1>they don't work together these days!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(9) && player.i.standardpath.eq(1) ? "<h1>The one man who brought us together..." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(10) && player.i.standardpath.eq(1) ? "<h1>The one man who brought us together, He is nowhere to be found!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(11) && player.i.standardpath.eq(1) ? "<h1>Us celestials are doomed. We have been ruined by each other!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(12) && player.i.standardpath.eq(1) ? "<h1>Not anymore! Celestials will dominate the multiverse!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(13) && player.i.standardpath.eq(1) ? "<h1>These prestige machines, pure machines, any machines," : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(14) && player.i.standardpath.eq(1) ? "<h1>They all have a chance at life." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(15) && player.i.standardpath.eq(1) ? "<h1>Now, a new age of celestials awaits! I will be the celestial of celestials!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinescene.eq(16) && player.i.standardpath.eq(1) ? "<h1>Things will be new. This is the dawn of the prestige machines!!!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 91], ["clickable", 89]]],
+                        ["raw-html", function () { return player.puremachinecutscene.eq(1) ? " <div class=spinning-symbol2>Θ</div>" : "" }],
+                        ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h2>You have " + format(player.i.puremachines) + "<h2> pure machines. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h3>You are gaining " + format(player.i.puremachinespersecond) + "<h3> pure machines per second. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h2>You have sacrificed " + format(player.i.sacrificedincrementalpower) + "<h2> incremental power. " : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h3>You have " + format(player.m.points) + "<h3> incremental power. " : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 92]]],
                     ]
             },
         },

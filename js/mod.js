@@ -120,6 +120,8 @@ function addedPlayerData() {
 		hindranceenergyscene: new Decimal(0),
 		hindrancecutscene: new Decimal(1),
 		hindrancescene: new Decimal(0),
+		puremachinecutscene: new Decimal(1),
+		puremachinescene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),

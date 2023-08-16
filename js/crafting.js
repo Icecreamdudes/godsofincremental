@@ -322,11 +322,11 @@ clickables: {
         },
     },
     //DONT MIND THIS CODE LOL
-    13: { title() { return "<h2>Unlock the standard path lock." }, canClick() { return player.bestpoints.gte(1e36) && player.i.bestprestigeenergy.gte(1e9) && player.i.bestpureenergy.gte(1e6) && player.i.prestigemachines.gte(125) && player.i.boosterenergy.gte(10000000) && player.i.generatorenergy.gte(10000000) && player.m.incrementalenergy.gte(40) && player.i.standardpath.eq(1) && player.c.standardkey.eq(0) }, unlocked() { return player.craftingcutscene.eq(0) }, onClick() { player.c.standardkey = new Decimal(1) }, style: { "background-color": "#ffffaa", width: '300px', "min-height": '75px' }, },
+    13: { title() { return "<h2>Unlock the standard path lock." }, canClick() { return player.bestpoints.gte(1e36) && player.i.bestprestigeenergy.gte(1e9) && player.i.bestpureenergy.gte(1e6) && player.i.prestigemachines.gte(125) && player.i.boosterenergy.gte(10000000) && player.i.generatorenergy.gte(10000000) && player.m.incrementalenergy.gte(40) && player.i.standardpath.eq(1) && player.c.standardkey.eq(0) }, unlocked() { return player.craftingcutscene.eq(0) && player.c.standardkey.eq(0) }, onClick() { player.c.standardkey = new Decimal(1) }, style: { "background-color": "#ffffaa", width: '300px', "min-height": '75px' }, },
     14: {
         title() { return "<h2>Unlock the enhance path lock." },
         canClick() { return player.bestpoints.gte(1e14) && player.i.bestenhancepoints.gte(500) && player.i.prestigepoints.gte(5e8) && player.i.buyables[101].gte(15) && player.i.enhancebeaconlevel.gte(8) && player.m.points.gte(5000) && player.i.enhancepath.eq(1) && player.c.enhancekey.eq(0) },
-        unlocked() { return player.craftingcutscene.eq(0) },
+        unlocked() { return player.craftingcutscene.eq(0) && player.c.enhancekey.eq(0) },
         onClick() {
             player.c.enhancekey = new Decimal(1)
         },
