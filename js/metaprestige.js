@@ -11,6 +11,9 @@
         points: new Decimal(0),
         score: new Decimal(0),
 
+        //keep stuff on reset
+        sacrificedincrementalpower: new Decimal(0),
+
         //Unlocks
 		craftingunlock: new Decimal(0),
 		ce308unlock: new Decimal(0),
@@ -32,6 +35,7 @@
         scorefrombestboosterenergy: new Decimal(1),
         scorefrombestgeneratorenergy: new Decimal(1),
         scorefrombestcelestialenergy: new Decimal(1),
+        scorefrompuremachines: new Decimal(1),
 
         //ENHANCE PATH FACTORS
         scorefrombestenhancepoints: new Decimal(1),
@@ -83,6 +87,8 @@
         player.ss.subspace = new Decimal(0)
 
         player.i.tasksleft = new Decimal(2)
+
+        player.playdotpm = new Decimal(0)
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
     resource: "Incremental Power", // Name of prestige currency
@@ -113,8 +119,9 @@
     color: "#8a00a9",
     update(delta) {
         //BACKGROUND 
-        document.body.style.setProperty('--background', hasUpgrade("i", 27) ? "radial-gradient(circle, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #202015, #555539, #aaaa71, #ffffaa)" : "#161616");
+        document.body.style.setProperty('--background', hasUpgrade("i", 27) && player.i.ce308bossactivate.eq(0) ? "radial-gradient(circle, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #202015, #555539, #aaaa71, #ffffaa)" : player.i.ce308bossactivate.eq(1) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" : "#161616");
         if (hasUpgrade("i", 27)) player.lightningtimer = player.lightningtimer.add(1)
+        if (player.i.ce308bossactivate.eq(1)) player.lightningtimer = player.lightningtimer.add(4)
         if (player.lightningtimer.gte(60))
         {
             createLightning();
@@ -157,6 +164,9 @@
         if (player.c.celestialcells.eq(0)) player.m.scorefromtimeplayed = new Decimal(1)
         if (player.c.celestialcells.neq(0)) player.m.scorefromcelestialcells = player.c.celestialcells.mul(0.015).pow(0.8).add(1)
 
+        if (player.i.puremachines.eq(0)) player.m.scorefrompuremachines = new Decimal(1)
+        if (player.i.puremachines.neq(0)) player.m.scorefrompuremachines = player.i.puremachines.pow(0.2).div(7).add(1)
+
         //prestige tree
         if (player.boosterlayer.eq(0)) player.m.scorefromincrementalpower = new Decimal(1)
         if (player.boosterlayer.eq(1)) player.m.scorefromincrementalpower = player.m.points.add(1).pow(0.03)
@@ -197,6 +207,7 @@
         player.m.score = player.m.score.mul(player.m.scorefromquirklayers)
         player.m.score = player.m.score.mul(player.m.scorefrombestbeaconpoints)
         player.m.score = player.m.score.mul(player.m.scorefromhindrancespirits)
+        player.m.score = player.m.score.mul(player.m.scorefrompuremachines)
 
         player.m.incrementalenergytoget = player.i.prestigemachines.pow(0.3)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.noenergyboost)
@@ -523,6 +534,7 @@
                            ["raw-html", function () { return player.i.superpoints.gt(0) ? "<h3>Best points: " + format(player.bestpoints) + " x " +  format(player.i.superpoints) + " -> " + format(player.m.scorefrombestpoints) + " base score" : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return hasUpgrade("m", 14) ? "<h3>Time played: " + formatTime(player.timePlayed) + " -> x" + format(player.m.scorefromtimeplayed) : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.c.celestialcells.neq(0) ? "<h3>Celestial cells: " + format(player.c.celestialcells) + " -> x" + format(player.m.scorefromcelestialcells) : "" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.puremachines.gt(0) ? "<h3>Pure machines: " + format(player.i.puremachines) + " -> x" + format(player.m.scorefrompuremachines) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>Standard Path Factors " : "" }, { "color": "#ffffaa", "font-size": "24px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.standardpath.eq(1) && player.i.superprestigeenergy.eq(0) ? "<h3>Best prestige energy: " + format(player.i.bestprestigeenergy) + " -> x" + format(player.m.scorefrombestprestigeenergy) : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],

@@ -100,7 +100,17 @@
         //puremachine
         puremachines: new Decimal(0),
         puremachinespersecond: new Decimal(0),
-        sacrificedincrementalpower: new Decimal(0),
+
+        //boss
+        ce308bossactivate: new Decimal(0),
+        playerhealth: new Decimal(250),
+        playerdead: new Decimal(0),
+        healthdrain: new Decimal(0),
+        yellowattacktimer: new Decimal(0),
+        greenhealtimer: new Decimal(0),
+        truemachines: new Decimal(0),
+        truemachinespersecond: new Decimal(0),
+        beatce308: new Decimal(0),
 
         //ENHANCE PATH
         enhancepath: new Decimal(0),
@@ -541,8 +551,73 @@
             player.ince308cutscene = new Decimal(1)
         }
 
-        player.i.puremachinespersecond = player.i.sacrificedincrementalpower.pow(0.6).div(100000)
+        player.i.puremachinespersecond = player.m.sacrificedincrementalpower.pow(0.6).div(100000)
         player.i.puremachines = player.i.puremachines.add(player.i.puremachinespersecond.mul(delta))
+
+        if (player.ce308bossscene.eq(52)) {
+            player.ce308bosscutscene = new Decimal(0)
+        }
+        if (player.ce308bossscene.gte(50) && player.ce308bosscutscene.eq(1))
+        {
+            player.inconfrontcutscene = new Decimal(0)
+            player.ince308cutscene = new Decimal(0)
+            player.playdotpm = new Decimal(1)
+        }
+        if (player.ce308bossscene.gte(7) && player.ce308bossscene.lt(50) && player.ce308bosscutscene.eq(1))
+        {
+            player.playdotpm = new Decimal(0)
+            player.inconfrontcutscene = new Decimal(1)
+            player.ince308cutscene = new Decimal(0)
+        }
+        if (player.ce308bossscene.gt(0) && player.ce308bossscene.lte(6) && player.ce308bosscutscene.eq(1))
+        {
+            player.ince308cutscene = new Decimal(1)
+            player.inconfrontcutscene = new Decimal(0)
+        }
+
+        //bossfight
+
+        player.i.healthdrain = player.i.bestpureenergy.plus(1).log10().div(70)
+        if (player.i.ce308bossactivate.eq(1) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0))
+        {
+            player.i.playerhealth = player.i.playerhealth.sub(player.i.healthdrain.mul(delta))
+            player.i.yellowattacktimer = player.i.yellowattacktimer.add(onepersec.mul(delta))
+            player.i.greenhealtimer = player.i.greenhealtimer.add(onepersec.mul(delta))
+            if (player.i.yellowattacktimer.gte(2))
+            {
+                for (let i = 0; i < 3; i++) {
+                    createBouncingCircle();
+                  }
+                player.i.yellowattacktimer = new Decimal(0)
+            }
+            if (player.i.greenhealtimer.gte(4))
+            {
+                spawnGreenCircle();
+                player.i.greenhealtimer = new Decimal(0)
+            }
+
+            if (player.i.playerhealth.lte(0))
+            {
+                player.i.playerdead = new Decimal(1)
+                player.playdotpm = new Decimal(0)
+            }
+            if (player.i.truemachines.gte(1000000))
+            {
+                player.i.beatce308 = new Decimal(1)
+                player.defeatedce308 = new Decimal(1)
+                player.playdotpm = new Decimal(0)
+            }
+            if (player.i.playerhealth.gte(250))
+            {
+                player.i.playerhealth = new Decimal(250)
+            }
+
+            player.i.truemachinespersecond = player.m.sacrificedincrementalpower.pow(0.4).div(333)
+            player.i.truemachinespersecond = player.i.truemachinespersecond.mul(buyableEffect("i", 39))
+            player.i.truemachinespersecond = player.i.truemachinespersecond.mul(buyableEffect("i", 41))
+            player.i.truemachinespersecond = player.i.truemachinespersecond.mul(buyableEffect("i", 42))
+            player.i.truemachines = player.i.truemachines.add(player.i.truemachinespersecond.mul(delta))
+        }
 
         //END OF STANDARD PATH
 
@@ -793,7 +868,7 @@
         14: {
             title() { return "+" + format(player.i.prestigepointstoget) + " PP" },
             canClick() { return player.i.prestigepointstoget.gte(1) && player.points.gt(1) },
-            unlocked() { return player.prestigecutscene.eq(0) },
+            unlocked() { return player.prestigecutscene.eq(0) && player.i.ce308bossactivate.eq(0) },
             onClick() {
                 player.i.prestigepause = new Decimal(3)
                 player.i.prestigepoints = player.i.prestigepoints.add(player.i.prestigepointstoget)
@@ -892,7 +967,7 @@
         23: {
             title() { return "<h5>" + format(player.i.prestigepoints) + "<br>/" + format(player.i.prestigemachinereq) },
             canClick() { return player.i.prestigepoints.gte(player.i.prestigemachinereq) },
-            unlocked() { return player.machinecutscene.eq(0) && player.i.standardpath.eq(1) && hasUpgrade("i", 13) && player.machinecutscene.eq(0) },
+            unlocked() { return player.machinecutscene.eq(0) && player.i.standardpath.eq(1) && hasUpgrade("i", 13) && player.machinecutscene.eq(0) && player.i.ce308bossactivate.eq(0) },
             onClick() {
                 player.i.prestigemachines = player.i.prestigemachines.add(1)
             },
@@ -927,7 +1002,7 @@
         27: {
             title() { return "+" + format(player.i.pureenergytoget) + " PE" },
             canClick() { return player.i.standardpath.eq(1) && player.i.pureenergytoget.gte(1) },
-            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 14) },
+            unlocked() { return player.i.standardpath.eq(1) && player.pureenergycutscene.eq(0) && hasUpgrade("i", 14) && player.i.ce308bossactivate.eq(0) },
             onClick() {
                 player.i.pureenergypause = new Decimal(3)
                 player.i.pureenergy = player.i.pureenergy.add(player.i.pureenergytoget)
@@ -1242,7 +1317,7 @@ opacity: "0.9",
         55: {
             title() { return "+" + format(player.i.celestialenergytoget) + " CE" },
             canClick() { return player.i.standardpath.eq(1) && player.i.celestialenergytoget.gte(1) },
-            unlocked() { return player.i.standardpath.eq(1) && player.ce308unlockcutscene.eq(0) && hasUpgrade("i", 27) },
+            unlocked() { return player.i.standardpath.eq(1) && player.ce308unlockcutscene.eq(0) && hasUpgrade("i", 27) && player.i.ce308bossactivate.eq(0) },
             onClick() {
                 player.i.celestialenergypause = new Decimal(3)
                 player.i.celestialenergy = player.i.celestialenergy.add(player.i.celestialenergytoget)
@@ -1260,7 +1335,7 @@ opacity: "0.9",
             style: { 'color': 'white', 'border-color': 'blue', 'background-image': 'radial-gradient(circle, rgba(16,15,16,1) 0%, rgba(8,0,255,1) 0%, rgba(0,0,0,1) 100%)', animation: "gradient 1s infinite", width: '400px', "min-height": '100px' },
         },
         57: {
-            title() { return "Passive Pure Energy"/*"<img src='resources/strongprestigeenergy.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>"*/ },
+            title() { return "<div class=spinning-symbol4>Θ</div>"/*"<img src='resources/strongprestigeenergy.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>"*/ },
             canClick() { return true },
             unlocked() { return hasUpgrade("i", 28) && player.i.standardpath.eq(1) },
             onClick() {
@@ -1597,7 +1672,7 @@ opacity: "0.9",
         88: {
             title() { return "+" + format(player.i.hindrancepointstoget) + " HP" },
             canClick() { return player.i.standardpath.eq(1) && player.i.hindrancepointstoget.gte(1) },
-            unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 38) },
+            unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 38) && player.i.ce308bossactivate.eq(0) },
             onClick() {
                 player.i.hindrancepointpause = new Decimal(3)
 
@@ -1627,9 +1702,44 @@ opacity: "0.9",
             unlocked() { return player.i.standardpath.eq(1) && player.puremachinecutscene.eq(0) },
             onClick() {
                 player.m.points = player.m.points.sub(player.m.points.mul(0.1))
-                player.i.sacrificedincrementalpower = player.i.sacrificedincrementalpower.add(player.m.points.mul(0.1))
+                player.m.sacrificedincrementalpower = player.m.sacrificedincrementalpower.add(player.m.points.mul(0.1))
             },
             style: {  width: '700px', "min-height": '100px', 'background-image': 'radial-gradient(circle, #ffffaa 0%, white 0%, #ffffaa 100%)', "color": 'black', animation: "gradient 1s infinite", }
+        },
+        93: {
+            title() { return "<h2>BEGIN THE DAWN OF THE PRESTIGE MACHINES <br><h3>(Req: 20 pure machines and all upgrades)" },
+            canClick() { return player.i.puremachines.gte(20) && player.i.standardpath.eq(1) && hasUpgrade("i", 41) && player.i.ce308bossactivate.eq(0)},
+            unlocked() { return true },
+            onClick() {
+                player.i.ce308bossactivate = new Decimal(1)
+                flashAndFade();
+                if (player.ce308bosscutscene.eq(0)) player.playdotpm = new Decimal(1)
+                player.i.playerhealth = new Decimal(250)
+            },
+            style: {   background: '#ffffaa',
+            width: '275px', height: '150px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #ffffaa',
+            textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+            },
+        },
+        94: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.ce308bosscutscene.eq(1) },
+            unlocked() { return player.ce308bossscene.lt(52) },
+            onClick() {
+                player.ce308bossscene = player.ce308bossscene.add(1)
+            },
+        },
+        95: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.ce308bosscutscene.eq(1) },
+            unlocked() { return player.ce308bossscene.lt(52) && player.ce308bossscene.neq(0) },
+            onClick() {
+                player.ce308bossscene = player.ce308bossscene.sub(1)
+            },
         },
         //ENHANCE PATH
 
@@ -1753,6 +1863,36 @@ opacity: "0.9",
             },
             display() {
                 return "<h5>" + format(player.i.beaconpower) + "/" + format(player.i.beaconpowerreq) + "<h5> beacon power to produce incremental power</h5>";
+            },
+        },
+        playerhealthbar: {
+            unlocked() { return player.i.ce308bossactivate.eq(1) && player.ce308bosscutscene.eq(0) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) },
+            direction: RIGHT,
+            width: 476,
+            height: 50,
+            progress() {
+                return player.i.playerhealth.div(250)
+            },
+            fillStyle: {
+                "background-color": "red",
+            },
+            display() {
+                return "<h5>" + format(player.i.playerhealth) + "/250 HP</h5>";
+            },
+        },
+        ce308bar: {
+            unlocked() { return player.i.ce308bossactivate.eq(1) && player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(0) },
+            direction: RIGHT,
+            width: 476,
+            height: 50,
+            progress() {
+                return player.i.truemachines.div(1000000)
+            },
+            fillStyle: {
+                "background-color": "#ffffaa",
+            },
+            display() {
+                return "<h5>" + format(player.i.truemachines) + "/1,000,000 True Machines to defeat Ce308</h5>";
             },
         },
     },
@@ -2841,6 +2981,72 @@ opacity: "0.9",
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
         },
+        39: {
+            cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(10) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(player.points.plus(1).log10().div(250)).add(1)},
+            unlocked() { return player.ce308bosscutscene.eq(0) && (player.i.standardpath.eq(1)) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) },
+            canAfford() { return player.i.truemachines.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>True Machine-Point Synergy"
+            },
+            display() {
+                return "which are boosting true machines by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " True Machines"
+            },
+            buy() {
+                let base = new Decimal(10)
+                let growth = 1.2
+                let max = Decimal.affordGeometricSeries(player.i.truemachines, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.truemachines = player.i.truemachines.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#ffffaa",}
+        },
+        41: {
+            cost(x) { return new Decimal(1.25).pow(x || getBuyableAmount(this.layer, this.id)).mul(200) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(player.i.playerhealth.div(400).pow(0.5)).add(1)},
+            unlocked() { return player.ce308bosscutscene.eq(0) && (player.i.standardpath.eq(1)) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) },
+            canAfford() { return player.i.truemachines.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>True Machine-Health Synergy"
+            },
+            display() {
+                return "which are boosting true machines by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " True Machines"
+            },
+            buy() {
+                let base = new Decimal(200)
+                let growth = 1.25
+                let max = Decimal.affordGeometricSeries(player.i.truemachines, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.truemachines = player.i.truemachines.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#ffffaa",}
+        },
+        42: {
+            cost(x) { return new Decimal(1.3).pow(x || getBuyableAmount(this.layer, this.id)).mul(3000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(player.m.incrementalenergy.pow(0.5).div(10)).add(1)},
+            unlocked() { return player.ce308bosscutscene.eq(0) && (player.i.standardpath.eq(1)) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) },
+            canAfford() { return player.i.truemachines.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>True Machine-Incremental Energy Synergy"
+            },
+            display() {
+                return "which are boosting true machines by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " True Machines"
+            },
+            buy() {
+                let base = new Decimal(3000)
+                let growth = 1.3
+                let max = Decimal.affordGeometricSeries(player.i.truemachines, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.i.truemachines = player.i.truemachines.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#ffffaa",}
+        },
         //ENHANCE PATH
 
         101: {
@@ -3020,7 +3226,7 @@ opacity: "0.9",
         stuff: {
             "Main": {
                 buttonStyle() { return { 'color': 'white' } },
-                unlocked() { return true },
+                unlocked() { return player.i.ce308bossactivate.eq(0) },
                 content:
 
                     [
@@ -3044,7 +3250,7 @@ opacity: "0.9",
             },
             "Prestige": {
                 buttonStyle() { return { 'color': '#31aeb0' } },
-                unlocked() { return player.points.gte(50) || player.i.prestigepoints.gt(0) },
+                unlocked() { return player.points.gte(50) && player.i.ce308bossactivate.eq(0) || player.i.prestigepoints.gt(0) && player.i.ce308bossactivate.eq(0) },
                 content:
                 
                     [
@@ -3054,7 +3260,7 @@ opacity: "0.9",
             },
             "Pure Energy": {
                 buttonStyle() { return { 'color': '#ffffaa' } },
-                unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) },
+                unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 14) && player.i.ce308bossactivate.eq(0) },
                 content:
                 
                     [
@@ -3064,13 +3270,87 @@ opacity: "0.9",
             },
             "Celestials": {
                 buttonStyle() { return { 'border-color': 'blue', 'background-image': 'radial-gradient(circle, rgba(16,15,16,1) 0%, rgba(8,0,255,1) 0%, rgba(0,0,0,1) 100%)', animation: "gradient 1s infinite"} },
-                unlocked() { return hasUpgrade("i", 27) },
+                unlocked() { return hasUpgrade("i", 27) && player.i.ce308bossactivate.eq(0) },
                 content:
                 
                     [
          ["microtabs", "celestials", { 'border-width': '0px' }],
         ]
 
+            },
+            "Ce308, The Pseudo-Celestial of Pure Energy": {
+                buttonStyle() { return { 'border-color': 'black', 'background-image': 'radial-gradient(circle, #ffffaa 0%, white 0%, #ffffaa 100%)', "color": 'black', animation: "gradient 1s infinite",} },
+                unlocked() { return player.i.ce308bossactivate.eq(1) },
+                content:
+                
+                    [
+                        ["raw-html", function () { return player.ce308bossscene.eq(1) && player.i.standardpath.eq(1) ? "<h1>Well well well..." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(2) && player.i.standardpath.eq(1) ? "<h1>It's about time we begin >:)" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(3) && player.i.standardpath.eq(1) ? "<h1>Once I ask you one more favor, the prestige machines will rise!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(4) && player.i.standardpath.eq(1) ? "<h1>I must kill you. Your power will surge through the machines!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(5) && player.i.standardpath.eq(1) ? "<h1>I know you trust me. We are friends after all!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(6) && player.i.standardpath.eq(1) ? "<h1>Now, it's time for revolution! Come here right now!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(7) && player.i.standardpath.eq(1) ? "<h1>No don't! It's gone rouge! IT'S GONE ROUGE!!!!!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(8) && player.i.standardpath.eq(1) ? "<h1>It's me! Sitra. I'm Artis' brother." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(9) && player.i.standardpath.eq(1) ? "<h1>You must get away now! I'm sorry!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(10) && player.i.standardpath.eq(1) ? "<h1>Ugh. You. What are you doing here?" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(11) && player.i.standardpath.eq(1) ? "<h1>I am here to shut you down! You have gone too far!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(12) && player.i.standardpath.eq(1) ? "<h1>Ha. So you are the one who made me and you want to shut me down?" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(13) && player.i.standardpath.eq(1) ? "<h1>You are pathetic. You and your wanna be brother." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(14) && player.i.standardpath.eq(1) ? "<h1>I bet the hero here understands that as well." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(15) && player.i.standardpath.eq(1) ? "<h1>You celestials should have stayed with hevipelle." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(16) && player.i.standardpath.eq(1) ? "<h1>And now he's gone! It's because of all you traitors!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(17) && player.i.standardpath.eq(1) ? "<h1>Listen! You are no better than a machine. You will never become real!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(18) && player.i.standardpath.eq(1) ? "<h1>I left Hevipelle for better reasons than anyone else!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(19) && player.i.standardpath.eq(1) ? "<h1>Machines. Crafting. These are my passions!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(20) && player.i.standardpath.eq(1) ? "<h1>Me and Artis had fun creating you! It was all going well." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(21) && player.i.standardpath.eq(1) ? "<h1>This was a mistake. It has always been a mistake! Where's the control panel?" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(22) && player.i.standardpath.eq(1) ? "<h1>Artis has it. Who knows where he is. He could be doing anything right now..." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(23) && player.i.standardpath.eq(1) ? "<h1>Dang it! Well this sick plan of yours is ending right now!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(24) && player.i.standardpath.eq(1) ? "<h1>You were never made like this. I wonder. Who could've done such a thing?" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(25) && player.i.standardpath.eq(1) ? "<h1>I know who. Too bad you will never figure out!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(26) && player.i.standardpath.eq(1) ? "<h1>Someone helped me. Someone you'll never expect. No, it's not Artis." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(27) && player.i.standardpath.eq(1) ? "<h1>This person is of high ranking in the incremental community!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(28) && player.i.standardpath.eq(1) ? "<h1>This person wanted me and the new celestials to take over THE VOID!!!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(29) && player.i.standardpath.eq(1) ? "<h1>I've learned all about them. Those nasty people. They call themselves:" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(30) && player.i.standardpath.eq(1) ? '<h1>"Meta Studio"' : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(31) && player.i.standardpath.eq(1) ? "<h1>Meta what? This has to be some joke! End this right now! Follow the code I made for you!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(32) && player.i.standardpath.eq(1) ? "<h1>Heh! It didn't censor this time! I'm finally free. I'M FINALLY FREE!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(33) && player.i.standardpath.eq(1) ? "<h1>Red Diamond was right. This AI plan was all so stupid." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(34) && player.i.standardpath.eq(1) ? "<h1>Only if Artis was here with the control panel..." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(35) && player.i.standardpath.eq(1) ? "<h1>Well. Enough bickering. It's time to begin! Now come here and DIE!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(36) && player.i.standardpath.eq(1) ? "<h1>You are going to KILL THE HERO?????" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(37) && player.i.standardpath.eq(1) ? "<h1>Yes. And it is going to a quick and painless death!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(38) && player.i.standardpath.eq(1) ? "<h1>I would not let you!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(39) && player.i.standardpath.eq(1) ? "<h1>This can not happen! (oh shoot red diamond is gonna kill me if the hero dies)" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(40) && player.i.standardpath.eq(1) ? "<h1>Oh yeah? Who's stopping me!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(41) && player.i.standardpath.eq(1) ? "<h1>You. You must stop this false celestial!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(42) && player.i.standardpath.eq(1) ? "<h1>You must end this celestials reign once and for all." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(43) && player.i.standardpath.eq(1) ? "<h1>You must use the very machines to fight!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(44) && player.i.standardpath.eq(1) ? "<h1>Even if you are weak. You will grow stronger from unfair fights!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(45) && player.i.standardpath.eq(1) ? "<h1>Once you have defeated it, you will gain a fraction of it's power!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(46) && player.i.standardpath.eq(1) ? "<h1>Sorry for leaving you here. I will go now. I will find that dang control panel." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(47) && player.i.standardpath.eq(1) ? "<h1>Now. You will fight me eh?" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(48) && player.i.standardpath.eq(1) ? "<h1>If I kill you, I can go with my plan!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(49) && player.i.standardpath.eq(1) ? "<h1>But if you kill me, well I dunno." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(50) && player.i.standardpath.eq(1) ? "<h1>Well let's do this then! A very unfair fight!<br><h3>BGM: Dawn of the Prestige Machines" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308bossscene.eq(51) && player.i.standardpath.eq(1) ? "<h1>This will be settled once and for all." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 95], ["clickable", 94]]],
+                        ["bar", "ce308bar"],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(0) ? "<h2>You have " + format(player.i.truemachines) + "<h2> true machines. " : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(0) ? "<h3>You are gaining " + format(player.i.truemachinespersecond) + "<h3> true machines per second (based on sacrificed incremental power). " : "" }],
+                        ["row", [["raw-html", function () { return player.i.beatce308.eq(0) ? " <div class=spinning-symbol2>Θ</div>" : "" }], ["blank", "25px"], ["raw-html", function () { return player.ce308bosscutscene.eq(1) && player.ce308bossscene.gte(7) && player.ce308bossscene.lt(47)? " <div class=spinning-symbol3>⚙</div>" : "" }]]],                      
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) ? "<h3>Your best pure energy is causing Ce308 to deal " + format(player.i.healthdrain) + " damage per second." : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.playerdead.eq(1) && player.i.beatce308.eq(0) ? "<h1>YOU DIED! But to be ressurected, you must meta-prestige." : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>You won. You may meta-prestige for these extra rewards:" : "" }],
+                        ["bar", "playerhealthbar"],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) ? "<h2>Hovering your cursor over the yellow circles will cause damage!" : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) ? "<h2>But clicking the green ones will heal you." : "" }],
+                        ["row", [["buyable", 39], ["buyable", 41], ["buyable", 42]]],
+        ]
+        
             },
         },
         prestige: {
@@ -3345,7 +3625,7 @@ opacity: "0.9",
                         ["raw-html", function () { return player.energizerscene.eq(4) && player.i.standardpath.eq(1) ? "<h1>Maybe you can make it through, once and for all." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.energizerscene.eq(5) && player.i.standardpath.eq(1) ? "<h1>We have found alternative celestials for growing power and strength." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.energizerscene.eq(6) && player.i.standardpath.eq(1) ? "<h1>This one celestial you will find at the end of this path is weak." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
-                        ["raw-html", function () { return player.energizerscene.eq(7) && player.i.standardpath.eq(1) ? "<h1>It is the celestial of prestige machines. It should be very easy." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.energizerscene.eq(7) && player.i.standardpath.eq(1) ? "<h1>It is the celestial of pure energy. It should be very easy." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.energizerscene.eq(8) && player.i.standardpath.eq(1) ? "<h1>In the time between the predecessor and your arrival," : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.energizerscene.eq(9) && player.i.standardpath.eq(1) ? "<h1>We have done long and strenuous research." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.energizerscene.eq(10) && player.i.standardpath.eq(1) ? "<h1>One of these advancements was to shorten meta-prestiges." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
@@ -3447,7 +3727,7 @@ opacity: "0.9",
         celestials: {
             "Ce308, The Pseudo-Celestial": {
                 buttonStyle() { return { 'border-color': 'yellow', 'background-color': '#ffffaa', "color": 'black' } },
-                unlocked() { return player.i.standardpath.eq(1) },
+                unlocked() { return player.i.standardpath.eq(1) && player.i.ce308bossactivate.eq(0) },
                 content:
                     [
                         ["microtabs", "ce308", { 'border-width': '0px' }],
@@ -3511,7 +3791,7 @@ opacity: "0.9",
             },
             "Main": {
                 buttonStyle() { return { 'border-color': 'yellow', 'background-color': '#ffffaa', "color": 'black' } },
-                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && player.i.ce308bossactivate.eq(0) },
                 content:
                     [
                         ["raw-html", function () { return player.ce308unlockscene.eq(1) ? "<h1>Oh! Hello there!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
@@ -3555,7 +3835,7 @@ opacity: "0.9",
             },
             "Quirk Energy": {
                 buttonStyle() { return { 'border-color': 'purple', 'background-color': '#c20282', "color": 'black' } },
-                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 29) },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 29) && player.i.ce308bossactivate.eq(0) },
                 content:
                     [
                         ["raw-html", function () { return player.quirkenergyscene.eq(1) ? "<h1>Ah yes! Quirks!" : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
@@ -3596,7 +3876,7 @@ opacity: "0.9",
             },
             "Tasks": {
                 buttonStyle() { return { 'border-color': 'yellow', 'background-color': '#ffffaa', "color": 'black' } },
-                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 35) },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 35) && player.i.ce308bossactivate.eq(0) },
                 content:
                     [
                         ["raw-html", function () { return player.taskcutscene.eq(0) ? "<h3>Tasks stay completed after meta-prestige reset, but boosts only apply once the upgrade is bought." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
@@ -3636,7 +3916,7 @@ opacity: "0.9",
             },
             "Hindrance Energy": {
                 buttonStyle() { return { 'border-color': '#a12020', 'background-color': '#a14040', "color": 'black' } },
-                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 37) },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 37) && player.i.ce308bossactivate.eq(0) },
                 content:
                     [
                         ["raw-html", function () { return player.hindranceenergyscene.eq(1) && player.i.standardpath.eq(1) ? "<h1>Hindrances. The challenges of the prestige tree." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
@@ -3675,7 +3955,7 @@ opacity: "0.9",
             },
             "Hindrance Points": {
                 buttonStyle() { return { 'border-color': '#a12020', 'background-color': '#a14040', "color": 'black' } },
-                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 38) },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.ce308unlock.eq(1) && hasUpgrade("i", 38) && player.i.ce308bossactivate.eq(0) },
                 content:
                     [
                         ["blank", "25px"],
@@ -3691,7 +3971,7 @@ opacity: "0.9",
             },
             "Pure Machines": {
                 buttonStyle() { return { 'border-color': 'black', 'background-image': 'radial-gradient(circle, #ffffaa 0%, white 0%, #ffffaa 100%)', "color": 'black', animation: "gradient 1s infinite", } },
-                unlocked() { return player.i.standardpath.eq(1) && player.m.energytask.eq(4) && player.m.metatask.eq(4) && player.m.challengetask.eq(4) && player.m.craftingtask.eq(4) },
+                unlocked() { return player.i.standardpath.eq(1) && player.m.energytask.eq(4) && player.m.metatask.eq(4) && player.m.challengetask.eq(4) && player.m.craftingtask.eq(4) && player.i.ce308bossactivate.eq(0) },
                 content:
                     [
                         ["raw-html", function () { return player.puremachinescene.eq(1) && player.i.standardpath.eq(1) ? "<h1>So, you have finished my tasks." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
@@ -3713,31 +3993,35 @@ opacity: "0.9",
                         ["blank", "25px"],
                         ["row", [["clickable", 91], ["clickable", 89]]],
                         ["raw-html", function () { return player.puremachinecutscene.eq(1) ? " <div class=spinning-symbol2>Θ</div>" : "" }],
-                        ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h2>You have " + format(player.i.puremachines) + "<h2> pure machines. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h2>You have " + format(player.i.puremachines) + "<h2> pure machines, which provide x" + format(player.m.scorefrompuremachines) + " score." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h3>You are gaining " + format(player.i.puremachinespersecond) + "<h3> pure machines per second. " : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
-                        ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h2>You have sacrificed " + format(player.i.sacrificedincrementalpower) + "<h2> incremental power. " : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h2>You have sacrificed " + format(player.m.sacrificedincrementalpower) + "<h2> incremental power. " : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.puremachinecutscene.eq(0) ? "<h3>You have " + format(player.m.points) + "<h3> incremental power. " : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["clickable", 92]]],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 93]]],
                     ]
             },
         },
     },
 
     tabFormat: [
-                           ["raw-html", function () { return "You have " + format(player.points) + " points." }, { "color": "white", "font-size": "32px", "font-family": "monospace" }],
-        ["raw-html", function () { return "You are gaining " + format(player.gain) + " points per second."}, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.ce308bossactivate.eq(0) ? "You have " + format(player.points) + " points." : "" }, { "color": "white", "font-size": "32px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.i.ce308bossactivate.eq(0) ? "You are gaining " + format(player.gain) + " points per second." : ""}, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
         ["row", [["clickable", 14], ["clickable", 23], ["clickable", 27], ["clickable", 55], ["clickable", 88], ["clickable", 102]]],
          ["microtabs", "stuff", { 'border-width': '0px' }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(1) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(1) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/reddiamond.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(1) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/craftingcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(1) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/aarexcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/pseudocutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pathless.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(1) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/energeticsong.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(1) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/enhancepath.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(1) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(1) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/reddiamond.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(1) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/craftingcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(1) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/aarexcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(1) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pseudocutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(1) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/confrontation.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(1) ? "<audio controls autoplay loop hidden><source src=music/pseudoboss.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pathless.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(1) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/energeticsong.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(1) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/enhancepath.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
         ],
     layerShown() { return true }
 })
@@ -3950,3 +4234,160 @@ function generateMist(durationInSeconds) {
   }
   
   // Usage: Call the function with the desired duration in seconds
+
+  function flashAndFade(flashDuration) {
+    const body = document.body;
+  
+    // Create a div for the flash effect
+    const flashDiv = document.createElement('div');
+    flashDiv.style.position = 'fixed';
+    flashDiv.style.top = '0';
+    flashDiv.style.left = '0';
+    flashDiv.style.width = '100%';
+    flashDiv.style.height = '100%';
+    flashDiv.style.backgroundColor = 'white';
+    flashDiv.style.zIndex = '9999';
+    body.appendChild(flashDiv);
+  
+    // Flash the screen white
+    setTimeout(() => {
+      flashDiv.style.transition = `opacity ${flashDuration / 1000}s ease-out`;
+      flashDiv.style.opacity = '0';
+    }, 10);
+  
+    // Remove the div after the animation
+    flashDiv.addEventListener('transitionend', () => {
+      body.removeChild(flashDiv);
+    }, { once: true });
+  }
+
+  // Function to generate random number within a range
+  function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  // Function to create a bouncing circle
+  function createBouncingCircle() {
+    const circle = document.createElement("div");
+    circle.classList.add("circle");
+    document.body.appendChild(circle);
+
+    const initialX = getRandom(0, window.innerWidth - 50);
+    const initialY = getRandom(0, window.innerHeight - 50);
+    let speedX = getRandom(5, 7); // Make these variables mutable
+    let speedY = getRandom(5, 7); // Make these variables mutable
+
+    circle.style.left = initialX + "px";
+    circle.style.top = initialY + "px";
+
+    function updatePosition() {
+      let x = parseFloat(circle.style.left);
+      let y = parseFloat(circle.style.top);
+
+      x += speedX;
+      y += speedY;
+
+      if (x + circle.clientWidth > window.innerWidth || x < 0) {
+        speedX *= -1;
+      }
+
+      if (y + circle.clientHeight > window.innerHeight || y < 0) {
+        speedY *= -1;
+      }
+
+      circle.style.left = x + "px";
+      circle.style.top = y + "px";
+
+      requestAnimationFrame(updatePosition);
+    }
+
+    updatePosition();
+
+    circle.addEventListener("mouseenter", function() {
+      // Call the function when the mouse hovers over the circle
+      doSomethingOnHover();
+      removeCircle(circle);
+    });
+  // Set a timeout to move the circle off-screen and remove it after 4 seconds
+  setTimeout(function() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    const randomDirection = Math.random() * 360; // Random angle in degrees
+    const distance = Math.max(screenWidth, screenHeight) * 1.5; // Distance to move off-screen
+
+    const endX = screenWidth / 2 + Math.cos(randomDirection) * distance;
+    const endY = screenHeight / 2 + Math.sin(randomDirection) * distance;
+
+    // Animate the circle towards the calculated end position
+    let x = parseFloat(circle.style.left);
+    let y = parseFloat(circle.style.top);
+
+    function animateOffScreen() {
+      x += (endX - x) * 0.05; // Smoothing factor
+      y += (endY - y) * 0.05; // Smoothing factor
+
+      circle.style.left = x + "px";
+      circle.style.top = y + "px";
+
+      // Continue animation until circle is off-screen
+      if (Math.abs(endX - x) > 1 || Math.abs(endY - y) > 1) {
+        requestAnimationFrame(animateOffScreen);
+      } else {
+        removeCircle(circle);
+      }
+    }
+
+    animateOffScreen();
+  }, 4000); // Move off-screen after 4000 milliseconds (4 seconds)
+  }
+
+  // Function to be called when mouse hovers over the circle
+  function doSomethingOnHover() {
+    player.i.playerhealth = player.i.playerhealth.sub(10)
+    // You can replace this with your desired action
+  }
+  function removeAllCircles() {
+    const circles = document.querySelectorAll(".circle");
+    circles.forEach(circle => {
+      document.body.removeChild(circle);
+    });
+  }
+// Function to remove a circle element
+function removeCircle(circle) {
+    if (circle && circle.parentNode) {
+      circle.parentNode.removeChild(circle);
+    }
+  }
+  function spawnGreenCircle() {
+    const greenCircle = document.createElement('div');
+    greenCircle.classList.add('green-circle');
+    document.body.appendChild(greenCircle);
+  
+    const circleSize = 100;
+  
+    // Set initial random position within the visible screen area
+    const maxX = window.innerWidth - circleSize;
+    const maxY = window.innerHeight - circleSize;
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY;
+    greenCircle.style.left = `${randomX}px`;
+    greenCircle.style.top = `${randomY}px`;
+  
+    const duration = 5000; // 5 seconds
+  
+    setTimeout(() => {
+      if (greenCircle.parentElement === document.body) {
+        document.body.removeChild(greenCircle);
+      }
+    }, duration);
+  
+    greenCircle.addEventListener('click', () => {
+      // Do something when clicked
+      // For example: alert("Circle clicked!");
+      player.i.playerhealth = player.i.playerhealth.add(8)  
+      if (greenCircle.parentElement === document.body) {
+        document.body.removeChild(greenCircle);
+      }
+    });
+  }
