@@ -80,11 +80,11 @@ function addedPlayerData() {
 		ince308cutscene: new Decimal(0),
 		inconfrontcutscene: new Decimal(0),
 		playdotpm: new Decimal(0),
+		inchapter1ending: new Decimal(0),
 
 		//Checks
 		defeatedce308: new Decimal(0),
 		
-
 		//Cutscenes
 		prestigecutscene: new Decimal(1),
         prestigescene: new Decimal(0),
@@ -130,6 +130,8 @@ function addedPlayerData() {
 		puremachinescene: new Decimal(0),
 		ce308bosscutscene: new Decimal(1),
 		ce308bossscene: new Decimal(0),
+		ce308defeatcutscene: new Decimal(1),
+		ce308defeatscene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),

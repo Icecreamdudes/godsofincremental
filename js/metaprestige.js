@@ -70,6 +70,12 @@
             player.c.wires = player.c.wires.add(player.c.wirestoget)
             player.c.enhancepowder = player.c.enhancepowder.add(player.c.enhancepowdertoget)
         }
+        if (player.defeatedce308.eq(1))
+        {
+            player.c.scrapmetal = player.c.scrapmetal.add(player.i.scrapmetaltoget)
+            player.c.wires = player.c.wires.add(player.i.wirestoget)
+            player.c.enhancepowder = player.c.enhancepowder.add(player.i.enhancepowdertoget)
+        }
         if (player.m.craftingunlock.eq(1) && hasUpgrade("i", 27))
         {
             player.c.celestialcells = player.c.celestialcells.add(player.c.celestialcellstoget)
@@ -119,9 +125,9 @@
     color: "#8a00a9",
     update(delta) {
         //BACKGROUND 
-        document.body.style.setProperty('--background', hasUpgrade("i", 27) && player.i.ce308bossactivate.eq(0) ? "radial-gradient(circle, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #202015, #555539, #aaaa71, #ffffaa)" : player.i.ce308bossactivate.eq(1) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" : "#161616");
-        if (hasUpgrade("i", 27)) player.lightningtimer = player.lightningtimer.add(1)
-        if (player.i.ce308bossactivate.eq(1)) player.lightningtimer = player.lightningtimer.add(4)
+        document.body.style.setProperty('--background', hasUpgrade("i", 27) && player.i.ce308bossactivate.eq(0) && player.i.beatce308.eq(0) ? "radial-gradient(circle, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #202015, #555539, #aaaa71, #ffffaa)" : player.i.ce308bossactivate.eq(1) && player.i.beatce308.eq(0) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" : player.ce308defeatscene.gte(1)  && player.ce308defeatscene.lt(0) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" : player.ce308defeatscene.gte(1)  && player.ce308defeatscene.lt(11) ? "#999999" : "#161616");
+        if (hasUpgrade("i", 27) && player.i.beatce308.eq(0)) player.lightningtimer = player.lightningtimer.add(1)
+        if (player.i.ce308bossactivate.eq(1) && player.i.beatce308.eq(0)) player.lightningtimer = player.lightningtimer.add(4)
         if (player.lightningtimer.gte(60))
         {
             createLightning();

@@ -198,7 +198,41 @@
         -webkit-background-clip: text;
         color: transparent;
       }
-
+      .ce308symbol {
+        display: inline-block;
+        font-size: 350px;
+        transition: transform 0.2s ease-in-out;
+        background: linear-gradient(45deg, #ffffaa, yellow);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      .ce308symbol2 {
+        display: inline-block;
+        font-size: 350px;
+        transition: transform 0.2s ease-in-out;
+        background: linear-gradient(45deg, #ffffaa, yellow);
+        -webkit-background-clip: text;
+        color: transparent;
+        opacity: 60%;
+      }
+      .ce308symbol3 {
+        display: inline-block;
+        font-size: 350px;
+        transition: transform 0.2s ease-in-out;
+        background: linear-gradient(45deg, #ffffaa, yellow);
+        -webkit-background-clip: text;
+        color: transparent;
+        opacity: 30%;
+      }
+      .ce308symbol4 {
+        display: inline-block;
+        font-size: 350px;
+        transition: transform 0.2s ease-in-out;
+        background: linear-gradient(45deg, #ffffaa, yellow);
+        -webkit-background-clip: text;
+        color: transparent;
+        opacity: 10%;
+      }
 @keyframes gradient {
     0% {
         background-size: 0%;

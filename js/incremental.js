@@ -111,6 +111,9 @@
         truemachines: new Decimal(0),
         truemachinespersecond: new Decimal(0),
         beatce308: new Decimal(0),
+        wirestoget: new Decimal(0),
+        scrapmetaltoget: new Decimal(0),
+        enhancepowdertoget: new Decimal(0),
 
         //ENHANCE PATH
         enhancepath: new Decimal(0),
@@ -574,6 +577,7 @@
             player.ince308cutscene = new Decimal(1)
             player.inconfrontcutscene = new Decimal(0)
         }
+    
 
         //bossfight
 
@@ -614,9 +618,53 @@
 
             player.i.truemachinespersecond = player.m.sacrificedincrementalpower.pow(0.4).div(333)
             player.i.truemachinespersecond = player.i.truemachinespersecond.mul(buyableEffect("i", 39))
-            player.i.truemachinespersecond = player.i.truemachinespersecond.mul(buyableEffect("i", 41))
+            player.i.truemachinespersecond = player.i.truemachinespersecond.mul(buyableEffect("i", 41))      
             player.i.truemachinespersecond = player.i.truemachinespersecond.mul(buyableEffect("i", 42))
             player.i.truemachines = player.i.truemachines.add(player.i.truemachinespersecond.mul(delta))
+        }
+        player.i.scrapmetaltoget = player.i.prestigemachines.add(100).pow(0.4).mul(3).mul(player.i.beatce308).floor()
+        player.i.wirestoget = player.i.bestprestigeenergy.add(1e10).slog().pow(4.5).mul(2).mul(player.i.beatce308).floor()
+        player.i.enhancepowdertoget = player.i.buyables[23].add(10).pow(0.5).mul(4).mul(player.i.beatce308).floor()
+
+        if (player.ce308defeatscene.gte(70) && player.ce308defeatcutscene.eq(1))
+        {
+            player.ince308cutscene = new Decimal(0)
+            player.inconfrontcutscene = new Decimal(0)
+            player.inchapter1ending = new Decimal(0)
+            player.inartiscutscene = new Decimal(0)
+            player.ce308defeatcutscene = new Decimal(0)
+        }
+        if (player.ce308defeatscene.gte(62) && player.ce308defeatcutscene.eq(1))
+        {
+            player.ince308cutscene = new Decimal(0)
+            player.inconfrontcutscene = new Decimal(0)
+            player.inchapter1ending = new Decimal(1)
+            player.inartiscutscene = new Decimal(0)
+        }
+        if (player.ce308defeatscene.gte(50) && player.ce308defeatscene.lt(62) && player.ce308defeatcutscene.eq(1))
+        {
+            player.ince308cutscene = new Decimal(0)
+            player.inconfrontcutscene = new Decimal(0)
+            player.inchapter1ending = new Decimal(0)
+            player.inartiscutscene = new Decimal(1)
+        }
+        if (player.ce308defeatscene.gte(11) && player.ce308defeatscene.lt(50) && player.ce308defeatcutscene.eq(1))
+        {
+            player.inartiscutscene = new Decimal(0)
+            player.ince308cutscene = new Decimal(0)
+            player.inconfrontcutscene = new Decimal(0)
+            player.inchapter1ending = new Decimal(1)
+        }
+        if (player.ce308defeatscene.gt(0) && player.ce308defeatscene.lt(11) && player.ce308defeatcutscene.eq(1))
+        {
+            player.ince308cutscene = new Decimal(1)
+            player.inconfrontcutscene = new Decimal(1)
+        }
+        if (player.ce308defeatscene.eq(0) && player.ce308defeatcutscene.eq(1))
+        {
+            player.ince308cutscene = new Decimal(0)
+            player.inconfrontcutscene = new Decimal(0)
+            player.inchapter1ending = new Decimal(0)
         }
 
         //END OF STANDARD PATH
@@ -1739,6 +1787,23 @@ opacity: "0.9",
             unlocked() { return player.ce308bossscene.lt(52) && player.ce308bossscene.neq(0) },
             onClick() {
                 player.ce308bossscene = player.ce308bossscene.sub(1)
+            },
+        },
+        96: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.ce308defeatcutscene.eq(1) },
+            unlocked() { return player.ce308defeatscene.lt(70) },
+            onClick() {
+                if (player.ce308defeatscene.eq(0)) flashAndFade(8000);
+                player.ce308defeatscene = player.ce308defeatscene.add(1)
+            },
+        },
+        97: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.ce308defeatcutscene.eq(1) },
+            unlocked() { return player.ce308defeatscene.lt(70) && player.ce308defeatscene.neq(0) },
+            onClick() {
+                player.ce308defeatscene = player.ce308defeatscene.sub(1)
             },
         },
         //ENHANCE PATH
@@ -3349,6 +3414,99 @@ opacity: "0.9",
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) ? "<h2>Hovering your cursor over the yellow circles will cause damage!" : "" }],
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) ? "<h2>But clicking the green ones will heal you." : "" }],
                         ["row", [["buyable", 39], ["buyable", 41], ["buyable", 42]]],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>+" + formatWhole(player.i.scrapmetaltoget) + " scrap metal." : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>+" + formatWhole(player.i.wirestoget) + " wires." : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>+" + formatWhole(player.i.enhancepowdertoget) + " enhance powder." : "" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.ce308defeatcutscene.eq(1) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h3>There is a cutscene required in order to progress to the next chapter. It is a new tab above. " : "" }, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
+        ]
+        
+            },
+            "Chapter 1 Concluding Cutscene": {
+                buttonStyle() { return { 'border-color': 'black', 'background-image': 'radial-gradient(circle, #ffffaa 0%, white 0%, #ffffaa 100%)', "color": 'black', animation: "gradient 1s infinite",} },
+                unlocked() { return player.i.beatce308.eq(1) && player.ce308defeatcutscene.eq(1) },
+                content:
+                
+                    [
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(1) && player.i.standardpath.eq(1) ? "<h1>Listen to me son. You must kill the king of our dimension." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(2) && player.i.standardpath.eq(1) ? "<h1>Then, we will be put in command. We can take action and claim the hollow dimensions." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(3) && player.i.standardpath.eq(1) ? "<h1>You are an unstoppable force. A god like no other." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(4) && player.i.standardpath.eq(1) ? "<h1>The ????????? dimension will be feared. We will rule the whole section of our realm." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(5) && player.i.standardpath.eq(1) ? "<h1>Why? There are six gods, with great power in the dimensional realm!" : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(6) && player.i.standardpath.eq(1) ? "<h1>Their power is more desirable than mere empty shells of dimensions." : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(7) && player.i.standardpath.eq(1) ? "<h1>????? told me all about them. They are the gods of incremental." : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(8) && player.i.standardpath.eq(1) ? "<h1>You shall not listen to that wretched soul." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(9) && player.i.standardpath.eq(1) ? "<h1>Our hostage is no friend. They are enemy." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(10) && player.i.standardpath.eq(1) ? "<h1>Interact once more and I will punish you. You hear me A-" : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(11) && player.i.standardpath.eq(1) ? "<h1>So, it's finally over. I've been defeated." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(12) && player.i.standardpath.eq(1) ? "<h1>The power of true machines is one I can't stand. You know my weak spot." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(13) && player.i.standardpath.eq(1) ? "<h1>Anyways, I'll return to old ways before I go. you know, tryna help and stuff." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(14) && player.i.standardpath.eq(1) ? "<h1>I won't truly be gone. You can still fight for rewards and summon me and stuff." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(15) && player.i.standardpath.eq(1) ? "<h1>But it's just a perk of being someone like you." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(16) && player.i.standardpath.eq(1) ? "<h1>Someone reprogrammed me to go rouge. I can't say." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(17) && player.i.standardpath.eq(1) ? "<h1>It's someone you have spoke to before." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(18) && player.i.standardpath.eq(1) ? "<h1>I'm starting to fade now." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(19) && player.i.standardpath.eq(1) ? "<h1>Sitra has gotten to the control panel." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(20) && player.i.standardpath.eq(1) ? "<h1>Goodbye..." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(21) && player.i.standardpath.eq(1) ? "<h1>Dude! No way you actually did it? That's so crazy." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(22) && player.i.standardpath.eq(1) ? "<h1>I'm like, so happy. I'm gonna become FREE!" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(23) && player.i.standardpath.eq(1) ? "<h1>Hey Jacorb." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(24) && player.i.standardpath.eq(1) ? "<h1>Aarex? We can talk? Looks like the prestige tree's working." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(25) && player.i.standardpath.eq(1) ? "<h1>Heh. These are the first words in a really really long time." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(26) && player.i.standardpath.eq(1) ? "<h1>So, what's up?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(27) && player.i.standardpath.eq(1) ? "<h1>The sky." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(28) && player.i.standardpath.eq(1) ? "<h1>What sky? In exile, there is no up or down." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(29) && player.i.standardpath.eq(1) ? "<h1>Okay. I just feel bad about what happened to the tree." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(30) && player.i.standardpath.eq(1) ? "<h1>The hero's been going through so much work to put it together." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(31) && player.i.standardpath.eq(1) ? "<h1>It will be alright. One day, we will all be freed." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(32) && player.i.standardpath.eq(1) ? "<h1>But Aarex. I have something to discuss. But after this exile." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(33) && player.i.standardpath.eq(1) ? "<h1>I need to know your origin. You have never told me." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(34) && player.i.standardpath.eq(1) ? "<h1>It's about time I figure where you are from." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(35) && player.i.standardpath.eq(1) ? "<h1>Alright. Such information will cancel our communication again though." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(36) && player.i.standardpath.eq(1) ? "<h1>Oh boy! Oh boy! Finally! A defeated celestial!" : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(37) && player.i.standardpath.eq(1) ? "<h1>This is the first celestial defeat after the infinity keeper." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(38) && player.i.standardpath.eq(1) ? "<h1>Despite it being a pseudo-celestial, I heard it has gone past it's limits." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(39) && player.i.standardpath.eq(1) ? "<h1>Now it's time to begin a new quest. A new path." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(40) && player.i.standardpath.eq(1) ? "<h1>Now there will be true celestials." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(41) && player.i.standardpath.eq(1) ? "<h1>You must revisit the path of singularity. It is mandatory." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(42) && player.i.standardpath.eq(1) ? "<h1>For real? I don't think my balancing is needed no more, the trials are complete." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(43) && player.i.standardpath.eq(1) ? "<h1>My balancing would help though. Singularity is like that." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(44) && player.i.standardpath.eq(1) ? "<h1>We know the truth about your predecessor." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(45) && player.i.standardpath.eq(1) ? "<h1>You must find him in the path of singularity." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(46) && player.i.standardpath.eq(1) ? "<h1>It should be easier, since he already did the dirty work." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(47) && player.i.standardpath.eq(1) ? "<h1>But as a duo, you should find the celestials easier." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(48) && player.i.standardpath.eq(1) ? "<h1>We've had countless heroes since the time of the gods." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(49) && player.i.standardpath.eq(1) ? "<h1>However, none of them has been as hopeful as you two." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(50) && player.i.standardpath.eq(1) ? "<h1>I have a report!" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(51) && player.i.standardpath.eq(1) ? "<h1>According to Sitra, someone has reprogrammed Ce308." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(52) && player.i.standardpath.eq(1) ? "<h1>And it is someone on our side. There is a traitor!" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(53) && player.i.standardpath.eq(1) ? "<h1>That's not important right now. The quest is." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(54) && player.i.standardpath.eq(1) ? "<h1>I dunno R.D. That's something a traitor would say." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(55) && player.i.standardpath.eq(1) ? "<h1>You can figure that out, Artis. Whoever this traitor is, that won't change any plans." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(56) && player.i.standardpath.eq(1) ? "<h1>Anyways. Great job on defeating this celestial." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(57) && player.i.standardpath.eq(1) ? "<h1>I'm sorry it went rouge. It's all our fault." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(58) && player.i.standardpath.eq(1) ? "<h1>Now you will be travelling realms. However, you need a ticket." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(59) && player.i.standardpath.eq(1) ? "<h1>Tickets will be craftable. I didn't make it too expensive. I'm nice." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(60) && player.i.standardpath.eq(1) ? "<h1>There will also be more crafting stuff to unlock. That's cool." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(61) && player.i.standardpath.eq(1) ? "<h1>Anyways, I'm out." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(62) && player.i.standardpath.eq(1) ? "<h1>Since you've defeated the celestial, you will unlock new things!" : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(63) && player.i.standardpath.eq(1) ? "<h1>Like the crafting Artis mentioned. Now it will be taken seriously." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(64) && player.i.standardpath.eq(1) ? "<h1>And you will have access to the realm hopper." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(65) && player.i.standardpath.eq(1) ? "<h1>It can teleport you from realm to realm, but takes time and requires tickets." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(66) && player.i.standardpath.eq(1) ? "<h1>You should go to Aarex's hub, which is already unlocked for you." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(67) && player.i.standardpath.eq(1) ? "<h1>Now. That's it. The beginning of the end." : "" }, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(68) && player.i.standardpath.eq(1) ? "<h1> CHAPTER 1: THE STANDARD PATH." : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.ce308defeatscene.eq(69) && player.i.standardpath.eq(1) ? "<h1> To be continued in Chapter 2..." : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+
+                        ["blank", "25px"],
+                        ["row", [["clickable", 97], ["clickable", 96]]],
+                        ["row", [["raw-html", function () { return player.ce308defeatscene.gte(11) && player.ce308defeatscene.lt(18) ? " <div class=ce308symbol>Θ</div>" : "" }]]],                      
+                        ["row", [["raw-html", function () { return player.ce308defeatscene.eq(18) ? " <div class=ce308symbol2>Θ</div>" : "" }]]],                      
+                        ["row", [["raw-html", function () { return player.ce308defeatscene.eq(19) ? " <div class=ce308symbol3>Θ</div>" : "" }]]],                      
+                        ["row", [["raw-html", function () { return player.ce308defeatscene.eq(20) ? " <div class=ce308symbol4>Θ</div>" : "" }]]],                                         
+                        ["raw-html", function () { return player.ce308defeatscene.gte(50) && player.ce308defeatscene.lt(62) ? " <div class=spinning-symbol>☭</div>" : "" }],
         ]
         
             },
@@ -4012,16 +4170,17 @@ opacity: "0.9",
         ["raw-html", function () { return player.i.ce308bossactivate.eq(0) ? "You are gaining " + format(player.gain) + " points per second." : ""}, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
         ["row", [["clickable", 14], ["clickable", 23], ["clickable", 27], ["clickable", 55], ["clickable", 88], ["clickable", 102]]],
          ["microtabs", "stuff", { 'border-width': '0px' }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(1) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(1) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/reddiamond.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(1) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/craftingcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(1) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/aarexcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(1) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pseudocutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(1) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/confrontation.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(1) ? "<audio controls autoplay loop hidden><source src=music/pseudoboss.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pathless.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(1) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/energeticsong.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(1) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/enhancepath.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(1) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(1) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/reddiamond.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(1) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/craftingcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(1) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/aarexcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(1) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pseudocutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(1) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/confrontation.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(1) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pseudoboss.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(1) ? "<audio controls autoplay loop hidden><source src=music/chapter1end.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/pathless.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(1) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/energeticsong.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+         ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(1) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/enhancepath.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
         ],
     layerShown() { return true }
 })
