@@ -1806,6 +1806,32 @@ opacity: "0.9",
                 player.ce308defeatscene = player.ce308defeatscene.sub(1)
             },
         },
+        98: {
+            title() { return "<h2>Layer 12: Solarity <br><h3>Req: 3,000,000 sacrificed incremental power." },
+            canClick() { return player.m.sacrificedincrementalpower.gte(3e6)},
+            unlocked() { return player.solaritylayer.eq(0) },
+            onClick() {
+                player.solaritylayer = new Decimal(1)
+                // Particle effect
+                alert("Solarity, dedicated to one of the gods.")
+                alert("It will be the gateway to many new crafting resources.")
+                alert("Sitra will tell you more once you've reached that point.")
+                alert("For now, it won't do much.")
+                createParticles();
+                createParticles();
+                createParticles();
+            },
+            style: {   
+                "background-origin": "border-box",
+                background: "radial-gradient(#ffcd00, #ff4300)",
+            width: '275px', height: '150px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #ffcd00',
+            textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+            },
+        },
         //ENHANCE PATH
 
         101: {
@@ -3555,7 +3581,7 @@ opacity: "0.9",
                         ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h2>You have " + format(player.i.prestigeenergy) + "<h2> prestige energy. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>You are gaining " + format(player.i.prestigeenergypersecond) + "<h2> prestige energy per second. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>which gives a x" + format(player.i.prestigeenergyeffect) + " boost to prestige points gain. " : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
-                        ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>but a /" + format(player.i.prestigeenergyeffectonpoints) + " divide on point gain. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.standardpath.eq(1) ? "<h3>but a /" + formatSmall(player.i.prestigeenergyeffectonpoints) + " divide on point gain. " : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["buyable", 15]]],
                         ["blank", "25px"],
@@ -4159,7 +4185,7 @@ opacity: "0.9",
                         ["blank", "25px"],
                         ["row", [["clickable", 92]]],
                         ["blank", "25px"],
-                        ["row", [["clickable", 93]]],
+                        ["row", [["clickable", 93], ["blank", "25px"], ["clickable", 98]]],
                     ]
             },
         },

@@ -1,5 +1,5 @@
 ﻿var prestigetree = [["pr"],
-["bo", "ge"], ["sb", "ti", "en", "sp", "sg"], ["hi", "qu", "ss"]]
+["bo", "ge"], ["sb", "ti", "en", "sp", "sg"], ["so", "hi", "qu", "ss"]]
           
           addLayer("m", {
     name: "Meta-Prestige", // This is optional, only used in a few places, If absent it just uses the layer id.

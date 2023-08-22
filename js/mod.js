@@ -5,7 +5,7 @@
 	pointsName: "points",
 	modFiles: ["incremental.js", "metaprestige.js", "tree.js", "prestigetree.js", "crafting.js"],
 
-	discordName: "Incremental God Tree Server",
+	discordName: "Gods of Incremental Server",
 	discordLink: "https://discord.gg/icecreamdude-s-incremental-games-850817562040467556",
 	initialStartPoints: new Decimal(1), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
@@ -14,12 +14,25 @@
 // Set your version in num and name
 let VERSION = {
 	num: "1.0b",
-	name: "Beta Update 1 - Remember, you weren't the first hero."
+	name: "Beta Update 1 - Chapter 1: The Standard Path"
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-		- Added things.<br>
-		Current Endgame: Idk`
+		<h3>v1.0b - Chapter 1: The Standard Path.<br>
+		-Added all of the content for chapter 1.<br>
+		-Added the incremental layer.<br>
+		-Added the meta-prestige layer.<br>
+		-Added the crafting layer.<br>
+		-Added the standard path.<br>
+		-Added the enhance path.<br>
+		-Added 15 new songs.<br>
+		-Added the first 12 layers of the prestige tree.<br>
+		-Added prestige points.<br>
+		-Added pure energy.<br>
+		-Added a celestial, Ce308.<br>
+		-Added a BOSSFIGHT?!<br>
+		-Added a whole buncha lore.<br>
+		Endgame: Defeated Ce308, ~3,000,000 Incremental Power, ~1e170 Points in Standard Path.<br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -154,6 +167,7 @@ function addedPlayerData() {
 		quirklayer: new Decimal(0),
 		hindrancelayer: new Decimal(0),
 		subspacelayer: new Decimal(0),
+		solaritylayer: new Decimal(0),
 	}
 }
 

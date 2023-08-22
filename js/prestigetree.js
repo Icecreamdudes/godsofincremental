@@ -1170,3 +1170,68 @@ tabFormat: [
 ],
 layerShown() { return player.subspacelayer.eq(1) }
 })
+addLayer("so", {
+    name: "Solarity", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "O", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Solarity", // Row the layer is in on the tree (0 is the first row)
+branches: ["sb", "ti"],
+color: "#ffcd00",
+nodeStyle: {
+    "background-origin": "border-box",
+    background: "radial-gradient(#ffcd00, #ff4300)",
+},
+startData() { return {
+    unlocked: true,
+}
+},
+update(delta) {
+
+},
+clickables: {
+
+},
+upgrades: {
+},
+buyables: {
+
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+    jacorblog27: {
+        unlocked() { return player.quirkcutscene.eq(0) },
+        title: "Log XXVII",
+        body() { return "Log XXVII: Haven't wrote here in a while. I'm too busy. The prestige tree is almost finished. Getting the seventh layer done. Aside from the war, we've been making big discoveries about the ???????? ?????. They have found ?????? beyond our ?????. Just can't let the death realm get there. Things are going to be nasty." },         
+    },
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#ffcd00' } },
+unlocked() { return player.quirklayer.eq(1) },
+content:
+
+    [
+        ["infobox", "jacorblog27"],
+        ["blank", "25px"],
+        ["raw-html", function () { return "<h1>Solarity Coming Next Update!" }],
+    ],
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.solaritylayer.eq(1) }
+})
