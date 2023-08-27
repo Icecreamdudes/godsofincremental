@@ -168,7 +168,7 @@ update(delta) {
     if (hasUpgrade("m", 21)) craftingspeed = craftingspeed.mul(upgradeEffect("m", 21))
     craftingspeed = craftingspeed.mul(buyableEffect("sb", 11))
     craftingspeed = craftingspeed.mul(player.sg.supergeneratorpowereffect)
-    if (player.c.anvilslots.gt(player.c.maxanvilslots)) player.c.anvilslots = player.c.maxanvilslots
+    if (player.c.anvilslots.gt(player.c.maxanvilslots)) player.c.maxanvilslots = player.c.anvilslots
 
     player.c.craftingspeed = craftingspeed
 

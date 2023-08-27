@@ -593,9 +593,9 @@
                            ["blank", "25px"],
                            "prestige-button",
                            ["blank", "25px"],
-            ["raw-html", function () { return "<h2>You have " + format(player.m.incrementalenergy) + " incremental energy." }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
-            ["raw-html", function () { return "<h3>Your incremental energy give a x" + format(player.m.incrementalenergyeffect) + " boost to points and prestige energy." }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
-            ["raw-html", function () { return "<h3>Your prestige machines will give you " + format(player.m.incrementalenergytoget) + " incremental energy on reset." }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return hasUpgrade("m", 11) ? "<h2>You have " + format(player.m.incrementalenergy) + " incremental energy." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return hasUpgrade("m", 11) ? "<h3>Your incremental energy give a x" + format(player.m.incrementalenergyeffect) + " boost to points and prestige energy." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return hasUpgrade("m", 11) ? "<h3>Your prestige machines will give you " + format(player.m.incrementalenergytoget) + " incremental energy on reset." : ""}, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
 
                     ]
 
