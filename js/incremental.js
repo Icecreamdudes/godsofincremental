@@ -114,6 +114,7 @@
         wirestoget: new Decimal(0),
         scrapmetaltoget: new Decimal(0),
         enhancepowdertoget: new Decimal(0),
+        nohitce308: new Decimal(3),
 
         //ENHANCE PATH
         enhancepath: new Decimal(0),
@@ -560,29 +561,49 @@
         if (player.ce308bossscene.eq(52)) {
             player.ce308bosscutscene = new Decimal(0)
         }
+        if (player.ce308bossscene.eq(51)) {
+            player.i.ce308bossactivate = new Decimal(1)
+        }
         if (player.ce308bossscene.gte(50) && player.ce308bosscutscene.eq(1))
         {
             player.inconfrontcutscene = new Decimal(0)
             player.ince308cutscene = new Decimal(0)
             player.playdotpm = new Decimal(1)
+            player.injacorbcutscene = new Decimal(0)
+            player.inaarexcutscene = new Decimal(0)
+            player.inreddiamondcutscene = new Decimal(0)
+            player.inartiscutscene = new Decimal(0)
+            player.inchapter1ending = new Decimal(0)
         }
         if (player.ce308bossscene.gte(7) && player.ce308bossscene.lt(50) && player.ce308bosscutscene.eq(1))
         {
             player.playdotpm = new Decimal(0)
             player.inconfrontcutscene = new Decimal(1)
             player.ince308cutscene = new Decimal(0)
+            player.injacorbcutscene = new Decimal(0)
+            player.inaarexcutscene = new Decimal(0)
+            player.inreddiamondcutscene = new Decimal(0)
+            player.inartiscutscene = new Decimal(0)
+            player.playdotpm = new Decimal(0)
+            player.inchapter1ending = new Decimal(0)
         }
         if (player.ce308bossscene.gt(0) && player.ce308bossscene.lte(6) && player.ce308bosscutscene.eq(1))
         {
             player.ince308cutscene = new Decimal(1)
             player.inconfrontcutscene = new Decimal(0)
+            player.injacorbcutscene = new Decimal(0)
+            player.inaarexcutscene = new Decimal(0)
+            player.inreddiamondcutscene = new Decimal(0)
+            player.inartiscutscene = new Decimal(0)
+            player.playdotpm = new Decimal(0)
+            player.inchapter1ending = new Decimal(0)
         }
     
 
         //bossfight
 
         player.i.healthdrain = player.i.bestpureenergy.plus(1).log10().div(70)
-        if (player.i.ce308bossactivate.eq(1) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0))
+        if (player.i.ce308bossactivate.eq(1) && player.i.playerdead.eq(0) && player.i.beatce308.eq(0) && player.ce308bosscutscene.eq(0))
         {
             player.i.playerhealth = player.i.playerhealth.sub(player.i.healthdrain.mul(delta))
             player.i.yellowattacktimer = player.i.yellowattacktimer.add(onepersec.mul(delta))
@@ -622,9 +643,9 @@
             player.i.truemachinespersecond = player.i.truemachinespersecond.mul(buyableEffect("i", 42))
             player.i.truemachines = player.i.truemachines.add(player.i.truemachinespersecond.mul(delta))
         }
-        player.i.scrapmetaltoget = player.i.prestigemachines.add(100).pow(0.4).mul(3).mul(player.i.beatce308).floor()
-        player.i.wirestoget = player.i.bestprestigeenergy.add(1e10).slog().pow(4.5).mul(2).mul(player.i.beatce308).floor()
-        player.i.enhancepowdertoget = player.i.buyables[23].add(10).pow(0.5).mul(4).mul(player.i.beatce308).floor()
+        player.i.scrapmetaltoget = player.i.prestigemachines.add(100).pow(0.4).mul(3).mul(player.i.beatce308).floor().mul(player.i.nohitce308)
+        player.i.wirestoget = player.i.bestprestigeenergy.add(1e10).slog().pow(4.5).mul(2).mul(player.i.beatce308).floor().mul(player.i.nohitce308)
+        player.i.enhancepowdertoget = player.i.buyables[23].add(10).pow(0.5).mul(4).mul(player.i.beatce308).floor().mul(player.i.nohitce308)
 
         if (player.ce308defeatscene.gte(70) && player.ce308defeatcutscene.eq(1))
         {
@@ -1393,7 +1414,7 @@ opacity: "0.9",
         58: {
             title() { return "<h2>Layer 7: Super Booster <br><h3>Req: 1e11 booster energy, 500,000 super points." },
             canClick() { return player.i.boosterenergy.gte(1e11) && player.i.superpoints.gte(500000) },
-            unlocked() { return hasUpgrade("i", 27) && player.superboosterlayer.eq(0) },
+            unlocked() { return hasUpgrade("i", 27) && player.superboosterlayer.eq(0) && player.superifiercutscene.eq(0) },
             onClick() {
                 player.superboosterlayer = new Decimal(1)
                 // Particle effect
@@ -1759,7 +1780,7 @@ opacity: "0.9",
             canClick() { return player.i.puremachines.gte(20) && player.i.standardpath.eq(1) && hasUpgrade("i", 41) && player.i.ce308bossactivate.eq(0)},
             unlocked() { return true },
             onClick() {
-                player.i.ce308bossactivate = new Decimal(1)
+                if (player.ce308bosscutscene.eq(0)) player.i.ce308bossactivate = new Decimal(1)
                 flashAndFade();
                 if (player.ce308bosscutscene.eq(0)) player.playdotpm = new Decimal(1)
                 player.i.playerhealth = new Decimal(250)
@@ -3444,6 +3465,8 @@ opacity: "0.9",
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>+" + formatWhole(player.i.scrapmetaltoget) + " scrap metal." : "" }],
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>+" + formatWhole(player.i.wirestoget) + " wires." : "" }],
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>+" + formatWhole(player.i.enhancepowdertoget) + " enhance powder." : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) && player.i.nohitce308.eq(1) ? "<h1>Try beating it no-hit for more rewards!" : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) && player.i.nohitce308.eq(3) ? "<h1>No-Hit rewards give you x3 resources." : "" }],
                         ["blank", "25px"],
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.ce308defeatcutscene.eq(1) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h3>There is a cutscene required in order to progress to the next chapter. It is a new tab above. " : "" }, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
         ]
@@ -4530,7 +4553,7 @@ function generateMist(durationInSeconds) {
   // Function to be called when mouse hovers over the circle
   function doSomethingOnHover() {
     player.i.playerhealth = player.i.playerhealth.sub(10)
-    // You can replace this with your desired action
+    player.i.nohitce308 = new Decimal(1)
   }
   function removeAllCircles() {
     const circles = document.querySelectorAll(".circle");

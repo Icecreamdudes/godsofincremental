@@ -308,7 +308,7 @@ clickables: {
     11: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.craftingcutscene.eq(1) },
-        unlocked() { return player.craftingscene.lte(20) },
+        unlocked() { return player.craftingscene.lt(20) },
         onClick() {
             player.craftingscene = player.craftingscene.add(1)
         },
@@ -316,7 +316,7 @@ clickables: {
     12: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.craftingcutscene.eq(1) },
-        unlocked() { return player.craftingscene.lte(20) && player.craftingscene.neq(0) },
+        unlocked() { return player.craftingscene.lt(20) && player.craftingscene.neq(0) },
         onClick() {
             player.craftingscene = player.craftingscene.sub(1)
         },
@@ -335,7 +335,7 @@ clickables: {
     15: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.crafting2cutscene.eq(1) },
-        unlocked() { return player.crafting2scene.lte(10) },
+        unlocked() { return player.crafting2scene.lt(10) },
         onClick() {
             player.crafting2scene = player.crafting2scene.add(1)
         },
@@ -343,7 +343,7 @@ clickables: {
     16: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.crafting2cutscene.eq(1) },
-        unlocked() { return player.crafting2scene.lte(10) && player.crafting2scene.neq(0) },
+        unlocked() { return player.crafting2scene.lt(10) && player.crafting2scene.neq(0) },
         onClick() {
             player.craftingscene = player.crafting2scene.sub(1)
         },
@@ -972,7 +972,8 @@ content:
             ["row", [["clickable", 16], ["clickable", 15]]],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) ? "<h3>" + formatWhole(player.c.anvilslots) + "<h3>/" + formatWhole(player.c.maxanvilslots) + " slots": "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) ? "<h3>+" + format(player.c.craftingspeed) + " crafting power per second": "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
-            ["blank", "25px"],
+    ["raw-html", function () { return player.crafting2cutscene.eq(1) ? " <div class=spinning-symbol>☭</div>" : "" }],
+    ["blank", "25px"],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h2>You have " + formatWhole(player.c.timemetal) + "<h2> time metal (+" + formatWhole(player.c.timemetaltoget) + ")": "" }, { "color": "#006609", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(2) ? "<h2>You have " + formatWhole(player.c.spacemetal) + "<h2> space metal (+" + formatWhole(player.c.spacemetaltoget) + ")": "" }, { "color": "#dfdfdf", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(4) ? "<h2>You have " + formatWhole(player.c.timecapsules) + "<h2> time capsules (+" + formatWhole(player.c.timecapsulestoget) + ")<br><h5>(Check time layer on prestige tree for details)": "" }, { "color": "#006609", "font-size": "18px", "font-family": "monospace" }],

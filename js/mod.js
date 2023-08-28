@@ -32,7 +32,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		-Added a celestial, Ce308.<br>
 		-Added a BOSSFIGHT?!<br>
 		-Added a whole buncha lore.<br>
-		Endgame: Defeated Ce308, ~3,000,000 Incremental Power, ~1e170 Points in Standard Path.<br>`
+		Endgame: Defeated Ce308, ~3,000,000 Incremental Power, ~1e200 Points in Standard Path.<br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
