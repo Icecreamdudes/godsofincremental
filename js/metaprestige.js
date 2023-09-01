@@ -167,7 +167,7 @@
         if (!hasUpgrade("m", 14)) player.m.scorefromtimeplayed = new Decimal(1)
         if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed + 5000))
 
-        if (player.c.celestialcells.eq(0)) player.m.scorefromtimeplayed = new Decimal(1)
+        if (player.c.celestialcells.eq(0)) player.m.scorefromcelestialcells = new Decimal(1)
         if (player.c.celestialcells.neq(0)) player.m.scorefromcelestialcells = player.c.celestialcells.mul(0.015).pow(0.8).add(1)
 
         if (player.i.puremachines.eq(0)) player.m.scorefrompuremachines = new Decimal(1)
