@@ -163,7 +163,7 @@ content:
            ["raw-html", function () { return player.boosterscene.eq(12) ? "<h1>They already did some of the steps to freeing me and Aarex." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
            ["raw-html", function () { return player.boosterscene.eq(13) ? "<h1>But now, there's a new task. To pay the bail the high god of the death realm set out." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
            ["raw-html", function () { return player.boosterscene.eq(14) ? "<h1>After finding all 28 layers, you can TRAVEL TO THE DEATH REALM." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
-           ["raw-html", function () { return player.boosterscene.eq(15) ? "<h1>Only until then you can free me." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+           ["raw-html", function () { return player.boosterscene.eq(15) ? "<h1>Only then you can free me." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
            ["raw-html", function () { return player.boosterscene.eq(16) ? "<h1>On the next layer, you should be able to talk to Aarex," : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
            ["raw-html", function () { return player.boosterscene.eq(17) ? "<h1>But for some reason, he doesn't want to talk." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
            ["raw-html", function () { return player.boosterscene.eq(18) ? "<h1>I got no clue what happened." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
@@ -220,7 +220,7 @@ infoboxes: {
     jacorblog5: {
         unlocked() { return true },
         title: "Log V",
-        body() { return "Log V: More battles kept on raging. We are losing hard. However, me and Aarex's work is going well. Hevipelle thinks that I should join fighting, but it's too risky. Losing a noble can be very catastrophic. I still don't know how this war is going to end, but we are going to need ????????'s help for sure." },         
+        body() { return "Log V: More battles kept on raging. We are losing hard. However, my and Aarex's work is going well. Hevipelle thinks that I should join fighting, but it's too risky. Losing a noble can be very catastrophic. I still don't know how this war is going to end, but we are going to need ????????'s help for sure." },         
     }, 
 },
 microtabs: {
@@ -323,15 +323,15 @@ content:
         ["raw-html", function () { return player.enhancescene.eq(2) ? "<h1>I remember working on the prestige tree being one of the best moments of my existence." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(3) ? "<h1>There was hope. I thought we were going to win the war." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(4) ? "<h1>Until IT came and destroyed the tree." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
-        ["raw-html", function () { return player.enhancescene.eq(5) ? "<h1>All 28 layers- scattered and lost.<h6>(celeste ost reference)" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(5) ? "<h1>All 28 layers—scattered and lost.<h6>(celeste ost reference)" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(6) ? "<h1>Once you put the layers back together, it will be great." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(7) ? "<h1>I'll finally know the true power of the tree." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(8) ? "<h1>Me and Aarex worked hard, and I want our work to finally pay off." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(9) ? "<h1>He was one of my best friends. I wonder how he's doing." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(10) ? "<h1>Last time I heard about his well-being was during your predecessor's time." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(11) ? "<h1>And the last time I spoke to him was before we got captured." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
-        ["raw-html", function () { return player.enhancescene.eq(12) ? "<h1>Things between me and him haven't been so well since the day we got captured." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
-        ["raw-html", function () { return player.enhancescene.eq(13) ? "<h1>The death realm haven't been letting us communicate with each other." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(12) ? "<h1>Things between me and him haven't been so good since the day we got captured." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.enhancescene.eq(13) ? "<h1>The death realm hasn't been letting us communicate with each other." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(14) ? "<h1>Yes, I've got small messages from Yhvr, but nothing from Aarex." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(15) ? "<h1>And Hevipelle? That guy still exists? Why hasn't he tried saving us?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.enhancescene.eq(16) ? "<h1>He's the most powerful one of us all, yet he hasn't done anything yet." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
@@ -483,12 +483,12 @@ content:
         ["raw-html", function () { return player.timescene.eq(17) ? "<h1>The death realm, they threatened to destroy the tree." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.timescene.eq(18) ? "<h1>It's either I gave them the tree, or them destroying it." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.timescene.eq(19) ? "<h1>But I did neither." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
-        ["raw-html", function () { return player.timescene.eq(20) ? "<h1>If I gave them the tree, god knows what they could have done with it." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(20) ? "<h1>If I gave them the tree, God knows what they could have done with it." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.timescene.eq(21) ? "<h1>Jacorb got pissed. We spent the last year working on the tree." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.timescene.eq(22) ? "<h1>We argued and argued, but time was ticking." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.timescene.eq(23) ? "<h1>By the time we knew it, we got captured. Taken into exile." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.timescene.eq(24) ? "<h1>It seemed like it was over, but your predecessor gave us hope." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
-        ["raw-html", function () { return player.timescene.eq(25) ? "<h1>I was so optimistic, until your predecessor randomly dissapeared." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.timescene.eq(25) ? "<h1>I was so optimistic, until your predecessor randomly disappeared." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.timescene.eq(26) ? "<h1>But you are here! You will give us hope." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.timescene.eq(27) ? "<h1>A lot of people are counting on you to save us, and the multiverse." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.timescene.eq(28) ? "<h1>Despite all of our setbacks, we will come back stronger." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
@@ -601,9 +601,9 @@ content:
         ["raw-html", function () { return player.spacescene.eq(2) ? "<h1>You spoke to Aarex?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.spacescene.eq(3) ? "<h1>And..." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.spacescene.eq(4) ? "<h1>He said he was sorry?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
-        ["raw-html", function () { return player.spacescene.eq(5) ? "<h1>For what he done all those days back?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(5) ? "<h1>For what he had done all those days back?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.spacescene.eq(6) ? "<h1>Man. That's the first time we've heard of him in a long time." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
-        ["raw-html", function () { return player.spacescene.eq(7) ? "<h1>Torture eh, it must end now!" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(7) ? "<h1>Torture, it must end now!" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.spacescene.eq(8) ? "<h1>But why him? Why not me? Or Yhvr?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.spacescene.eq(9) ? "<h1>Is it because of the tree incident?" : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.spacescene.eq(10) ? "<h1>You know, the prestige tree was never finished." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
@@ -612,7 +612,7 @@ content:
         ["raw-html", function () { return player.spacescene.eq(13) ? "<h1>Meta-Prestige and The Hub." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.spacescene.eq(14) ? "<h1>Meta-Prestige which is my creation," : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["raw-html", function () { return player.spacescene.eq(15) ? "<h1>The Hub, which is Aarex's creation." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
-        ["raw-html", function () { return player.spacescene.eq(16) ? "<h1>But v1.4 of the prestige tree never became..." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.spacescene.eq(16) ? "<h1>But v1.4 of the prestige tree never came to be..." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
         ["blank", "25px"],
         ["row", [["clickable", 12], ["clickable", 11]]],
         ["raw-html", function () { return player.spacelayer.eq(1) && player.spacecutscene.eq(0) ? "<h4>Unlocked space buildings! Check crafting." : "" }, { "color": "#dfdfdf", "font-size": "24px", "font-family": "monospace" }],
@@ -760,7 +760,7 @@ buyables: {
             return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Super Generator"
         },
         tooltip() {
-            return "<h5>Suprised some of them still remained in the rewrite. The classic tree was much weaker."
+            return "<h5>Surprised some of them still remained in the rewrite. The classic tree was much weaker."
         },
         display() {
             return "which are producing +" + format(tmp[this.layer].buyables[this.id].effect) + " super generator power per second.\n\
@@ -789,7 +789,7 @@ infoboxes: {
     jacorblog21: {
         unlocked() { return true },
         title: "Log XXI",
-        body() { return "Log XXI: Aarex has been missing all week without notice. I wonder where he went. He only left me a note that says that he's going to come back in two weeks. Strange, why in a time like this? All of our soldiers are dying. The people of the void keep sending more, but they are no match to the death realm." },         
+        body() { return "Log XXI: Aarex has been missing all week without notice. I wonder where he went. He only left me a note that says that he's going to come back in two weeks. Strange, why in a time like this? All of our soldiers are dying. The people of the void keep sending more, but they are no match for the death realm." },         
     },
 },
 microtabs: {
@@ -991,7 +991,7 @@ infoboxes: {
     jacorblog25: {
         unlocked() { return player.quirkcutscene.eq(0) },
         title: "Log XXV",
-        body() { return "Log XXV: I decided to add the power of nebula energy into the tree. I remember finding some on my long journey as the gods apprentice. Work has been going very well. The sixth layer is looking very promising. Aarex also started work on another NG game, but I lost track because there are way too many. I've always wondered what Aarex would use those for." },         
+        body() { return "Log XXV: I decided to add the power of nebula energy into the tree. I remember finding some on my long journey as the gods apprentice. Work has been going very well. The sixth row is looking very promising. Aarex also started work on another NG game, but I lost track because there are way too many. I've always wondered what Aarex would use those for." },         
     },
 },
 microtabs: {
@@ -1135,7 +1135,7 @@ infoboxes: {
     jacorblog26: {
         unlocked() { return player.quirkcutscene.eq(0) },
         title: "Log XXVI",
-        body() { return "Log XXVI: Aarex left off again. I am actually starting to get suspicious about him. I wonder who he's seeing, what he needs, and why? Every time I try to communicate with him I can't. I'm just working by myself right now. ??????? gave us a lot of information on the death realm, which is good. ???? is almost done with ??????. Hevipelle is starting to mass produce celestials, which I don't think is a very good idea. We'll just see how things go." },         
+        body() { return "Log XXVI: Aarex left off again. I am actually starting to get suspicious about him. I wonder who he's seeing, what he needs, and why? Every time I try to communicate with him I can't. I'm just working by myself right now. ??????? gave us a lot of information on the death realm, which is good. ???? is almost done with ??????. Hevipelle is starting to mass-produce celestials, which I don't think is a very good idea. We'll just see how things go." },         
     },
 },
 microtabs: {
@@ -1208,7 +1208,7 @@ infoboxes: {
     jacorblog27: {
         unlocked() { return player.quirkcutscene.eq(0) },
         title: "Log XXVII",
-        body() { return "Log XXVII: Haven't wrote here in a while. I'm too busy. The prestige tree is almost finished. Getting the seventh layer done. Aside from the war, we've been making big discoveries about the ???????? ?????. They have found ?????? beyond our ?????. Just can't let the death realm get there. Things are going to be nasty." },         
+        body() { return "Log XXVII: Haven't wrote here in a while. I'm too busy. The prestige tree is almost finished. Getting the seventh row done. Aside from the war, we've been making big discoveries about the ???????? ?????. They have found ?????? beyond our ?????. Just can't let the death realm get there. Things are going to be nasty." },         
     },
 },
 microtabs: {
