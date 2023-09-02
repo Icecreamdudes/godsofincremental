@@ -1780,7 +1780,7 @@ opacity: "0.9",
             canClick() { return player.i.puremachines.gte(20) && player.i.standardpath.eq(1) && hasUpgrade("i", 41) && player.i.ce308bossactivate.eq(0)},
             unlocked() { return true },
             onClick() {
-                if (player.ce308bosscutscene.eq(0)) player.i.ce308bossactivate = new Decimal(1)
+                player.i.ce308bossactivate = new Decimal(1)
                 flashAndFade();
                 if (player.ce308bosscutscene.eq(0)) player.playdotpm = new Decimal(1)
                 player.i.playerhealth = new Decimal(250)
