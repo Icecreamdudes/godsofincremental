@@ -2068,7 +2068,7 @@ opacity: "0.9",
         14:
         {
             title: "SP Prestige Upgrade IV",
-            unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 13) && hasUpgrade("m", 14) },
+            unlocked() { return player.i.standardpath.eq(1) && hasUpgrade("i", 13) && hasUpgrade("m", 15) },
             description: "Unlocks pure energy.",
             cost: new Decimal(1e8),
             canAfford() { return player.i.standardpath.eq(1)},
