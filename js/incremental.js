@@ -284,6 +284,7 @@
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.sp.spacestandardeffect)
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.superprestigeenergyeffect)
         player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.i.celestialenergyeffect)
+        player.i.prestigeenergypersecond = player.i.prestigeenergypersecond.mul(player.m.incrementalenergyeffect)
 
         player.i.prestigeenergy = player.i.prestigeenergy.add(player.i.prestigeenergypersecond.mul(delta))
 
