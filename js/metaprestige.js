@@ -298,7 +298,7 @@
             title: "Pure Energy",
             unlocked() { return hasUpgrade("m", 14) },
             description: "Unlocks the pure energy feature.",
-            cost: new Decimal(75),
+            cost: new Decimal(40),
             currencyLocation() { return player.m },
             currencyDisplayName: "Incremental Power",
             currencyInternalName: "points",
