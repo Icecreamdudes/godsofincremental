@@ -863,12 +863,12 @@ infoboxes: {
     jacorblog14: {
         unlocked() { return player.c.currentcraftingdisplay.eq(2) && player.c.craftingtimemetal.eq(1) },
         title: "Log XIV",
-        body() { return "Log XIV: We keep working on the foruth row. One of the layers, ????????, is based of one of the gods, ??????? and ???????? ?????? is based off ???????. ??????? pitches the idea of using ????? for the fifth row. Sounds like a good idea, but I still don't fully trust him. Aarex thinks it's a good idea. Hevipelle finished two more celestials. One holds the power of singularity within and the other remembers. They aren't named yet." },         
+        body() { return "Log XIV: We keep working on the fourth row. One of the layers, ????????, is based on one of the gods, ??????? and ???????? ?????? is based off ???????. ??????? pitches the idea of using ????? for the fifth row. Sounds like a good idea, but I still don't fully trust him. Aarex thinks it's a good idea. Hevipelle finished two more celestials. One holds the power of singularity within and the other remembers. They aren't named yet." },         
     },
     jacorblog16: {
         unlocked() { return player.c.currentcraftingdisplay.eq(1) && player.c.craftingspacemetal.eq(1) },
         title: "Log XVI",
-        body() { return "Log XVI: ???????? did it. He gave up his position and gave it to ????. It makes sense. ???????? said he wanted to do other things in other realms. Makes sense. He's been very interested in researching the ??????? ?????. And ???? has been very interested in becoming a ?????. It's all well." },         
+        body() { return "Log XVI: ???????? did it. He gave up his position and gave it to ????. It makes sense. ???????? said he wanted to do other things in other realms. Makes sense. He's been very interested in researching the ??????? ?????. And ???? has been very interested in becoming a ?????. It's all good." },         
     },
     timecapsule: {
         unlocked() { return player.c.currentcraftingdisplay.eq(4) },

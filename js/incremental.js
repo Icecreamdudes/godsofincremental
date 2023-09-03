@@ -3297,7 +3297,7 @@ opacity: "0.9",
         jacorblog9: {
             unlocked() { return player.energizercutscene.eq(0) && player.i.nextenergizer.eq(3) && player.i.currentenergizer.eq(1) },
             title: "Log IX",
-            body() { return "Log IX: Aarex got sick, which is strange because he's a god (and born a god, unlike me). So I've been working on the prestige tree (yes it has a name now) by myself. I'm working on the 3rd row, and I'm implementing some of my own balancing into it. (Screw you Aarex timewalls). Hevipelle even helped me out a bit. I hope we win. I really do." },         
+            body() { return "Log IX: Aarex got sick, which is strange because he's a god (and born a god, unlike me). So I've been working on the prestige tree (yes it has a name now) by myself. I'm working on the third row, and I'm implementing some of my own balancing into it. (Screw you Aarex timewalls.) Hevipelle even helped me out a bit. I hope we win. I really do." },         
         }, 
         jacorblog10: {
             unlocked() { return player.energizercutscene.eq(0) && player.i.nextenergizer.eq(3) && player.i.currentenergizer.eq(0) },
