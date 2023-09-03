@@ -3317,7 +3317,7 @@ opacity: "0.9",
         jacorblog18: {
             unlocked() { return player.energizercutscene.eq(0) && player.i.nextenergizer.eq(4) && player.i.currentenergizer.eq(4) },
             title: "Log XVIII",
-            body() { return "Log XVIII: ??????? seems like a good guy. He is very freindly and all that, but it's the DEATH REALM. Time and time again they keep fooling us. Whatever. If anything happens, then I will use the prestige tree for what it is. Even if it's not at its fullest potential." },         
+            body() { return "Log XVIII: ??????? seems like a good guy. He is very friendly and all that, but it's the DEATH REALM. Time and time again they keep fooling us. Whatever. If anything happens, then I will use the prestige tree for what it is. Even if it's not at its fullest potential." },         
         }, 
         jacorblog19: {
             unlocked() { return player.energizercutscene.eq(0) && player.i.nextenergizer.eq(4) && player.i.currentenergizer.neq(4) },
