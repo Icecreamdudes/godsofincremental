@@ -15,9 +15,16 @@ function getStartOptions() {
 		oldStyle: false,
 		tooltipForcing: true,
 		musicToggle: true,
+		musicVolume: 10
 	}
 }
+const audio = new Audio()
+function updateMusicVolume() {
+    const input = document.getElementById("volume");
+    options.musicVolume = parseInt(input.value);
 
+	audio.volume = options.musicVolume / 10;
+}
 function toggleOpt(name) {
 	if (name == "oldStyle" && styleCooldown > 0)
 		return;

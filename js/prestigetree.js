@@ -409,7 +409,7 @@ clickables: {
     11: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.timecutscene.eq(1) },
-        unlocked() { return player.timescene.lte(30) },
+        unlocked() { return player.timescene.lt(30) },
         onClick() {
             player.timescene = player.timescene.add(1)
         },
@@ -417,7 +417,7 @@ clickables: {
     12: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.timecutscene.eq(1) },
-        unlocked() { return player.timescene.lte(30) && player.timescene.neq(0) },
+        unlocked() { return player.timescene.lt(30) && player.timescene.neq(0) },
         onClick() {
             player.timescene = player.timescene.sub(1)
         },

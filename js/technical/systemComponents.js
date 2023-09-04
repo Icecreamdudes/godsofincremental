@@ -175,6 +175,7 @@ var systemComponents = {
 				<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: {{ options.forceTooltips?"ON":"OFF" }}</button></td>
 				</tr> 
 				<td><button class="opt" onclick="toggleOpt('musicToggle'); needsCanvasUpdate = true">Toggle Music: {{ options.musicToggle?"Unmute":"Mute" }}</button></td>
+</tr>
 
 \t\t\t</tr> 
         </table>`
@@ -223,3 +224,14 @@ var systemComponents = {
 	}
 
 }
+
+/*
+				<td>
+				<div style="margin: 0 10px">
+					<input type="range" id="volume" name="Music Volume" min="1" max="10" value="10" oninput="updateMusicVolume()">
+					<br>
+					<p>Music Volume: {{ options.musicVolume }}</p>
+				</div>
+			</td>
+				<tr>
+				*/

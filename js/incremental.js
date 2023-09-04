@@ -694,7 +694,7 @@
         //ENHANCE PATH
         let enhanceloss = new Decimal(0)
         if (player.i.enhancedprestigepoints.gt(0)) enhanceloss = player.i.enhancedprestigepoints.mul(0.1)
-        if (player.i.enhancedprestigepoints.lt(0)) enhanceloss = new Decimal(0)
+        if (player.i.enhancedprestigepoints.lt(0.00001)) enhanceloss = new Decimal(0)
 
         player.i.enhancepoints = player.i.enhancepoints.add(player.i.enhancepointspersecond.mul(delta))
         player.i.enhancepointseffect = player.i.enhancepoints.pow(0.5).add(1)
