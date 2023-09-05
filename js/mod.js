@@ -18,9 +18,9 @@ let VERSION = {
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-<h3>v1.0.1b - The Hotfix Minor Update<br>
--Added hotfixes for tab changes.<br>
--Added hotfix for meta-prestige reset.<br>
+<h3>v1.0.1b - The Hotkey Minor Update<br>
+-Added hotkeys for tab changes.<br>
+-Added hotkey for meta-prestige reset.<br>
 -Many typo fixes.<br>
 -An attempt at fixing the enhance path NaN bug.<br>
 <br>
