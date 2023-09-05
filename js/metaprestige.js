@@ -641,22 +641,22 @@
 })
 
 document.addEventListener('keydown', function(event) {
-    if (event.key === 'm') {
+    if (event.key === 'm' && options.toggleHotkey) {
       player.tab = "m"
     }
   });
   document.addEventListener('keydown', function(event) {
-    if (event.key === 'i') {
+    if (event.key === 'i' && options.toggleHotkey) {
       player.tab = "i"
     }
   });
   document.addEventListener('keydown', function(event) {
-    if (event.key === 'c') {
+    if (event.key === 'c' && options.toggleHotkey) {
       player.tab = "c"
     }
   });
   document.addEventListener('keydown', function(event) {
-    if (event.key === 'M' && event.shiftKey) {
+    if (event.key === 'M' && event.shiftKey && options.toggleHotkey) {
         doReset("m")
     }
   });

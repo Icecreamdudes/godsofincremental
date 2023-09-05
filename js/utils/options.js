@@ -15,7 +15,8 @@ function getStartOptions() {
 		oldStyle: false,
 		tooltipForcing: true,
 		musicToggle: true,
-		musicVolume: 10
+		musicVolume: 10,
+		toggleHotkey: true,
 	}
 }
 const audio = new Audio()

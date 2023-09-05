@@ -178,8 +178,10 @@ var systemComponents = {
                 <td><button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">Single-Tab Mode: {{ options.forceOneTab?"ALWAYS":"AUTO" }}</button></td>
 				<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: {{ options.forceTooltips?"ON":"OFF" }}</button></td>
 				</tr> 
-				<td><button class="opt" onclick="toggleOpt('musicToggle'); needsCanvasUpdate = true">Toggle Music: {{ options.musicToggle?"Unmute":"Mute" }}</button></td>
-</tr>
+            <tr>
+			<td><button class="opt" onclick="toggleOpt('musicToggle'); needsCanvasUpdate = true">Toggle Music: {{ options.musicToggle?"Unmute":"Mute" }}</button></td>
+				<td><button class="opt" onclick="toggleOpt('toggleHotkey'); needsCanvasUpdate = true">Toggle Hotkeys: {{ options.toggleHotkey?"On":"Off" }}</button></td>
+				</tr>
 
 \t\t\t</tr> 
         </table>`
