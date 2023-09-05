@@ -640,5 +640,24 @@
     layerShown() { return player.unlockedmetaprestige.eq(1) }
 })
 
-//const audio = new Audio()
-//audio.volume = options.musicVolume / 10;
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'm') {
+      player.tab = "m"
+    }
+  });
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'i') {
+      player.tab = "i"
+    }
+  });
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'c') {
+      player.tab = "c"
+    }
+  });
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'M' && event.shiftKey) {
+        doReset("m")
+    }
+  });
+  

@@ -147,6 +147,10 @@ var systemComponents = {
 		<br><br>
         Time Played: {{ formatTime(player.timePlayed) }}<br><br>
         <h3>Hotkeys</h3><br>
+		i: Switch to incremental node<br>
+		m: Switch to meta-prestige node<br>
+		c: Switch to crafting node<br>
+		m+shift: Meta-prestige reset<br>
         <span v-for="key in hotkeys" v-if="player[key.layer].unlocked && tmp[key.layer].hotkeys[key.id].unlocked"><br>{{key.description}}</span></div>
     `
 	},

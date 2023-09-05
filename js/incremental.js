@@ -738,8 +738,8 @@
         }
 
         let pointloss = new Decimal(0)
-        if (player.i.enhancebeacontoggle.eq(0)) pointloss = new Decimal(0)
-        if (player.i.enhancebeacontoggle.eq(1)) pointloss = player.points.mul(0.4)
+        if (player.i.enhancebeacontoggle.eq(0) || player.points.lt(1)) pointloss = new Decimal(0)
+        if (player.i.enhancebeacontoggle.eq(1) && player.points.gte(1)) pointloss = player.points.mul(0.4)
 
         player.points = player.points.sub(pointloss.mul(delta))
 
