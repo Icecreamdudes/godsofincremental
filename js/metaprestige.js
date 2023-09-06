@@ -641,7 +641,7 @@
 })
 
 document.addEventListener('keydown', function(event) {
-    if (event.key === 'm' && options.toggleHotkey) {
+    if (event.key === 'm' && options.toggleHotkey && player.unlockedmetaprestige.eq(1)) {
       player.tab = "m"
     }
   });
@@ -651,7 +651,7 @@ document.addEventListener('keydown', function(event) {
     }
   });
   document.addEventListener('keydown', function(event) {
-    if (event.key === 'c' && options.toggleHotkey) {
+    if (event.key === 'c' && options.toggleHotkey && hasUpgrade("m", 19)) {
       player.tab = "c"
     }
   });
