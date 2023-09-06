@@ -246,7 +246,7 @@ function NaNcheck(data) {
 			if (!NaNalert) {
 				clearInterval(interval);
 				NaNalert = true;
-				alert("Dang. I would never let '" + item + "' reach the evil number of NaN. I thought this day would never happen. Tell Icecreamdude about this...")
+				alert("Dang. I would never let '" + item + "' reach the evil number of NaN. I thought this day would never happen. Refresh and if it doesn't work, tell Icecreamdude about this...")
 				return
 			}
 		}
