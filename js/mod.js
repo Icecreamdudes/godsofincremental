@@ -77,6 +77,7 @@ function getPointGen() {
 	gain = gain.mul(player.i.quirkenergyeffect)
 	gain = gain.mul(player.i.challengetaskeffect)
 	gain = gain.mul(buyableEffect("i", 102))
+	if (player.i.enhancebeacontoggle.eq(1)) gain = gain.sqrt()
 	player.gain = gain
 	return gain
 }

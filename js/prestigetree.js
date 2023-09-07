@@ -96,18 +96,13 @@ color: "#6e64c4",
 update(delta) {
     if (player.boosterscene.eq(20)) {
         player.boostercutscene = new Decimal(0)
-        player.injacorbcutscene = new Decimal(0)
-    }
-    if (player.boosterscene.gt(0) && player.boostercutscene.eq(1))
-    {
-        player.injacorbcutscene = new Decimal(1)
     }
 },
 clickables: {
     11: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.boostercutscene.eq(1) },
-        unlocked() { return player.boosterscene.lte(20) },
+        unlocked() { return player.boosterscene.lt(20) },
         onClick() {
             player.boosterscene = player.boosterscene.add(1)
         },
@@ -115,7 +110,7 @@ clickables: {
     12: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.boostercutscene.eq(1) },
-        unlocked() { return player.boosterscene.lte(20) && player.boosterscene.neq(0) },
+        unlocked() { return player.boosterscene.lt(20) && player.boosterscene.neq(0) },
         onClick() {
             player.boosterscene = player.boosterscene.sub(1)
         },
@@ -188,8 +183,8 @@ content:
 
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
-["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.boostercutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.boostercutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.boosterlayer.eq(1) }
 })
@@ -264,12 +259,6 @@ branches: ["bo", "ge"],
 update(delta) {
     if (player.enhancescene.eq(24)) {
         player.enhancecutscene = new Decimal(0)
-        player.injacorbcutscene = new Decimal(0)
-    }
-    if (player.enhancescene.gt(0) && player.enhancecutscene.eq(1))
-    {
-        player.boosterscene = new Decimal(21)
-        player.injacorbcutscene = new Decimal(1)
     }
     
 },
@@ -277,7 +266,7 @@ clickables: {
     11: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.enhancecutscene.eq(1) },
-        unlocked() { return player.enhancescene.lte(24) },
+        unlocked() { return player.enhancescene.lt(24) },
         onClick() {
             player.enhancescene = player.enhancescene.add(1)
         },
@@ -285,7 +274,7 @@ clickables: {
     12: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.enhancecutscene.eq(1) },
-        unlocked() { return player.enhancescene.lte(24) && player.enhancescene.neq(0) },
+        unlocked() { return player.enhancescene.lt(24) && player.enhancescene.neq(0) },
         onClick() {
             player.enhancescene = player.enhancescene.sub(1)
         },
@@ -360,8 +349,8 @@ content:
 
 tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
-["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
-["raw-html", function () { return options.musicToggle && player.injacorbcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.enhancecutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.enhancecutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.enhancelayer.eq(1) }
 })

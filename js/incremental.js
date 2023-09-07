@@ -716,7 +716,6 @@
         }
         if (player.beaconscene.gt(0) && player.beaconcutscene.eq(1))
         {
-            player.enhancescene = new Decimal(25)
             player.injacorbcutscene = new Decimal(1)
         }
 
@@ -736,12 +735,6 @@
             if (hasUpgrade("m", 18)) player.i.metaprestigetime = player.i.metaprestigetime.add(10)
             if (hasUpgrade("i", 105)) player.i.beaconpoints = player.i.beaconpoints.add(player.i.beaconpointstoget)
         }
-
-        let pointloss = new Decimal(0)
-        if (player.i.enhancebeacontoggle.eq(0) || player.points.lt(1)) pointloss = new Decimal(0)
-        if (player.i.enhancebeacontoggle.eq(1) && player.points.gte(1)) pointloss = player.points.mul(0.4)
-
-        player.points = player.points.sub(pointloss.mul(delta))
 
         if (player.beaconpointscene.eq(17)) {
             player.beaconpointcutscene = new Decimal(0)
@@ -3727,7 +3720,7 @@ opacity: "0.9",
                         ["blank", "25px"],
                         ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0)? "<h3>You are making " + format(player.i.beaconpowerpersecond) + " beacon power per second." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0)? "<h3>You will produce " + format(player.m.score.mul(player.i.incrementalpowergain)) + " incremental power (based on score)." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
-                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0)? "<h3>You lose 40% of points per second if your beacon is toggled on." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.enhancepath.eq(1) && player.beaconcutscene.eq(0)? "<h3>Your point gain is square rooted if beacon is toggled on." : ""}, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["bar", "beaconbar"],
         ]
