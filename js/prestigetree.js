@@ -10,6 +10,12 @@
     },
     upgrades: {
     },
+    automate() {
+        if (hasUpgrade("m", 35))
+        {
+            buyBuyable("pr", 11)
+        }
+    },
     buyables: {
         11: {
             cost(x) { return new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(4) },
@@ -31,7 +37,7 @@
                 let growth = 1.5
                 let max = Decimal.affordGeometricSeries(player.m.points, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.m.points = player.m.points.sub(cost)
+                if (!hasUpgrade("m", 35)) player.m.points = player.m.points.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#31aeb0",}
@@ -383,9 +389,11 @@ update(delta) {
     
     player.ti.timeenergycap = player.c.timecapsules.add(1).mul(60).pow(1.35)
     player.ti.timeenergycap = player.ti.timeenergycap.mul(player.hi.hindrancespiritseffect)
+    player.ti.timeenergycap = player.ti.timeenergycap.mul(buyableEffect("h", 19))
 
     if (player.ti.timeenergy.lt(player.ti.timeenergycap)) player.ti.timeenergypersecond = player.c.timecapsules.pow(1.2)
     player.ti.timeenergypersecond = player.ti.timeenergypersecond.mul(player.ss.subspaceeffect)
+    player.ti.timeenergypersecond = player.ti.timeenergypersecond.mul(buyableEffect("h", 18))
     if (player.ti.timeenergy.gte(player.ti.timeenergycap)) 
     {
         player.ti.timeenergypersecond = new Decimal(0)
@@ -535,6 +543,7 @@ update(delta) {
 
     player.sp.spacepersecond = player.c.spacebuildings.pow(1.5)
     player.sp.spacepersecond = player.sp.spacepersecond.mul(player.ss.subspaceeffect)
+    player.sp.spacepersecond = player.sp.spacepersecond.mul(buyableEffect("h", 21))
     player.sp.space = player.sp.space.add(player.sp.spacepersecond.mul(delta))
 
     if (player.i.standardpath.eq(0)) player.sp.spacestandardeffect = new Decimal(1)
@@ -647,6 +656,12 @@ clickables: {
 },
 upgrades: {
 },
+automate() {
+    if (hasUpgrade("m", 35))
+    {
+        buyBuyable("sb", 11)
+    }
+},
 buyables: {
     11: {
         cost(x) { return new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(1000) },
@@ -668,7 +683,7 @@ buyables: {
             let growth = 1.5
             let max = Decimal.affordGeometricSeries(player.m.points, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.m.points = player.m.points.sub(cost)
+            if (!hasUpgrade("m", 35)) player.m.points = player.m.points.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', "background-color": "#504899", }
@@ -732,12 +747,19 @@ startData() { return {
 },
 update(delta) {
     player.sg.supergeneratorpowerpersecond = buyableEffect("sg", 11)
+    player.sg.supergeneratorpowerpersecond = player.sg.supergeneratorpowerpersecond.mul(buyableEffect("h", 22))
     player.sg.supergeneratorpower = player.sg.supergeneratorpower.add(player.sg.supergeneratorpowerpersecond.mul(delta))
     player.sg.supergeneratorpowereffect = player.sg.supergeneratorpower.div(1e6).pow(0.2).add(1)
 },
 clickables: {
 },
 upgrades: {
+},
+automate() {
+    if (hasUpgrade("m", 35))
+    {
+        buyBuyable("sg", 11)
+    }
 },
 buyables: {
     11: {
@@ -760,7 +782,7 @@ buyables: {
             let growth = 1.25
             let max = Decimal.affordGeometricSeries(player.m.points, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.m.points = player.m.points.sub(cost)
+            if (!hasUpgrade("m", 35)) player.m.points = player.m.points.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', "background-color": "#248239", }
@@ -934,6 +956,7 @@ update(delta) {
         player.hindrancecutscene = new Decimal(0)
     }
     player.hi.hindrancespiritstoget = player.i.metaprestigetime.div(1000).pow(0.5)
+    player.hi.hindrancespiritstoget = player.hi.hindrancespiritstoget.mul(buyableEffect("h", 24))
     player.hi.hindrancespiritseffect = player.hi.hindrancespirits.pow(0.5).add(1)
 },
 clickables: {
@@ -1051,6 +1074,7 @@ startData() { return {
 update(delta) {
     player.ss.subspacepersecond = buyableEffect("ss", 11)
     player.ss.subspacepersecond = player.ss.subspacepersecond.mul(buyableEffect("ss", 12))
+    player.ss.subspacepersecond = player.ss.subspacepersecond.mul(buyableEffect("h", 23))
 
     player.ss.subspace = player.ss.subspace.add(player.ss.subspacepersecond.mul(delta))
     player.ss.subspaceeffect = player.ss.subspace.pow(0.25).div(3.5).add(1)
@@ -1059,6 +1083,13 @@ clickables: {
 
 },
 upgrades: {
+},
+automate() {
+    if (hasUpgrade("m", 35))
+    {
+        buyBuyable("ss", 11)
+        buyBuyable("ss", 12)
+    }
 },
 buyables: {
     11: {
@@ -1081,7 +1112,7 @@ buyables: {
             let growth = 1.4
             let max = Decimal.affordGeometricSeries(player.sp.space, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.sp.space = player.sp.space.sub(cost)
+            if (!hasUpgrade("m", 35)) player.sp.space = player.sp.space.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', "background-color": "#e8ffff",}
@@ -1106,7 +1137,7 @@ buyables: {
             let growth = 1.5
             let max = Decimal.affordGeometricSeries(player.ti.timeenergy, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.ti.timeenergy = player.ti.timeenergy.sub(cost)
+            if (!hasUpgrade("m", 35)) player.ti.timeenergy = player.ti.timeenergy.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', "background-color": "#e8ffff",}
@@ -1210,7 +1241,7 @@ content:
     [
         ["infobox", "jacorblog27"],
         ["blank", "25px"],
-        ["raw-html", function () { return "<h1>Solarity Coming Next Update!" }],
+        ["raw-html", function () { return "<h1>Unlocked the solar forge! Check crafting (must have defeated Ce308)" }],
     ],
 
 },

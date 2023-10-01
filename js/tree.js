@@ -19,7 +19,8 @@ addNode("blank", {
 addLayer("tree-tab", {
     tabFormat: 
     [
-        ["raw-html", function () { return options.musicToggle && options.forceOneTab ? "<audio controls autoplay loop hidden><source src=music/falsetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+        ["raw-html", function () { return options.musicToggle && options.forceOneTab && player.dimensionalrealm.eq(0) ? "<audio controls autoplay loop hidden><source src=music/falsetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+        ["raw-html", function () { return options.musicToggle && options.forceOneTab && player.dimensionalrealm.eq(1) ? "<audio controls autoplay loop hidden><source src=music/dimensionalrealm.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
         ["tree", function() {return (layoutInfo.treeLayout ? layoutInfo.treeLayout : TREE_LAYERS)}]
     ],
     previousTab: "",

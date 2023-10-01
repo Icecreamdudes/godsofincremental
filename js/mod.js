@@ -3,7 +3,7 @@
 	id: "godsofincremental",
 	author: "Icecreamdude",
 	pointsName: "points",
-	modFiles: ["incremental.js", "metaprestige.js", "tree.js", "prestigetree.js", "crafting.js"],
+	modFiles: ["incremental.js", "metaprestige.js", "tree.js", "prestigetree.js", "crafting.js", "hub.js"],
 
 	discordName: "Gods of Incremental Server",
 	discordLink: "https://discord.gg/icecreamdude-s-incremental-games-850817562040467556",
@@ -13,11 +13,21 @@
 
 // Set your version in num and name
 let VERSION = {
-	num: "1.0b",
-	name: "Beta Update 1 - Chapter 1: The Standard Path"
+	num: "1.1b",
+	name: "Beta Update 2 - Chapter 2 Part 1: The Dimensional Realm"
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+<h3>v1.1b - Chapter 2 Part 1: The Dimensional Realm<br>
+-Added the dimensional realm.<br>
+-Added the hub.<br>
+-Added willpower, shrines, and counting.<br>
+-Added the solar forge.<br>
+-Added crafting points.<br>
+-Added only 2 new songs.<br>
+-Added a bit of lore here and there.<br>
+Endgame: Unlocked enhance path extension, ~1,000,000 Willpower, ~1e220 points in Standard Path, ~1e30 points in Enhance Path<br>
+<br>
 <h3>v1.0.1b - The Hotkey Minor Update<br>
 -Added hotkeys for tab changes.<br>
 -Added hotkey for meta-prestige reset.<br>
@@ -44,7 +54,7 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset", "celestialenergyreset", "hindrancereset"]
+var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset", "celestialenergyreset", "hindrancereset", "checkforcountingreset", "countingreset", "checkforclaimsolaritycoal", "claimsolaritycoal"]
 
 function getStartPoints() {
 	return new Decimal(modInfo.initialStartPoints)
@@ -78,6 +88,7 @@ function getPointGen() {
 	gain = gain.mul(player.i.challengetaskeffect)
 	gain = gain.mul(buyableEffect("i", 102))
 	if (player.i.enhancebeacontoggle.eq(1)) gain = gain.sqrt()
+	gain = gain.mul(player.h.willpowereffect)
 	player.gain = gain
 	return gain
 }
@@ -101,6 +112,8 @@ function addedPlayerData() {
 		inconfrontcutscene: new Decimal(0),
 		playdotpm: new Decimal(0),
 		inchapter1ending: new Decimal(0),
+		inaarexhubcutscene: new Decimal(0),
+		insitracutscene: new Decimal(0),
 
 		//Checks
 		defeatedce308: new Decimal(0),
@@ -152,6 +165,14 @@ function addedPlayerData() {
 		ce308bossscene: new Decimal(0),
 		ce308defeatcutscene: new Decimal(1),
 		ce308defeatscene: new Decimal(0),
+		hubcutscene: new Decimal(1),
+		hubscene: new Decimal(0),
+		countingcutscene: new Decimal(1),
+		countingscene: new Decimal(0),
+		solarforgecutscene: new Decimal(1),
+		solarforgescene: new Decimal(0),
+		enhancequirkcutscene: new Decimal(1),
+		enhancequirkscene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),
@@ -161,6 +182,17 @@ function addedPlayerData() {
 		yhvrcutscene5: new Decimal(0),
 		yhvrcutscene6: new Decimal(0),
 		yhvrcutscene7: new Decimal(0),
+		yhvrcutscene8: new Decimal(0),
+		yhvrcutscene9: new Decimal(0),
+
+		//counting cutscene
+		downvoidcountingcutscene: new Decimal(0),
+		rementalcountingcutscene: new Decimal(0),
+		rementalcountingscene: new Decimal(0),
+		ducdatcountingcutscene: new Decimal(0),
+		ducdatcountingscene: new Decimal(0),
+		flamecountingcutscene: new Decimal(0),
+		flamecountingscene: new Decimal(0),
 
 		//PT layers
 		prestigelayer: new Decimal(0),
@@ -175,6 +207,9 @@ function addedPlayerData() {
 		hindrancelayer: new Decimal(0),
 		subspacelayer: new Decimal(0),
 		solaritylayer: new Decimal(0),
+
+		//Realm Travel
+		dimensionalrealm: new Decimal(0)
 	}
 }
 

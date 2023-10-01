@@ -17,6 +17,7 @@
         //Unlocks
 		craftingunlock: new Decimal(0),
 		ce308unlock: new Decimal(0),
+		quirkenhanceunlock: new Decimal(0),
 
         //ce308 tasks
         energytask: new Decimal(0),
@@ -53,6 +54,9 @@
         incrementalenergy: new Decimal(0),
         incrementalenergytoget: new Decimal(0),
         incrementalenergyeffect: new Decimal(1),
+
+        //realmtravel
+        dimensionalrealmtravels: new Decimal(0),
     }
     },
     onPrestige()
@@ -87,6 +91,10 @@
             createLightning();
             createLightning();
         }
+        if (player.solarforgecutscene.eq(0))
+        {
+            player.c.solaritycoal = player.c.solaritycoal.add(player.c.solaritycoaltoget)
+        }
         player.ti.timeenergy = new Decimal(0)
         player.sp.space = new Decimal(0)
         player.sg.supergeneratorpower = new Decimal(0)
@@ -95,6 +103,7 @@
         player.i.tasksleft = new Decimal(2)
 
         player.playdotpm = new Decimal(0)
+        player.c.solaritycoaltoget = new Decimal(0)
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
     resource: "Incremental Power", // Name of prestige currency
@@ -125,9 +134,9 @@
     color: "#8a00a9",
     update(delta) {
         //BACKGROUND 
-        document.body.style.setProperty('--background', hasUpgrade("i", 27) && player.i.ce308bossactivate.eq(0) && player.i.beatce308.eq(0) ? "radial-gradient(circle, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #202015, #555539, #aaaa71, #ffffaa)" : player.i.ce308bossactivate.eq(1) && player.i.beatce308.eq(0) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" : player.ce308defeatscene.gte(1)  && player.ce308defeatscene.lt(0) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" : player.ce308defeatscene.gte(1)  && player.ce308defeatscene.lt(11) ? "#999999" : "#161616");
-        if (hasUpgrade("i", 27) && player.i.beatce308.eq(0)) player.lightningtimer = player.lightningtimer.add(1)
-        if (player.i.ce308bossactivate.eq(1) && player.i.beatce308.eq(0)) player.lightningtimer = player.lightningtimer.add(4)
+        document.body.style.setProperty('--background', hasUpgrade("i", 27) && player.i.ce308bossactivate.eq(0) && player.i.beatce308.eq(0) && player.dimensionalrealm.eq(0) ? "radial-gradient(circle, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #161616, #202015, #555539, #aaaa71, #ffffaa)" : player.i.ce308bossactivate.eq(1) && player.i.beatce308.eq(0) && player.dimensionalrealm.eq(0) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" : player.ce308defeatscene.gte(1)  && player.ce308defeatscene.lt(0) && player.dimensionalrealm.eq(0) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" : player.ce308defeatscene.gte(1) && player.ce308defeatscene.lt(11) && player.dimensionalrealm.eq(0) ? "#999999" : player.dimensionalrealm.eq(1) ? "#1e2e1d" : "#161616");
+        if (hasUpgrade("i", 27) && player.i.beatce308.eq(0) && player.dimensionalrealm.eq(0)) player.lightningtimer = player.lightningtimer.add(1)
+        if (player.i.ce308bossactivate.eq(1) && player.i.beatce308.eq(0) && player.dimensionalrealm.eq(0)) player.lightningtimer = player.lightningtimer.add(4)
         if (player.lightningtimer.gte(60))
         {
             createLightning();
@@ -214,14 +223,48 @@
         player.m.score = player.m.score.mul(player.m.scorefrombestbeaconpoints)
         player.m.score = player.m.score.mul(player.m.scorefromhindrancespirits)
         player.m.score = player.m.score.mul(player.m.scorefrompuremachines)
+        player.m.score = player.m.score.mul(buyableEffect("h", 12))
+        player.m.score = player.m.score.mul(buyableEffect("h", 35))
 
         player.m.incrementalenergytoget = player.i.prestigemachines.pow(0.3)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.noenergyboost)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.metataskeffect)
+        player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(buyableEffect("h", 33))
 
         player.m.incrementalenergyeffect = player.m.incrementalenergy.pow(0.8).add(1)
     },
     clickables: {
+        11: {
+            title() { return "Turn a ticket into travel uses." },
+            canClick() { return player.c.dimensionaltickets.gt(0) },
+            unlocked() { return true },
+            onClick() {
+                player.c.dimensionaltickets = player.c.dimensionaltickets.sub(1)
+                player.m.dimensionalrealmtravels = player.m.dimensionalrealmtravels.add(10)
+            },
+            style: { "background-color": "#90EE90", width: '200px', "min-height": '70px' },
+        },
+        12: {
+            title() { return "TRAVEL TO THE DIMENSIONAL REALM (uses up 1 travel)" },
+            canClick() { return player.m.dimensionalrealmtravels.gt(0) },
+            unlocked() { return true },
+            onClick() {
+                player.dimensionalrealm = new Decimal(1)
+                player.tab = "h"
+                player.m.dimensionalrealmtravels = player.m.dimensionalrealmtravels.sub(1)
+                if (player.yhvrcutscene8.eq(0))
+                {
+                alert("You are going to travel to the dimensional realm.")
+                alert("This is your first time out of base.")
+                alert("This realm is one level higher than the one we are in right now.")
+                alert("My creation, galaxy, is in this realm.")
+                alert("Once you find your predecessor, go to galaxy.")
+                alert("A lot of important things are there.")
+            }
+                player.yhvrcutscene8 = new Decimal(1)
+            },
+            style: { "background-color": "#90EE90", width: '300px', "min-height": '100px' },
+        },
     },
     upgrades: {
         11:
@@ -503,6 +546,26 @@
             currencyDisplayName: "Celestial Cells",
             currencyInternalName: "celestialcells",
         },
+        34:
+        {
+            title: "Travel",
+            unlocked() { return player.defeatedce308.eq(1) },
+            description: "Unlocks realm travel.",
+            cost: new Decimal(4000000),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+        },
+        35:
+        {
+            title: "Prestige Tree QoL I",
+            unlocked() { return hasUpgrade("m", 34) },
+            description: "Autobuys all the buyables from the first four rows of the prestige tree.",
+            cost: new Decimal(69),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
     },
     buyables: {
     },
@@ -564,6 +627,10 @@
                            ["raw-html", function () { return player.quirklayer.eq(1) ? "<h3>Quirk layers: " + formatWhole(player.c.quirklayers) + " -> x" + format(player.m.scorefromquirklayers) : "" }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.hindrancelayer.eq(1) ? "<h3>Hindrance spirits: " + formatWhole(player.hi.hindrancespirits) + " -> x" + format(player.m.scorefromhindrancespirits) : "" }, { "color": "#a14040", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
+                           ["raw-html", function () { return hasUpgrade("h", 11) ? "<h3>Hub Factors " : "" }, { "color": "#68e8f4", "font-size": "24px", "font-family": "monospace" }],
+                           ["raw-html", function () { return hasUpgrade("h", 11) ? "<h3>Score Bumper: " + format(player.h.buyables[12]) + " -> x" + format(buyableEffect("h", 12)) : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.h.flameunlock.eq(1) ? "<h3>More Score: " + format(player.h.buyables[35]) + " -> x" + format(buyableEffect("h", 35)) : "" }, { "color": "#A40A67", "font-size": "18px", "font-family": "monospace" }],
+                           ["blank", "25px"],
                            ["raw-html", function () { return "<h3>TOTAL SCORE: " + format(player.m.score) }, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
                     ]
 
@@ -577,6 +644,21 @@
                            ["blank", "25px"],
                            ["tree", prestigetree],
                     ]
+
+            },
+            "Realm Travel": {
+                buttonStyle() { return { 'color': '#90EE90', "border-color" : "90EE90" } },
+                unlocked() { return hasUpgrade("m", 34) },
+                content:
+                    [
+                           ["blank", "25px"],
+            ["raw-html", function () { return "<h2>You have " + formatWhole(player.c.dimensionaltickets) + " dimensional realm tickets." }, { "color": "#90EE90", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return "<h3>You have " + formatWhole(player.m.dimensionalrealmtravels) + " dimensional realm travels." }, { "color": "#90EE90", "font-size": "18px", "font-family": "monospace" }],
+            ["blank", "25px"],
+            ["row", [["clickable", 11]]],
+            ["blank", "25px"],
+            ["row", [["clickable", 12]]],
+        ]
 
             },
         },
@@ -610,7 +692,7 @@
             ["raw-html", function () { return "<h2>You have " + format(player.m.points) + " incremental power." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 16], ["upgrade", 17]]],
-                        ["row", [["upgrade", 18], ["upgrade", 19], ["upgrade", 21], ["upgrade", 22], ["upgrade", 23], ["upgrade", 31]]],
+                        ["row", [["upgrade", 18], ["upgrade", 19], ["upgrade", 21], ["upgrade", 22], ["upgrade", 23], ["upgrade", 31], ["upgrade", 34]]],
         ]
 
             },
@@ -625,7 +707,7 @@
             ["raw-html", function () { return "<h3>(celestial cells are a crafting resource)" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
             ["blank", "25px"],
                         ["row", [["upgrade", 24], ["upgrade", 25], ["upgrade", 26], ["upgrade", 27], ["upgrade", 28], ["upgrade", 29]]],
-                        ["row", [["upgrade", 32], ["upgrade", 33]]],
+                        ["row", [["upgrade", 32], ["upgrade", 33], ["upgrade", 35]]],
         ]
 
             },
@@ -637,22 +719,25 @@
             //MUSIC
             ["raw-html", function () { return options.musicToggle ? "<audio controls autoplay loop hidden><source src=music/metaprestige.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
     ],
-    layerShown() { return player.unlockedmetaprestige.eq(1) }
+    layerShown() { return player.unlockedmetaprestige.eq(1) && player.dimensionalrealm.eq(0)}
 })
 
 document.addEventListener('keydown', function(event) {
     if (event.key === 'm' && options.toggleHotkey && player.unlockedmetaprestige.eq(1)) {
       player.tab = "m"
+      player.dimensionalrealm = new Decimal(0)
     }
   });
   document.addEventListener('keydown', function(event) {
     if (event.key === 'i' && options.toggleHotkey) {
       player.tab = "i"
+      player.dimensionalrealm = new Decimal(0)
     }
   });
   document.addEventListener('keydown', function(event) {
     if (event.key === 'c' && options.toggleHotkey && hasUpgrade("m", 19)) {
       player.tab = "c"
+      player.dimensionalrealm = new Decimal(0)
     }
   });
   document.addEventListener('keydown', function(event) {
@@ -660,4 +745,10 @@ document.addEventListener('keydown', function(event) {
         doReset("m")
     }
   });
-  
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'h' && options.toggleHotkey && hasUpgrade("m", 34) && player.m.dimensionalrealmtravels.gt(0)) {
+      player.tab = "h"
+      if (player.dimensionalrealm.eq(0)) player.m.dimensionalrealmtravels = player.m.dimensionalrealmtravels.sub(1)
+      player.dimensionalrealm = new Decimal(1)     
+    }
+  });

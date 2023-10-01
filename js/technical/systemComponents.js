@@ -151,6 +151,7 @@ var systemComponents = {
 		m: Switch to meta-prestige node<br>
 		c: Switch to crafting node<br>
 		m+shift: Meta-prestige reset<br>
+		h: Switch to hub node (uses a travel if not in dimensional realm)<br>
         <span v-for="key in hotkeys" v-if="player[key.layer].unlocked && tmp[key.layer].hotkeys[key.id].unlocked"><br>{{key.description}}</span></div>
     `
 	},

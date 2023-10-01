@@ -557,6 +557,7 @@
         }
 
         player.i.puremachinespersecond = player.m.sacrificedincrementalpower.pow(0.6).div(100000)
+        player.i.puremachinespersecond = player.i.puremachinespersecond.mul(buyableEffect("h", 32))
         player.i.puremachines = player.i.puremachines.add(player.i.puremachinespersecond.mul(delta))
 
         if (player.ce308bossscene.eq(52)) {
@@ -644,9 +645,9 @@
             player.i.truemachinespersecond = player.i.truemachinespersecond.mul(buyableEffect("i", 42))
             player.i.truemachines = player.i.truemachines.add(player.i.truemachinespersecond.mul(delta))
         }
-        player.i.scrapmetaltoget = player.i.prestigemachines.add(100).pow(0.4).mul(3).mul(player.i.beatce308).floor().mul(player.i.nohitce308)
-        player.i.wirestoget = player.i.bestprestigeenergy.add(1e10).slog().pow(4.5).mul(2).mul(player.i.beatce308).floor().mul(player.i.nohitce308)
-        player.i.enhancepowdertoget = player.i.buyables[23].add(10).pow(0.5).mul(4).mul(player.i.beatce308).floor().mul(player.i.nohitce308)
+        player.i.scrapmetaltoget = player.i.prestigemachines.add(100).pow(0.4).mul(3).mul(player.i.beatce308).floor().mul(2).mul(player.i.nohitce308)
+        player.i.wirestoget = player.i.bestprestigeenergy.add(1e10).slog().pow(4.5).mul(2).mul(player.i.beatce308).floor().mul(2).mul(player.i.nohitce308)
+        player.i.enhancepowdertoget = player.i.buyables[23].add(10).pow(0.5).mul(4).mul(player.i.beatce308).floor().mul(2).mul(player.i.nohitce308)
 
         if (player.ce308defeatscene.gte(70) && player.ce308defeatcutscene.eq(1))
         {
@@ -747,6 +748,16 @@
 
         player.i.beaconpointstoget = player.i.enhancepoints.div(100).pow(0.8)
         if (player.i.beaconpoints.gte(player.i.bestbeaconpoints)) player.i.bestbeaconpoints = player.i.beaconpoints
+
+        //Enhance Extension
+        if (player.enhancequirkscene.eq(16)) {
+            player.enhancequirkcutscene = new Decimal(0)
+            player.injacorbcutscene = new Decimal(0)
+        }
+        if (player.enhancequirkscene.gt(0) && player.enhancequirkcutscene.eq(1))
+        {
+            player.injacorbcutscene = new Decimal(1)
+        }
     },
     prestigereset()
     {
@@ -1830,7 +1841,7 @@ opacity: "0.9",
                 // Particle effect
                 alert("Solarity, dedicated to one of the gods.")
                 alert("It will be the gateway to many new crafting resources.")
-                alert("Sitra will tell you more once you've reached that point.")
+                alert("Artis and Sitra will tell you more once you've reached that point.")
                 alert("For now, it won't do much.")
                 createParticles();
                 createParticles();
@@ -1950,6 +1961,59 @@ opacity: "0.9",
             position: 'relative',
             overflow: 'hidden', 
             boxShadow: '0 0 20px 10px #e8ffff',
+            textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+            border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+            },
+        },
+        112: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.enhancequirkcutscene.eq(1) },
+            unlocked() { return player.enhancequirkscene.lt(16) },
+            onClick() {
+                player.enhancequirkscene = player.enhancequirkscene.add(1)
+            },
+        },
+        113: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.enhancequirkcutscene.eq(1) },
+            unlocked() { return player.enhancequirkscene.lt(16) && player.enhancequirkscene.neq(0) },
+            onClick() {
+                player.enhancequirkscene = player.enhancequirkscene.sub(1)
+            },
+        },
+        114: {
+            title() { return "<h1>Unlock" },
+            canClick() { return player.h.willpower.gte(1000000) && player.h.count.gte(1000) && player.h.countingpoints.gte(100) && player.m.points.gte(3000000) && player.m.incrementalenergy.gte(500) && player.c.totalanvils.gte(3) },
+            unlocked() { return player.enhancequirkcutscene.eq(0) && player.m.quirkenhanceunlock.eq(0) },
+            onClick() {
+                player.m.quirkenhanceunlock = new Decimal(1)
+
+                if (player.yhvrcutscene9.eq(0))
+                {
+                alert("Nice.")
+                alert("Almost about time I need you to visit galaxy.")
+                alert("But in order to enter, you must bypass it's strict quality control.")
+                alert("Someone like you would be obliterated immediately.")
+                alert("You must accompany a GALAXY STAFF MEMBER.")
+                alert("If you don't know any, Thepaperpilot and Ducdat are good staff members.")
+                alert("Also, you may see someone named CRG roaming around...")
+                alert("If I were you I'd stay away from him.")
+                alert("He has something called a 'neck tree', which was designed to repel newcomers to galaxy.")
+                alert("We haven't had new users in a while.")
+                alert("You may also encounter Sovereign. Someone who can potentially end you.")
+                alert("I don't want to explain much just don't get near him.")
+                alert("Once you get to the center of the galaxy you'll reach THE GALAXY SINGULARITY.")
+                alert("In the center there will be a very small gem. It is the singularity gem.")
+                alert("This one belonged to the high god INFINITY. Yes, it is a relic.")
+                alert("Alright. Bye.")
+            }
+                player.yhvrcutscene9 = new Decimal(1)
+            },
+            style: {   background: '#c20282',
+            width: '275px', height: '150px',
+            position: 'relative',
+            overflow: 'hidden', 
+            boxShadow: '0 0 20px 10px #c20282',
             textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
             border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
             },
@@ -2445,10 +2509,10 @@ opacity: "0.9",
         },
         106:
         {
-            title: "EP Prestige Upgrade VI",
-            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 104) && player.quirklayer.eq(1) },
-            description: "Unlocks beacon points.",
-            cost: new Decimal(1e13),
+            title: "EP Prestige Upgrade VII",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 105) && player.defeatedce308.eq(1) },
+            description: "Unlocks quirks (don't we have enough quirk-related stuff).",
+            cost: new Decimal(1e20),
             currencyLocation() { return player.i },
             canAfford() { return player.i.enhancepath.eq(1)},
             currencyDisplayName: "Prestige Points",
@@ -3318,14 +3382,24 @@ opacity: "0.9",
             body() { return "Log XIX: This war is making me fatigued. I'm taking a break, and Aarex is getting some work done. I remembered why I am journaling. It's because one day, a hero will avenge all of us. This hero will be reading my logs. Well, to you, whatever you do, don't ever go to the ????. There's a lot of secrets, like the ???????? ?????. You aren't allowed to know. " },         
         },
         jacorblog23: {
-            unlocked() { return player.enhancelayer.eq(1) && player.i.enhancebeacontoggle.eq(1) && hasUpgrade("i", 105) },
+            unlocked() { return player.enhancelayer.eq(1) && player.i.enhancebeacontoggle.eq(1) && hasUpgrade("i", 105) && !hasUpgrade("i", 107) },
             title: "Log XXIII",
             body() { return "Log XXIII: Our rare victory has been accomplished against the death realm. ??????????? used his ??????? powers to sneak troops into the death realm. Lots of death realm officials were killed or captured. They are being held in ???? ??????, where no one can find them. This war might finally be over." },         
         }, 
         jacorblog24: {
-            unlocked() { return player.enhancelayer.eq(1) && player.i.enhancebeacontoggle.eq(0) && hasUpgrade("i", 105) },
+            unlocked() { return player.enhancelayer.eq(1) && player.i.enhancebeacontoggle.eq(0) && hasUpgrade("i", 105) && !hasUpgrade("i", 107) },
             title: "Log XXIV",
             body() { return "Log XXIV: We started work on the sixth row of the prestige tree. Instead of life essence or super prestige points like Aarex suggested, we opted for honour and nebula instead. They are much more powerful. The honour of our fallen soldiers will live on with the tree. " },         
+        }, 
+        ce308bosshowto: {
+            unlocked() { return true },
+            title: "Bossfight Explanation:",
+            body() { return "In this fight, you will have to dodge droning yellow circles with your mouse. If any of them and your mouse cursor touch, then you lose some hp. To avoid cheesing the fight, there is also a passive health drain. In order to combat said passive health drain, green circles appear that you must click in order to recover health. In order to beat the boss, you must play through the mini incremental game while you have to dodge the bullets and recover health. " },         
+        }, 
+        jacorblog28: {
+            unlocked() { return player.i.enhancepath.eq(1) && !hasUpgrade("i", 107) },
+            title: "Log XXVIII",
+            body() { return "Log XXVIII: This may be the final entry. I am sorry I can not write more. I have been working on the tree 24/7 now. This may be the last time writing, but one day we will meet. I am sure of that. The prophet wants to meet you as well. It will happen one day. War is inevitable. " },         
         }, 
     },
     microtabs: {
@@ -3461,8 +3535,9 @@ opacity: "0.9",
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>+" + formatWhole(player.i.enhancepowdertoget) + " enhance powder." : "" }],
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) && player.i.nohitce308.eq(1) ? "<h1>Try beating it no-hit for more rewards!" : "" }],
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) && player.i.nohitce308.eq(3) ? "<h1>No-Hit rewards give you x3 resources." : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>New crafting recipe: Dimensional Realm Tickets" : "" }],
                         ["blank", "25px"],
-                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>Oh and about Ce308's power? You'll get that later. :)" : "" }],
+                        ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h1>You have gained Ce308's power: The power to to travel realms :)" : "" }],
                         ["blank", "25px"],
                         ["raw-html", function () { return player.ce308bosscutscene.eq(0) && player.ce308defeatcutscene.eq(1) && player.i.beatce308.eq(1) && player.i.playerdead.eq(0) ? "<h3>There is a cutscene required in order to progress to the next chapter. It is a new tab above. " : "" }, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
         ]
@@ -3555,6 +3630,16 @@ opacity: "0.9",
         ]
         
             },
+            "Quirk": {
+                buttonStyle() { return { 'border-color': 'purple', 'background-color': '#c20282', "color": 'black' }},
+                unlocked() { return hasUpgrade("i", 106) },
+                content:
+                
+                    [
+         ["microtabs", "quirk", { 'border-width': '0px' }],
+        ]
+
+            },
         },
         prestige: {
             "Main": {
@@ -3581,10 +3666,11 @@ opacity: "0.9",
                         ["row", [["buyable", 14]]],
                         ["blank", "25px"],
                         ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14]]],
-                        ["row", [["upgrade", 101], ["upgrade", 102], ["upgrade", 103], ["upgrade", 104], ["upgrade", 105]]],
+                        ["row", [["upgrade", 101], ["upgrade", 102], ["upgrade", 103], ["upgrade", 104], ["upgrade", 105], ["upgrade", 106]]],
                         ["row", [["clickable", 15]]],
                         ["row", [["clickable", 16], ["blank", "25px"], ["clickable", 43]]],
                         ["blank", "25px"],
+                        ["infobox", "jacorblog28"],
                     ]
 
             },
@@ -4205,6 +4291,53 @@ opacity: "0.9",
                         ["row", [["clickable", 92]]],
                         ["blank", "25px"],
                         ["row", [["clickable", 93], ["blank", "25px"], ["clickable", 98]]],
+                        ["blank", "25px"],
+                        ["infobox", "ce308bosshowto"],
+                    ]
+            },
+        },
+        quirk: {
+            "Unlock": {
+                buttonStyle() { return { 'border-color': 'purple', 'background-color': '#c20282', "color": 'black' }},
+                unlocked() { return player.m.quirkenhanceunlock.eq(0) },
+                content:
+                    [
+                        ["raw-html", function () { return player.enhancequirkscene.eq(1) && player.i.enhancepath.eq(1) ? "<h1>So, now you are ready to continue this path." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(2) && player.i.enhancepath.eq(1) ? "<h1>You are ready to experience the TRUE nature of quirks..." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(3) && player.i.enhancepath.eq(1) ? "<h1>This will not be easy. It will take a lot of time and dedication." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(4) && player.i.enhancepath.eq(1) ? "<h1>Eventually, you will reach Jacorbian Balancing." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(5) && player.i.enhancepath.eq(1) ? "<h1>You must realize that this layer's purpose is to build strength for the true challenge." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(6) && player.i.enhancepath.eq(1) ? "<h1>Sitra, the celestial of machines, is waiting at the end of this layer." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(7) && player.i.enhancepath.eq(1) ? "<h1>He is a real celestial. Not a piece of scrap like Ce308." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(8) && player.i.enhancepath.eq(1) ? "<h1>However, since he is on the good side, he should be a fair fight." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(9) && player.i.enhancepath.eq(1) ? "<h1>You would have to kill him though. He has already accepted his fate. I'm sorry." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(10) && player.i.enhancepath.eq(1) ? "<h1>It is law that you absorb a celestial's power upon killing it." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(11) && player.i.enhancepath.eq(1) ? "<h1>Sitra is too good to resist. You'd be able to withstand singularity." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(12) && player.i.enhancepath.eq(1) ? "<h1>The predecessor is waiting for you." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(13) && player.i.enhancepath.eq(1) ? "<h1>Stuck in dilation; you must set him free." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(14) && player.i.enhancepath.eq(1) ? "<h1>There will be a bunch of requirements first." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkscene.eq(15) && player.i.enhancepath.eq(1) ? "<h1>This is very important." : "" }, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 113], ["clickable", 112]]],
+                        ["raw-html", function () { return player.enhancequirkcutscene.eq(0) ? "<h2>" + format(player.h.willpower) + "/1,000,000<h2> willpower. " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkcutscene.eq(0) ? "<h2>" + formatWhole(player.h.count) + "/1,000<h2> current count. " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkcutscene.eq(0) ? "<h2>" + formatWhole(player.h.countingpoints) + "/100<h2> counting points. " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkcutscene.eq(0) ? "<h2>" + format(player.m.points) + "/3,000,000 <h2> incremental power. " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkcutscene.eq(0) ? "<h2>" + format(player.m.incrementalenergy) + "/500.00 <h2> incremental energy. " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkcutscene.eq(0) ? "<h2>" + formatWhole(player.c.totalanvils) + "/3 <h2> total anvils. (this one is pain, good luck)" : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.enhancequirkcutscene.eq(0) ? "<h3>The grind is yet again on my friend. I am sorry, this is the easy way. No one wants to go the hard way." : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.enhancequirkcutscene.eq(0) ? "<h3>You must satisfy these requirements simultaneously." : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 114]]],
+                    ]
+            },
+            "Main": {
+                buttonStyle() { return { 'border-color': 'purple', 'background-color': '#c20282', "color": 'black' }},
+                unlocked() { return player.m.quirkenhanceunlock.eq(1) },
+                content:
+                    [
+                        ["raw-html", function () { return player.enhancequirkcutscene.eq(0) ? "<h3>Wait for next update!!!!" : ""}, { "color": "purple", "font-size": "36px", "font-family": "monospace" }],
                     ]
             },
         },
@@ -4227,7 +4360,7 @@ opacity: "0.9",
          ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(1) && player.i.enhancepath.eq(0) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/energeticsong.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
          ["raw-html", function () { return options.musicToggle && player.i.standardpath.eq(0) && player.i.enhancepath.eq(1) && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) ? "<audio controls autoplay loop hidden><source src=music/enhancepath.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
         ],
-    layerShown() { return true }
+    layerShown() { return player.dimensionalrealm.eq(0) }
 })
 
 function createParticles() {
