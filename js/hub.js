@@ -1644,7 +1644,7 @@ counting: {
     },
     "User Points": {
         buttonStyle() { return {  'color': '#7289DA', 'border-color': '#7289DA' } },
-        unlocked() { return hasUpgrade("h", 18) },
+        unlocked() { return hasUpgrade("h", 19) },
         content:
         [
             ["row", [
