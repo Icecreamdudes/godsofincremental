@@ -1759,7 +1759,7 @@ content:
                 
                     [
             ["raw-html", function () { return "<h2>You have " + format(player.c.craftingpoints) + "<h2> crafting points." }, { "color": "#ffcd00", "font-size": "18px", "font-family": "monospace" }],
-            ["raw-html", function () { return "<h3>You will earn " + format(player.c.craftingpointstoget) + "<h3> crafting points per counting power on craft." }, { "color": "#ffcd00", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return "<h3>You will earn " + format(player.c.craftingpointstoget) + "<h3> crafting points per crafting power on craft." }, { "color": "#ffcd00", "font-size": "18px", "font-family": "monospace" }],
             ["blank", "25px"],
             ["raw-html", function () { return "<h3>You have sacrificed " + formatWhole(player.c.sacrificedsand) + "<h3> solar sand." }, { "color": "#ffcd00", "font-size": "18px", "font-family": "monospace" }],
             ["row", [["clickable", 58]]],
