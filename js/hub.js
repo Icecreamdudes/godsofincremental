@@ -570,7 +570,7 @@ clickables: {
     16: {
         title() { return "+10%" },
         canClick() { return player.h.countingspeed.lt(1.5) },
-        unlocked() { return hasUpgrade("h", 22)},
+        unlocked() { return hasUpgrade("h", 23)},
         onClick() {
             player.h.countingspeed = player.h.countingspeed.add(0.1)
         },
@@ -579,7 +579,7 @@ clickables: {
     17: {
         title() { return "-10%" },
         canClick() { return player.h.countingspeed.gt(0.01) },
-        unlocked() { return hasUpgrade("h", 22)},
+        unlocked() { return hasUpgrade("h", 23)},
         onClick() {
             player.h.countingspeed = player.h.countingspeed.sub(0.1)
 
@@ -1626,7 +1626,7 @@ counting: {
                     ["raw-html", function () { return player.countingcutscene.eq(0) && player.h.yourturncounting.eq(0) ? "It is not your turn" : ""}, { "color": "#68e8f4", "font-size": "32px", "font-family": "monospace" }], ["blank", "25px"], 
         ]], ["blank", "25px"], ["column", [["bar", "downvoidbar"], ["bar", "incrementalgamerbar"], ["bar", "ducdatbar"], ["bar", "flamebar"]]], ["column", [["bar", "paperbar"], ["bar", "norulesbar"]]]]],
     ["blank", "25px"], 
-    ["raw-html", function () { return player.countingcutscene.eq(0) ? "<h3>Counting Speed: x" + format(player.h.countingspeed) + ".": "" }, { "color": "#7289DA", "font-size": "18px", "font-family": "monospace" }],
+    ["raw-html", function () { return player.countingcutscene.eq(0) && hasUpgrade("h", 23) ? "<h3>Counting Speed: x" + format(player.h.countingspeed) + ".": "" }, { "color": "#7289DA", "font-size": "18px", "font-family": "monospace" }],
     ["blank", "25px"], 
     ["row", [["clickable", 16], ["clickable", 17]]],
     ],
