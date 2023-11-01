@@ -1244,7 +1244,7 @@ clickables: {
     72: {
         title() { return format(player.c.enhancemedals, 0)  + "<img src='resources/enhancemedal.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return true },
-        unlocked() { return player.solarforgecutscene.eq(0) },
+        unlocked() { return player.sitraunlockcutscene.eq(0) },
         onClick() {
             player.c.currentforgedisplay = new Decimal(4)
         },
