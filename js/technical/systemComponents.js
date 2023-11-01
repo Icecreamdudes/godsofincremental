@@ -143,7 +143,7 @@ var systemComponents = {
         <span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></span>
         <a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br>
         <a class="link" href="http://discord.gg/wwQfgPa" target="_blank" v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a><br>
-        <a class="link" href="https://www.youtube.com/watch?v=Rhj5ULjqRlg" target="_blank" v-bind:style="{'font-size': '16px'}">Soundtrack</a><br>
+        <a class="link" href="https://open.spotify.com/album/1vcOArs4G9rufPvaTMTw1M" target="_blank" v-bind:style="{'font-size': '16px'}">Soundtrack</a><br>
 		<br><br>
         Time Played: {{ formatTime(player.timePlayed) }}<br><br>
         <h3>Hotkeys</h3><br>
@@ -182,6 +182,7 @@ var systemComponents = {
             <tr>
 			<td><button class="opt" onclick="toggleOpt('musicToggle'); needsCanvasUpdate = true">Toggle Music: {{ options.musicToggle?"Unmute":"Mute" }}</button></td>
 				<td><button class="opt" onclick="toggleOpt('toggleHotkey'); needsCanvasUpdate = true">Toggle Hotkeys: {{ options.toggleHotkey?"On":"Off" }}</button></td>
+				<td><button class="opt" onclick="toggleOpt('toggleParticle'); needsCanvasUpdate = true">Toggle Particles: {{ options.toggleParticle?"On":"Off" }}</button></td>
 				</tr>
 
 \t\t\t</tr> 

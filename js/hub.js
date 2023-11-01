@@ -72,7 +72,47 @@ startData() { return {
 
     //control
     countingspeed: new Decimal(1),
+
+    //prestige power
+    prestigepower: new Decimal(0),
+    prestigepowereffect: new Decimal(1),
+    prestigepowerpause: new Decimal(0),
+    prestigepowertogetdivide: new Decimal(0),
+    prestigepowertoget: new Decimal(0),
+
+    //assembly line
+    assemblylineselect: new Decimal(0),
+    assemblylinetypeselect: new Decimal(0), //1 - Red 2 - Green 3 - Blue 4 - Transport 5 - Finish
+    slotstatus: [new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0)],
+    slotstatuspic: ["", "", "", "", "", "", ""],
+    redenergy: new Decimal(0),
+    greenenergy: new Decimal(0),
+    blueenergy: new Decimal(0),
+    slotredenergy: [new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0)],
+    slotgreenenergy: [new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0)],
+    slotblueenergy: [new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0)],
+    slotbuyablepage: new Decimal(1),
 }
+},
+automate() {
+    if (hasUpgrade("m", 36))
+    {
+        buyBuyable("h", 11)
+        buyBuyable("h", 12)
+        buyBuyable("h", 13)
+        buyBuyable("h", 14)
+        buyBuyable("h", 15)
+        buyBuyable("h", 16)
+        buyBuyable("h", 17)
+        buyBuyable("h", 18)
+        buyBuyable("h", 19)
+        buyBuyable("h", 21)
+        buyBuyable("h", 22)
+        buyBuyable("h", 23)
+        buyBuyable("h", 24)
+        buyBuyable("h", 25)
+        buyBuyable("h", 26)
+    }
 },
 update(delta) {
     let onepersec = new Decimal(1)
@@ -97,10 +137,26 @@ update(delta) {
     player.h.willpowerpersecond = player.h.willpowerpersecond.mul(player.h.counteffect)
     if (hasUpgrade("h", 21)) player.h.willpowerpersecond = player.h.willpowerpersecond.mul(upgradeEffect("h", 21))
     player.h.willpowerpersecond = player.h.willpowerpersecond.mul(buyableEffect("h", 31))
+    player.h.willpowerpersecond = player.h.willpowerpersecond.mul(player.h.prestigepowereffect)
+    player.h.willpowerpersecond = player.h.willpowerpersecond.mul(buyableEffect("h", 42))
+    player.h.willpowerpersecond = player.h.willpowerpersecond.mul(buyableEffect("h", 45))
+    player.h.willpowerpersecond = player.h.willpowerpersecond.mul(buyableEffect("h", 46))
+    player.h.willpowerpersecond = player.h.willpowerpersecond.mul(buyableEffect("h", 48))
+    player.h.willpowerpersecond = player.h.willpowerpersecond.mul(buyableEffect("h", 49))
+    player.h.willpowerpersecond = player.h.willpowerpersecond.mul(buyableEffect("h", 51))
+    player.h.willpowerpersecond = player.h.willpowerpersecond.mul(buyableEffect("h", 52))
 
     player.h.shrinepower = player.h.shrinepower.add(player.h.shrinepowerpersecond.mul(delta))
     player.h.shrinepowereffect = player.h.shrinepower.add(1).pow(0.3)
     player.h.shrinepowerpersecond = player.h.buyables[14].add(player.h.buyables[15].add(player.h.buyables[16].add(player.h.buyables[17].add(player.h.buyables[18].add(player.h.buyables[19].add(player.h.buyables[21].add(player.h.buyables[22].add(player.h.buyables[23].add(player.h.buyables[24]))))))))).mul(0.01)
+    player.h.shrinepowerpersecond = player.h.shrinepowerpersecond.mul(buyableEffect("h", 41))
+    player.h.shrinepowerpersecond = player.h.shrinepowerpersecond.mul(buyableEffect("h", 43))
+    player.h.shrinepowerpersecond = player.h.shrinepowerpersecond.mul(buyableEffect("h", 45))
+    player.h.shrinepowerpersecond = player.h.shrinepowerpersecond.mul(buyableEffect("h", 47))
+    player.h.shrinepowerpersecond = player.h.shrinepowerpersecond.mul(buyableEffect("h", 48))
+    player.h.shrinepowerpersecond = player.h.shrinepowerpersecond.mul(buyableEffect("h", 49))
+    player.h.shrinepowerpersecond = player.h.shrinepowerpersecond.mul(buyableEffect("h", 51))
+    player.h.shrinepowerpersecond = player.h.shrinepowerpersecond.mul(buyableEffect("h", 53))
 
     //counting
 
@@ -117,7 +173,9 @@ update(delta) {
     player.h.counteffect = player.h.count.pow(0.2).add(1)
     
     player.h.countingpointstoget = player.h.count.div(25).floor()
-    player.h.countingpointseffect = player.h.countingpoints.mul(0.02).add(1)
+    if (hasUpgrade("h", 28)) player.h.countingpointstoget = player.h.countingpointstoget.mul(upgradeEffect("h", 28))
+    player.h.countingpointstoget = player.h.countingpointstoget.mul(buyableEffect("h", 63))
+    player.h.countingpointseffect = player.h.countingpoints.mul(0.02).add(1).pow(0.7)
     if (player.h.countinput == player.h.nextcount && player.h.yourturncounting.eq(1))
     {
         countingPrint("You: " + formatWhole(player.h.nextcount))
@@ -154,6 +212,7 @@ update(delta) {
     player.h.countingpowerpersecond = player.h.countingpowerpersecond.mul(player.h.countingpointseffect)
     if (hasUpgrade("h", 17)) player.h.countingpowerpersecond = player.h.countingpowerpersecond.mul(upgradeEffect("h", 17))
     player.h.countingpowerpersecond = player.h.countingpowerpersecond.mul(player.h.countingspeed)
+    player.h.countingpowerpersecond = player.h.countingpowerpersecond.mul(buyableEffect("h", 62))
     if (player.h.norulesduration.gt(0)) 
     {
     player.h.countingpowerpersecond = player.h.countingpowerpersecond.mul(2)
@@ -412,6 +471,7 @@ update(delta) {
     }
     player.h.downvoidpointstoget = new Decimal(1)
     player.h.downvoidpointstoget = player.h.downvoidpointstoget.mul(buyableEffect("h", 27))
+    player.h.downvoidpointstoget = player.h.downvoidpointstoget.mul(buyableEffect("h", 64))
     
     if (player.h.incrementalgamerunlock.eq(1) && player.h.incrementalgamerturn.eq(1))
     {
@@ -436,6 +496,7 @@ update(delta) {
     }
     player.h.incrementalgamerpointstoget = new Decimal(1)
     player.h.incrementalgamerpointstoget = player.h.incrementalgamerpointstoget.mul(buyableEffect("h", 28))
+    player.h.incrementalgamerpointstoget = player.h.incrementalgamerpointstoget.mul(buyableEffect("h", 64))
     if (hasUpgrade("h", 16)) player.h.incrementalgamerunlock = new Decimal(1)
 
     if (player.h.ducdatunlock.eq(1) && player.h.ducdatturn.eq(1))
@@ -460,6 +521,7 @@ update(delta) {
     player.h.ducdatcountingpowerreq = player.h.count.div(10).add(10)
     player.h.ducdatpointstoget = new Decimal(1)
     player.h.ducdatpointstoget = player.h.ducdatpointstoget.mul(buyableEffect("h", 29))
+    player.h.ducdatpointstoget = player.h.ducdatpointstoget.mul(buyableEffect("h", 64))
     if (hasUpgrade("h", 18)) player.h.ducdatunlock = new Decimal(1)
 
     if (hasUpgrade("h", 22)) player.h.flameunlock = new Decimal(1)
@@ -495,6 +557,7 @@ update(delta) {
     }
     player.h.flamepointstoget = new Decimal(0.1)
     player.h.flamepointstoget = player.h.flamepointstoget.mul(buyableEffect("h", 34))
+    player.h.flamepointstoget = player.h.flamepointstoget.mul(buyableEffect("h", 64))
 
     if (hasUpgrade("h", 24)) player.h.paperunlock = new Decimal(1)
     if (player.h.paperunlock.eq(1) && player.h.paperturn.eq(1))
@@ -521,8 +584,400 @@ update(delta) {
     }
     player.h.paperpointstoget = new Decimal(1)
     player.h.paperpointstoget = player.h.paperpointstoget.mul(buyableEffect("h", 36))
+    player.h.paperpointstoget = player.h.paperpointstoget.mul(buyableEffect("h", 64))
 
     player.h.norulesduration = player.h.norulesduration.sub(onepersec.mul(delta))
+
+    //prestige power
+
+    player.h.prestigepowertoget = player.h.willpower.pow(0.5)
+    let divide = new Decimal(0)
+    divide = player.h.prestigepower.add(player.h.prestigepowertoget.add(1))
+    player.h.prestigepowertogetdivide = divide.pow(0.8)
+    player.h.prestigepowertoget = player.h.prestigepowertoget.div(player.h.prestigepowertogetdivide)
+    player.h.prestigepowertoget = player.h.prestigepowertoget.mul(buyableEffect("h", 44))
+    player.h.prestigepowertoget = player.h.prestigepowertoget.mul(buyableEffect("h", 46))
+    player.h.prestigepowertoget = player.h.prestigepowertoget.mul(buyableEffect("h", 47))
+    player.h.prestigepowertoget = player.h.prestigepowertoget.mul(buyableEffect("h", 48))
+    player.h.prestigepowertoget = player.h.prestigepowertoget.mul(buyableEffect("h", 49))
+    player.h.prestigepowertoget = player.h.prestigepowertoget.mul(buyableEffect("h", 51))
+    player.h.prestigepowertoget = player.h.prestigepowertoget.mul(buyableEffect("h", 54))
+
+    player.h.prestigepowerpause = player.h.prestigepowerpause.sub(1)
+    if (player.h.prestigepowerpause.gt(0))
+    {
+        layers.h.prestigepowerreset();
+    }
+
+    player.h.prestigepowereffect = player.h.prestigepower.pow(0.7).add(1)
+
+    //factor grid
+    if (player.factorgridscene.eq(14)) {
+        player.factorgridcutscene = new Decimal(0)
+    }
+
+    if (player.assemblylinescene.eq(12)) {
+        player.assemblylinecutscene = new Decimal(0)
+        player.inaarexhubcutscene = new Decimal(0)
+    }
+    if (player.assemblylinescene.gt(0) && player.assemblylinecutscene.eq(1))
+    {
+        player.inaarexhubcutscene = new Decimal(1)
+    }
+
+            //assembly line
+            if (player.h.assemblylinetypeselect.eq(1))
+            {
+                player.h.slotstatus[player.h.assemblylineselect] = new Decimal(1)
+                player.h.slotstatuspic[player.h.assemblylineselect] = "<img src='resources/assemblylinered.png'style='width:calc(5%);height:calc(5%);'></img>"
+            }
+            if (player.h.assemblylinetypeselect.eq(2)) {
+                player.h.slotstatus[player.h.assemblylineselect] = new Decimal(2)
+                player.h.slotstatuspic[player.h.assemblylineselect] = "<img src='resources/assemblylinegreen.png'style='width:calc(5%);height:calc(5%);'></img>"
+            }
+            if (player.h.assemblylinetypeselect.eq(3)) {
+                player.h.slotstatus[player.h.assemblylineselect] = new Decimal(3)
+                player.h.slotstatuspic[player.h.assemblylineselect] = "<img src='resources/assemblylineblue.png'style='width:calc(5%);height:calc(5%);'></img>"
+            }
+            if (player.h.assemblylinetypeselect.eq(4)) {
+                player.h.slotstatus[player.h.assemblylineselect] = new Decimal(4)
+                player.h.slotstatuspic[player.h.assemblylineselect] = "<img src='resources/assemblylinearrowwhite.png'style='width:calc(5%);height:calc(5%);'></img>"
+            }
+            if (player.h.assemblylinetypeselect.eq(5)) {
+                player.h.slotstatus[player.h.assemblylineselect] = new Decimal(5)
+                player.h.slotstatuspic[player.h.assemblylineselect] = "<img src='resources/assemblylinex.png'style='width:calc(5%);height:calc(5%);'></img>"
+            }
+    
+            let redenergypersecond = new Decimal(1)
+            let greenenergypersecond = new Decimal(1)
+            let blueenergypersecond = new Decimal(1)
+            let transportspeed = new Decimal(0.5)
+            let harvestspeed = new Decimal(5)
+            let assemblylinespeed = new Decimal(1)
+            assemblylinespeed = assemblylinespeed.mul(buyableEffect("h", 58))
+
+            redenergypersecond = redenergypersecond.mul(assemblylinespeed)
+            redenergypersecond = redenergypersecond.mul(buyableEffect("h", 55))
+            greenenergypersecond = greenenergypersecond.mul(assemblylinespeed)
+            greenenergypersecond = greenenergypersecond.mul(buyableEffect("h", 56))
+            blueenergypersecond = blueenergypersecond.mul(assemblylinespeed)
+            blueenergypersecond = blueenergypersecond.mul(buyableEffect("h", 57))
+            transportspeed = transportspeed.mul(assemblylinespeed)
+            transportspeed = transportspeed.mul(buyableEffect("h", 59))
+            harvestspeed = harvestspeed.mul(assemblylinespeed)
+            harvestspeed = harvestspeed.mul(buyableEffect("h", 61))
+    
+            if (player.h.slotstatus[1].eq(1)) {
+                player.h.slotredenergy[1] = player.h.slotredenergy[1].add(redenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[2].eq(1)) {
+                player.h.slotredenergy[2] = player.h.slotredenergy[2].add(redenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[3].eq(1)) {
+                player.h.slotredenergy[3] = player.h.slotredenergy[3].add(redenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[4].eq(1)) {
+                player.h.slotredenergy[4] = player.h.slotredenergy[4].add(redenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[5].eq(1)) {
+                player.h.slotredenergy[5] = player.h.slotredenergy[5].add(redenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[6].eq(1)) {
+                player.h.slotredenergy[6] = player.h.slotredenergy[6].add(redenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[7].eq(1)) {
+                player.h.slotredenergy[7] = player.h.slotredenergy[7].add(redenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[1].eq(2)) {
+                player.h.slotgreenenergy[1] = player.h.slotgreenenergy[1].add(greenenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[2].eq(2)) {
+                player.h.slotgreenenergy[2] = player.h.slotgreenenergy[2].add(greenenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[3].eq(2)) {
+                player.h.slotgreenenergy[3] = player.h.slotgreenenergy[3].add(greenenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[4].eq(2)) {
+                player.h.slotgreenenergy[4] = player.h.slotgreenenergy[4].add(greenenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[5].eq(2)) {
+                player.h.slotgreenenergy[5] = player.h.slotgreenenergy[5].add(greenenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[6].eq(2)) {
+                player.h.slotgreenenergy[6] = player.h.slotgreenenergy[6].add(greenenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[7].eq(2)) {
+                player.h.slotgreenenergy[7] = player.h.slotgreenenergy[7].add(greenenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[1].eq(3)) {
+                player.h.slotblueenergy[1] = player.h.slotblueenergy[1].add(blueenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[2].eq(3)) {
+                player.h.slotblueenergy[2] = player.h.slotblueenergy[2].add(blueenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[3].eq(3)) {
+                player.h.slotblueenergy[3] = player.h.slotblueenergy[3].add(blueenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[4].eq(3)) {
+                player.h.slotblueenergy[4] = player.h.slotblueenergy[4].add(blueenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[5].eq(3)) {
+                player.h.slotblueenergy[5] = player.h.slotblueenergy[5].add(blueenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[6].eq(3)) {
+                player.h.slotblueenergy[6] = player.h.slotblueenergy[6].add(blueenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[7].eq(3)) {
+                player.h.slotblueenergy[7] = player.h.slotblueenergy[7].add(blueenergypersecond.mul(delta))
+            }
+            if (player.h.slotstatus[1].eq(4)) {
+                if (player.h.slotredenergy[1].gt(1)) {
+                    player.h.slotredenergy[1] = player.h.slotredenergy[1].sub(transportspeed.mul(delta))
+                    player.h.slotredenergy[2] = player.h.slotredenergy[2].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[1].gt(1)) {
+                    player.h.slotblueenergy[1] = player.h.slotblueenergy[1].sub(transportspeed.mul(delta))
+                    player.h.slotblueenergy[2] = player.h.slotblueenergy[2].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[1].gt(1)) {
+                    player.h.slotgreenenergy[1] = player.h.slotgreenenergy[1].sub(transportspeed.mul(delta))
+                    player.h.slotgreenenergy[2] = player.h.slotgreenenergy[2].add(transportspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[2].eq(4)) {
+                if (player.h.slotredenergy[1].gt(1)) {
+                    player.h.slotredenergy[1] = player.h.slotredenergy[1].sub(transportspeed.mul(delta))
+                    player.h.slotredenergy[3] = player.h.slotredenergy[3].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[1].gt(1)) {
+                    player.h.slotblueenergy[1] = player.h.slotblueenergy[1].sub(transportspeed.mul(delta))
+                    player.h.slotblueenergy[3] = player.h.slotblueenergy[3].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[1].gt(1)) {
+                    player.h.slotgreenenergy[1] = player.h.slotgreenenergy[1].sub(transportspeed.mul(delta))
+                    player.h.slotgreenenergy[3] = player.h.slotgreenenergy[3].add(transportspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[3].eq(4)) {
+                if (player.h.slotredenergy[2].gt(1)) {
+                    player.h.slotredenergy[2] = player.h.slotredenergy[2].sub(transportspeed.mul(delta))
+                    player.h.slotredenergy[4] = player.h.slotredenergy[4].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[2].gt(1)) {
+                    player.h.slotblueenergy[2] = player.h.slotblueenergy[2].sub(transportspeed.mul(delta))
+                    player.h.slotblueenergy[4] = player.h.slotblueenergy[4].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[2].gt(1)) {
+                    player.h.slotgreenenergy[2] = player.h.slotgreenenergy[2].sub(transportspeed.mul(delta))
+                    player.h.slotgreenenergy[4] = player.h.slotgreenenergy[4].add(transportspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[4].eq(4)) {
+                if (player.h.slotredenergy[3].gt(1)) {
+                    player.h.slotredenergy[3] = player.h.slotredenergy[3].sub(transportspeed.mul(delta))
+                    player.h.slotredenergy[5] = player.h.slotredenergy[5].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[3].gt(1)) {
+                    player.h.slotblueenergy[3] = player.h.slotblueenergy[3].sub(transportspeed.mul(delta))
+                    player.h.slotblueenergy[5] = player.h.slotblueenergy[5].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[3].gt(1)) {
+                    player.h.slotgreenenergy[3] = player.h.slotgreenenergy[3].sub(transportspeed.mul(delta))
+                    player.h.slotgreenenergy[5] = player.h.slotgreenenergy[5].add(transportspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[5].eq(4)) {
+                if (player.h.slotredenergy[4].gt(1)) {
+                    player.h.slotredenergy[4] = player.h.slotredenergy[4].sub(transportspeed.mul(delta))
+                    player.h.slotredenergy[6] = player.h.slotredenergy[6].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[4].gt(1)) {
+                    player.h.slotblueenergy[4] = player.h.slotblueenergy[4].sub(transportspeed.mul(delta))
+                    player.h.slotblueenergy[6] = player.h.slotblueenergy[6].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[4].gt(1)) {
+                    player.h.slotgreenenergy[4] = player.h.slotgreenenergy[4].sub(transportspeed.mul(delta))
+                    player.h.slotgreenenergy[6] = player.h.slotgreenenergy[6].add(transportspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[6].eq(4)) {
+                if (player.h.slotredenergy[5].gt(1)) {
+                    player.h.slotredenergy[5] = player.h.slotredenergy[5].sub(transportspeed.mul(delta))
+                    player.h.slotredenergy[7] = player.h.slotredenergy[7].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[5].gt(1)) {
+                    player.h.slotblueenergy[5] = player.h.slotblueenergy[5].sub(transportspeed.mul(delta))
+                    player.h.slotblueenergy[7] = player.h.slotblueenergy[7].add(transportspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[5].gt(1)) {
+                    player.h.slotgreenenergy[5] = player.h.slotgreenenergy[5].sub(transportspeed.mul(delta))
+                    player.h.slotgreenenergy[7] = player.h.slotgreenenergy[7].add(transportspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[7].eq(4)) {
+                console.log("bro this is useless lol")
+            }
+            if (player.h.slotstatus[1].eq(5)) {
+                if (player.h.slotredenergy[1].gt(1)) {
+                    player.h.redenergy = player.h.redenergy.add(harvestspeed.mul(delta))
+                    player.h.slotredenergy[1] = player.h.slotredenergy[1].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[1].gt(1)) {
+                    player.h.greenenergy = player.h.greenenergy.add(harvestspeed.mul(delta))
+                    player.h.slotgreenenergy[1] = player.h.slotgreenenergy[1].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[1].gt(1)) {
+                    player.h.blueenergy = player.h.blueenergy.add(harvestspeed.mul(delta))
+                    player.h.slotblueenergy[1] = player.h.slotblueenergy[1].sub(harvestspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[2].eq(5)) {
+                if (player.h.slotredenergy[2].gt(1)) {
+                    player.h.redenergy = player.h.redenergy.add(harvestspeed.mul(delta))
+                    player.h.slotredenergy[2] = player.h.slotredenergy[2].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[2].gt(1)) {
+                    player.h.greenenergy = player.h.greenenergy.add(harvestspeed.mul(delta))
+                    player.h.slotgreenenergy[2] = player.h.slotgreenenergy[2].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[2].gt(1)) {
+                    player.h.blueenergy = player.h.blueenergy.add(harvestspeed.mul(delta))
+                    player.h.slotblueenergy[2] = player.h.slotblueenergy[2].sub(harvestspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[3].eq(5)) {
+                if (player.h.slotredenergy[3].gt(1)) {
+                    player.h.redenergy = player.h.redenergy.add(harvestspeed.mul(delta))
+                    player.h.slotredenergy[3] = player.h.slotredenergy[3].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[3].gt(1)) {
+                    player.h.greenenergy = player.h.greenenergy.add(harvestspeed.mul(delta))
+                    player.h.slotgreenenergy[3] = player.h.slotgreenenergy[3].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[3].gt(1)) {
+                    player.h.blueenergy = player.h.blueenergy.add(harvestspeed.mul(delta))
+                    player.h.slotblueenergy[3] = player.h.slotblueenergy[3].sub(harvestspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[4].eq(5)) {
+                if (player.h.slotredenergy[4].gt(1)) {
+                    player.h.redenergy = player.h.redenergy.add(harvestspeed.mul(delta))
+                    player.h.slotredenergy[4] = player.h.slotredenergy[4].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[4].gt(1)) {
+                    player.h.greenenergy = player.h.greenenergy.add(harvestspeed.mul(delta))
+                    player.h.slotgreenenergy[4] = player.h.slotgreenenergy[4].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[4].gt(1)) {
+                    player.h.blueenergy = player.h.blueenergy.add(harvestspeed.mul(delta))
+                    player.h.slotblueenergy[4] = player.h.slotblueenergy[4].sub(harvestspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[5].eq(5)) {
+                if (player.h.slotredenergy[5].gt(1)) {
+                    player.h.redenergy = player.h.redenergy.add(harvestspeed.mul(delta))
+                    player.h.slotredenergy[5] = player.h.slotredenergy[5].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[5].gt(1)) {
+                    player.h.greenenergy = player.h.greenenergy.add(harvestspeed.mul(delta))
+                    player.h.slotgreenenergy[5] = player.h.slotgreenenergy[5].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[5].gt(1)) {
+                    player.h.blueenergy = player.h.blueenergy.add(harvestspeed.mul(delta))
+                    player.h.slotblueenergy[5] = player.h.slotblueenergy[5].sub(harvestspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[6].eq(5)) {
+                if (player.h.slotredenergy[6].gt(1)) {
+                    player.h.redenergy = player.h.redenergy.add(harvestspeed.mul(delta))
+                    player.h.slotredenergy[6] = player.h.slotredenergy[6].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[6].gt(1)) {
+                    player.h.greenenergy = player.h.greenenergy.add(harvestspeed.mul(delta))
+                    player.h.slotgreenenergy[6] = player.h.slotgreenenergy[6].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[6].gt(1)) {
+                    player.h.blueenergy = player.h.blueenergy.add(harvestspeed.mul(delta))
+                    player.h.slotblueenergy[6] = player.h.slotblueenergy[6].sub(harvestspeed.mul(delta))
+                }
+            }
+            if (player.h.slotstatus[7].eq(5)) {
+                if (player.h.slotredenergy[7].gt(1)) {
+                    player.h.redenergy = player.h.redenergy.add(harvestspeed.mul(delta))
+                    player.h.slotredenergy[7] = player.h.slotredenergy[7].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotgreenenergy[7].gt(1)) {
+                    player.h.greenenergy = player.h.greenenergy.add(harvestspeed.mul(delta))
+                    player.h.slotgreenenergy[7] = player.h.slotgreenenergy[7].sub(harvestspeed.mul(delta))
+                }
+                if (player.h.slotblueenergy[7].gt(1)) {
+                    player.h.blueenergy = player.h.blueenergy.add(harvestspeed.mul(delta))
+                    player.h.slotblueenergy[7] = player.h.slotblueenergy[7].sub(harvestspeed.mul(delta))
+                }
+            }
+            if (player.h.slotredenergy[1].lt(0)) {
+                player.h.slotredenergy[1] = new Decimal(0)
+            }
+            if (player.h.slotgreenenergy[1].lt(0)) {
+                player.h.slotgreenenergy[1] = new Decimal(0)
+            }
+            if (player.h.slotblueenergy[1].lt(0)) {
+                player.h.slotblueenergy[1] = new Decimal(0)
+            }
+            if (player.h.slotredenergy[2].lt(0)) {
+                player.h.slotredenergy[2] = new Decimal(0)
+            }
+            if (player.h.slotgreenenergy[2].lt(0)) {
+                player.h.slotgreenenergy[2] = new Decimal(0)
+            }
+            if (player.h.slotblueenergy[2].lt(0)) {
+                player.h.slotblueenergy[2] = new Decimal(0)
+            }
+            if (player.h.slotredenergy[3].lt(0)) {
+                player.h.slotredenergy[3] = new Decimal(0)
+            }
+            if (player.h.slotgreenenergy[3].lt(0)) {
+                player.h.slotgreenenergy[3] = new Decimal(0)
+            }
+            if (player.h.slotblueenergy[3].lt(0)) {
+                player.h.slotblueenergy[3] = new Decimal(0)
+            }
+            if (player.h.slotredenergy[4].lt(0)) {
+                player.h.slotredenergy[4] = new Decimal(0)
+            }
+            if (player.h.slotgreenenergy[4].lt(0)) {
+                player.h.slotgreenenergy[4] = new Decimal(0)
+            }
+            if (player.h.slotblueenergy[4].lt(0)) {
+                player.h.slotblueenergy[4] = new Decimal(0)
+            }
+            if (player.h.slotredenergy[5].lt(0)) {
+                player.h.slotredenergy[5] = new Decimal(0)
+            }
+            if (player.h.slotgreenenergy[5].lt(0)) {
+                player.h.slotgreenenergy[5] = new Decimal(0)
+            }
+            if (player.h.slotblueenergy[5].lt(0)) {
+                player.h.slotblueenergy[5] = new Decimal(0)
+            }
+            if (player.h.slotredenergy[6].lt(0)) {
+                player.h.slotredenergy[6] = new Decimal(0)
+            }
+            if (player.h.slotgreenenergy[6].lt(0)) {
+                player.h.slotgreenenergy[6] = new Decimal(0)
+            }
+            if (player.h.slotblueenergy[6].lt(0)) {
+                player.h.slotblueenergy[6] = new Decimal(0)
+            }
+            if (player.h.slotredenergy[7].lt(0)) {
+                player.h.slotredenergy[7] = new Decimal(0)
+            }
+            if (player.h.slotgreenenergy[7].lt(0)) {
+                player.h.slotgreenenergy[7] = new Decimal(0)
+            }
+            if (player.h.slotblueenergy[7].lt(0)) {
+                player.h.slotblueenergy[7] = new Decimal(0)
+            }
 },
 clickables: {
     11: {
@@ -586,6 +1041,184 @@ clickables: {
         },
         style: { width: '50px', "min-height": '50px' },
     },
+    18: {
+        title() { return "<h2>Reset for prestige power." },
+        canClick() { return player.h.prestigepowertoget.gte(1) },
+        unlocked() { return true },
+        onClick() {
+            player.h.prestigepowerpause = new Decimal(3)
+            player.h.prestigepower = player.h.prestigepower.add(player.h.prestigepowertoget)
+        },
+        style: { width: '400px', "min-height": '100px' },
+    },
+    19: {
+        title() { return "+" + format(player.h.prestigepowertoget) + " PP" },
+        canClick() { return player.h.prestigepowertoget.gte(1)  },
+        unlocked() { return hasUpgrade("h", 26) },
+        onClick() {
+            player.h.prestigepowerpause = new Decimal(3)
+            player.h.prestigepower = player.h.prestigepower.add(player.h.prestigepowertoget)
+        },
+        style: {  width: '150px', "min-height": '60px', }
+    },
+    21: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.factorgridcutscene.eq(1) },
+        unlocked() { return player.factorgridscene.lt(14) },
+        onClick() {
+            player.factorgridscene = player.factorgridscene.add(1)
+        },
+    },
+    22: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.factorgridcutscene.eq(1) },
+        unlocked() { return player.factorgridscene.lt(14) && player.factorgridscene.neq(0) },
+        onClick() {
+            player.factorgridscene = player.factorgridscene.sub(1)
+        },
+    },
+    23: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.assemblylinecutscene.eq(1) },
+        unlocked() { return player.assemblylinescene.lt(12) },
+        onClick() {
+            player.assemblylinescene = player.assemblylinescene.add(1)
+        },
+    },
+    24: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.assemblylinecutscene.eq(1) },
+        unlocked() { return player.assemblylinescene.lt(12) && player.assemblylinescene.neq(0) },
+        onClick() {
+            player.assemblylinescene = player.assemblylinescene.sub(1)
+        },
+    },
+    25: {
+        title() { return "Slot 1" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylineselect = new Decimal(1)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    26: {
+        title() { return "Slot 2" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylineselect = new Decimal(2)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    27: {
+        title() { return "Slot 3" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylineselect = new Decimal(3)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    28: {
+        title() { return "Slot 4" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylineselect = new Decimal(4)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    29: {
+        title() { return "Slot 5" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylineselect = new Decimal(5)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    31: {
+        title() { return "Slot 6" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylineselect = new Decimal(6)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    32: {
+        title() { return "Slot 7" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylineselect = new Decimal(7)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    33: {
+        title() { return "<img src='resources/assemblylinered.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylinetypeselect = new Decimal(1)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    34: {
+        title() { return "<img src='resources/assemblylinegreen.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylinetypeselect = new Decimal(2)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    35: {
+        title() { return "<img src='resources/assemblylineblue.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylinetypeselect = new Decimal(3)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    36: {
+        title() { return "<img src='resources/assemblylinearrowblack.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylinetypeselect = new Decimal(4)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    37: {
+        title() { return "<img src='resources/assemblylinex.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        onClick() {
+            player.h.assemblylinetypeselect = new Decimal(5)
+        },
+        style: { width: '80px', "min-height": '80px' }
+    },
+    38: {
+        title() { return "->" },
+        canClick() { return player.h.slotbuyablepage.lt(7) },
+        unlocked() { return player.assemblylinecutscene.eq(0) && hasUpgrade("h", 31) },
+        onClick() {
+            player.h.slotbuyablepage = player.h.slotbuyablepage.add(1)
+        },
+        style: { width: '50px', "min-height": '50px' }
+    },
+    39: {
+        title() { return "<-" },
+        canClick() { return player.h.slotbuyablepage.gt(1) },
+        unlocked() { return player.assemblylinecutscene.eq(0) && hasUpgrade("h", 31) },
+        onClick() {
+            player.h.slotbuyablepage = player.h.slotbuyablepage.sub(1)
+        },
+        style: { width: '50px', "min-height": '50px' }
+    },
 },
 checkforcountingreset()
 {
@@ -630,6 +1263,27 @@ checkforclaimsolaritycoal()
     {
         player.h.canclaimsolaritycoal = new Decimal(0)
     }
+},
+prestigepowerreset()
+{
+    player.h.willpower = new Decimal(0)
+    player.h.shrinepower = new Decimal(0)
+
+    player.h.buyables[11] = new Decimal(0)
+    player.h.buyables[12] = new Decimal(0)
+    player.h.buyables[13] = new Decimal(0)
+    player.h.buyables[14] = new Decimal(0)
+    player.h.buyables[15] = new Decimal(0)
+    player.h.buyables[16] = new Decimal(0)
+    player.h.buyables[17] = new Decimal(0)
+    player.h.buyables[18] = new Decimal(0)
+    player.h.buyables[19] = new Decimal(0)
+    player.h.buyables[21] = new Decimal(0)
+    player.h.buyables[22] = new Decimal(0)
+    player.h.buyables[23] = new Decimal(0)
+    player.h.buyables[24] = new Decimal(0)
+    player.h.buyables[25] = new Decimal(0)
+    player.h.buyables[26] = new Decimal(0)
 },
 upgrades: {
     11:
@@ -772,6 +1426,71 @@ upgrades: {
         currencyInternalName: "countingpoints",
         currencyLocation() { return player.h },
     },
+    25:
+    {
+        title: "Buyables",
+        unlocked() { return hasUpgrade("h", 24) && player.m.quirkenhanceunlock.eq(1) },
+        description: "Unlocks counting point buyables.",
+        cost: new Decimal(64),
+        currencyDisplayName: "Counting Points",
+        currencyInternalName: "countingpoints",
+        currencyLocation() { return player.h },
+    },
+    26:
+    {
+        title: "Willpower Upgrade VII",
+        unlocked() { return player.m.translatorunlock.eq(1) },
+        description: "Unlocks prestige power.",
+        cost: new Decimal(1000000),
+        currencyDisplayName: "Willpower",
+        currencyInternalName: "willpower",
+        currencyLocation() { return player.h },
+    },
+    27:
+    {
+        title: "Prestige Power Upgrade I",
+        unlocked() { return hasUpgrade("h", 26) },
+        description: "Unlocks the factor grid.",
+        cost: new Decimal(10),
+        currencyDisplayName: "Prestige Power",
+        currencyInternalName: "prestigepower",
+        currencyLocation() { return player.h },
+    },
+    28:
+    {
+        title: "Prestige Power Upgrade II",
+        unlocked() { return hasUpgrade("h", 27) },
+        description: "Boosts counting points based on crafting points.",
+        effect() 
+        {
+             return player.c.craftingpoints.add(1).div(20).pow(0.08)
+        },
+        effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        cost: new Decimal(222),
+        currencyDisplayName: "Prestige Power",
+        currencyInternalName: "prestigepower",
+        currencyLocation() { return player.h },
+    },
+    29:
+    {
+        title: "Prestige Power Upgrade III",
+        unlocked() { return hasUpgrade("h", 28) },
+        description: "Unlocks the assembly line.",
+        cost: new Decimal(10000),
+        currencyDisplayName: "Prestige Power",
+        currencyInternalName: "prestigepower",
+        currencyLocation() { return player.h },
+    },
+    31:
+    {
+        title: "Prestige Power Upgrade IV",
+        unlocked() { return hasUpgrade("h", 29) },
+        description: "Unlocks slot-specialized assembly buyables.",
+        cost: new Decimal(44444),
+        currencyDisplayName: "Prestige Power",
+        currencyInternalName: "prestigepower",
+        currencyLocation() { return player.h },
+    },
 },
 buyables: {
     11: {
@@ -794,7 +1513,7 @@ buyables: {
             let growth = 1.15
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -819,7 +1538,7 @@ buyables: {
             let growth = 4
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -844,7 +1563,7 @@ buyables: {
             let growth = 1.5
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -866,7 +1585,7 @@ buyables: {
             let growth = 2
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -888,7 +1607,7 @@ buyables: {
             let growth = 2
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -910,7 +1629,7 @@ buyables: {
             let growth = 2
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -932,7 +1651,7 @@ buyables: {
             let growth = 2.5
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -954,7 +1673,7 @@ buyables: {
             let growth = 1.5
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -976,7 +1695,7 @@ buyables: {
             let growth = 1.55
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -998,7 +1717,7 @@ buyables: {
             let growth = 1.45
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -1020,7 +1739,7 @@ buyables: {
             let growth = 1.4
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -1042,7 +1761,7 @@ buyables: {
             let growth = 1.6
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -1064,7 +1783,7 @@ buyables: {
             let growth = 1.65
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -1089,7 +1808,7 @@ buyables: {
             let growth = 1.175
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -1114,7 +1833,7 @@ buyables: {
             let growth = 1.2
             let max = Decimal.affordGeometricSeries(player.h.willpower, base, growth, getBuyableAmount(this.layer, this.id))
             let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.h.willpower = player.h.willpower.sub(cost)
+            if (!hasUpgrade("m", 36)) player.h.willpower = player.h.willpower.sub(cost)
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', }
@@ -1346,7 +2065,7 @@ buyables: {
     },
     37: {
         cost(x) { return new Decimal(1.4).pow(x || getBuyableAmount(this.layer, this.id)).mul(3) },
-        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1).pow(0.6) },
         unlocked() { return player.h.paperunlock.eq(1) },
         canAfford() { return player.h.paperpoints.gte(this.cost()) },
         title() {
@@ -1368,6 +2087,807 @@ buyables: {
             setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
         },
         style: { width: '275px', height: '150px', "background-color": "#2C313D",}
+    },
+    38: {
+        cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(2) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1).add(1)},
+        unlocked() { return hasUpgrade("h", 25) },
+        canAfford() { return player.h.countingpoints.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Jacorbian Boost"
+        },
+        tooltip() {
+            return "<h5>1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20."
+        },
+        display() {
+            return "which are boosting jacorbian energy gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Counting Points"
+        },
+        buy() {
+            let base = new Decimal(2)
+            let growth = 1.2
+            let max = Decimal.affordGeometricSeries(player.h.countingpoints, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.countingpoints = player.h.countingpoints.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    39: {
+        cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(4) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1).pow(0.55) },
+        unlocked() { return hasUpgrade("h", 25) },
+        canAfford() { return player.h.countingpoints.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Crafting Point Boost"
+        },
+        tooltip() {
+            return "<h5>21. 22. 23. 24. 25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40."
+        },
+        display() {
+            return "which are boosting crafting point gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Counting Points"
+        },
+        buy() {
+            let base = new Decimal(4)
+            let growth = 1.2
+            let max = Decimal.affordGeometricSeries(player.h.countingpoints, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.countingpoints = player.h.countingpoints.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    41: {
+        cost(x) { return new Decimal(1.3).pow(x || getBuyableAmount(this.layer, this.id)).mul(7) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1).pow(0.65) },
+        unlocked() { return hasUpgrade("h", 25) },
+        canAfford() { return player.h.countingpoints.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Shrine Power Boost"
+        },
+        tooltip() {
+            return "<h5>0. 1. 10. 11. 100. 101. 110. 111. 1000. 1001. 1010. 1011. 1100. 1101. 1110. 1111."
+        },
+        display() {
+            return "which are boosting shrine power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Counting Points"
+        },
+        buy() {
+            let base = new Decimal(7)
+            let growth = 1.3
+            let max = Decimal.affordGeometricSeries(player.h.countingpoints, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.countingpoints = player.h.countingpoints.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    42: {
+        cost(x) { return new Decimal(1.175).pow(x || getBuyableAmount(this.layer, this.id)).mul(1) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.06).add(1) },
+        unlocked() { return player.factorgridcutscene.eq(0) },
+        canAfford() { return player.h.prestigepower.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Grid Factor (1, 1)"
+        },
+        display() {
+            return "which are boosting willpower by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Prestige Power"
+        },
+        buy() {
+            let base = new Decimal(1)
+            let growth = 1.175
+            let max = Decimal.affordGeometricSeries(player.h.prestigepower, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.prestigepower = player.h.prestigepower.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    43: {
+        cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(2) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.06).add(1) },
+        unlocked() { return player.factorgridcutscene.eq(0) },
+        canAfford() { return player.h.prestigepower.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Grid Factor (2, 1)"
+        },
+        display() {
+            return "which are boosting shrine power by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Prestige Power"
+        },
+        buy() {
+            let base = new Decimal(2)
+            let growth = 1.2
+            let max = Decimal.affordGeometricSeries(player.h.prestigepower, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.prestigepower = player.h.prestigepower.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    44: {
+        cost(x) { return new Decimal(1.225).pow(x || getBuyableAmount(this.layer, this.id)).mul(4) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.06).add(1) },
+        unlocked() { return player.factorgridcutscene.eq(0) },
+        canAfford() { return player.h.prestigepower.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Grid Factor (3, 1)"
+        },
+        display() {
+            return "which are boosting prestige power by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Prestige Power"
+        },
+        buy() {
+            let base = new Decimal(4)
+            let growth = 1.225
+            let max = Decimal.affordGeometricSeries(player.h.prestigepower, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.prestigepower = player.h.prestigepower.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    45: {
+        cost(x) { return new Decimal(1.215).pow(x || getBuyableAmount(this.layer, this.id)).mul(3) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.04).add(1) },
+        unlocked() { return player.factorgridcutscene.eq(0) },
+        canAfford() { return player.h.prestigepower.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Grid Factor (1, 2)"
+        },
+        display() {
+            return "which are boosting willpower and shrine power by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Prestige Power"
+        },
+        buy() {
+            let base = new Decimal(3)
+            let growth = 1.215
+            let max = Decimal.affordGeometricSeries(player.h.prestigepower, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.prestigepower = player.h.prestigepower.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    46: {
+        cost(x) { return new Decimal(1.235).pow(x || getBuyableAmount(this.layer, this.id)).mul(6) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.04).add(1) },
+        unlocked() { return player.factorgridcutscene.eq(0) },
+        canAfford() { return player.h.prestigepower.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Grid Factor (2, 2)"
+        },
+        display() {
+            return "which are boosting willpower and prestige power by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Prestige Power"
+        },
+        buy() {
+            let base = new Decimal(6)
+            let growth = 1.235
+            let max = Decimal.affordGeometricSeries(player.h.prestigepower, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.prestigepower = player.h.prestigepower.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    47: {
+        cost(x) { return new Decimal(1.265).pow(x || getBuyableAmount(this.layer, this.id)).mul(10) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.04).add(1) },
+        unlocked() { return player.factorgridcutscene.eq(0) },
+        canAfford() { return player.h.prestigepower.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Grid Factor (3, 2)"
+        },
+        display() {
+            return "which are boosting shrine power and prestige power by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Prestige Power"
+        },
+        buy() {
+            let base = new Decimal(10)
+            let growth = 1.265
+            let max = Decimal.affordGeometricSeries(player.h.prestigepower, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.prestigepower = player.h.prestigepower.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    48: {
+        cost(x) { return new Decimal(1.4).pow(x || getBuyableAmount(this.layer, this.id)).mul(16) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.03).add(1) },
+        unlocked() { return player.factorgridcutscene.eq(0) },
+        canAfford() { return player.h.prestigepower.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Grid Factor (1, 3)"
+        },
+        display() {
+            return "which are boosting willpower, shrine power and prestige power by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Prestige Power"
+        },
+        buy() {
+            let base = new Decimal(16)
+            let growth = 1.4
+            let max = Decimal.affordGeometricSeries(player.h.prestigepower, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.prestigepower = player.h.prestigepower.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    49: {
+        cost(x) { return new Decimal(1.42).pow(x || getBuyableAmount(this.layer, this.id)).mul(25) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.045).add(1) },
+        unlocked() { return player.factorgridcutscene.eq(0) },
+        canAfford() { return player.h.prestigepower.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Grid Factor (2, 3)"
+        },
+        display() {
+            return "which are boosting willpower, shrine power and prestige power by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Prestige Power"
+        },
+        buy() {
+            let base = new Decimal(25)
+            let growth = 1.42
+            let max = Decimal.affordGeometricSeries(player.h.prestigepower, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.prestigepower = player.h.prestigepower.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    51: {
+        cost(x) { return new Decimal(1.44).pow(x || getBuyableAmount(this.layer, this.id)).mul(36) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.06).add(1) },
+        unlocked() { return player.factorgridcutscene.eq(0) },
+        canAfford() { return player.h.prestigepower.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Grid Factor (3, 3)"
+        },
+        display() {
+            return "which are boosting willpower, shrine power and prestige power by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Prestige Power"
+        },
+        buy() {
+            let base = new Decimal(36)
+            let growth = 1.44
+            let max = Decimal.affordGeometricSeries(player.h.prestigepower, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.prestigepower = player.h.prestigepower.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    52: {
+        cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(25) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1).add(1) },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        canAfford() { return player.h.redenergy.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Red Boost"
+        },
+        display() {
+            return "which are boosting willpower gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Red Energy"
+        },
+        buy() {
+            let base = new Decimal(25)
+            let growth = 1.2
+            let max = Decimal.affordGeometricSeries(player.h.redenergy, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.redenergy = player.h.redenergy.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "red",}
+    },
+    53: {
+        cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(25) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.075).add(1) },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        canAfford() { return player.h.greenenergy.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Green Boost"
+        },
+        display() {
+            return "which are boosting shrine power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Green Energy"
+        },
+        buy() {
+            let base = new Decimal(25)
+            let growth = 1.2
+            let max = Decimal.affordGeometricSeries(player.h.greenenergy, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.greenenergy = player.h.greenenergy.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "green",}
+    },
+    54: {
+        cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(25) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1) },
+        unlocked() { return player.assemblylinecutscene.eq(0) },
+        canAfford() { return player.h.blueenergy.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Blue Boost"
+        },
+        display() {
+            return "which are boosting prestige power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Blue Energy"
+        },
+        buy() {
+            let base = new Decimal(25)
+            let growth = 1.2
+            let max = Decimal.affordGeometricSeries(player.h.blueenergy, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.blueenergy = player.h.blueenergy.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "blue",}
+    },
+    55: {
+        cost(x) { return new Decimal(1.22).pow(x || getBuyableAmount(this.layer, this.id)).mul(8) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(1) },
+        canAfford() { return player.h.slotredenergy[1].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 1 Red"
+        },
+        display() {
+            return "which are boosting red energy gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 1 Red Energy"
+        },
+        buy() {
+            let base = new Decimal(8)
+            let growth = 1.22
+            let max = Decimal.affordGeometricSeries(player.h.slotredenergy[1], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotredenergy[1] = player.h.slotredenergy[1].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "red",}
+    },
+    56: {
+        cost(x) { return new Decimal(1.22).pow(x || getBuyableAmount(this.layer, this.id)).mul(8) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(1) },
+        canAfford() { return player.h.slotgreenenergy[1].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 1 Green"
+        },
+        display() {
+            return "which are boosting green energy gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 1 Green Energy"
+        },
+        buy() {
+            let base = new Decimal(8)
+            let growth = 1.22
+            let max = Decimal.affordGeometricSeries(player.h.slotgreenenergy[1], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotgreenenergy[1] = player.h.slotgreenenergy[1].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "green",}
+    },
+    57: {
+        cost(x) { return new Decimal(1.22).pow(x || getBuyableAmount(this.layer, this.id)).mul(8) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(1) },
+        canAfford() { return player.h.slotblueenergy[1].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 1 Blue"
+        },
+        display() {
+            return "which are boosting blue energy gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 1 Blue Energy"
+        },
+        buy() {
+            let base = new Decimal(8)
+            let growth = 1.22
+            let max = Decimal.affordGeometricSeries(player.h.slotblueenergy[1], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotblueenergy[1] = player.h.slotblueenergy[1].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "blue",}
+    },
+    58: {
+        cost(x) { return new Decimal(1.24).pow(x || getBuyableAmount(this.layer, this.id)).mul(12) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.03).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(2) },
+        canAfford() { return player.h.slotredenergy[2].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 2 Red"
+        },
+        display() {
+            return "which are boosting total assembly line speed by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 2 Red Energy"
+        },
+        buy() {
+            let base = new Decimal(12)
+            let growth = 1.24
+            let max = Decimal.affordGeometricSeries(player.h.slotredenergy[2], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotredenergy[2] = player.h.slotredenergy[2].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "red",}
+    },
+    59: {
+        cost(x) { return new Decimal(1.24).pow(x || getBuyableAmount(this.layer, this.id)).mul(12) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.075).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(2) },
+        canAfford() { return player.h.slotgreenenergy[2].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 2 Green"
+        },
+        display() {
+            return "which are boosting harvest speed by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 2 Green Energy"
+        },
+        buy() {
+            let base = new Decimal(12)
+            let growth = 1.24
+            let max = Decimal.affordGeometricSeries(player.h.slotgreenenergy[2], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotgreenenergy[2] = player.h.slotgreenenergy[2].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "green",}
+    },
+    61: {
+        cost(x) { return new Decimal(1.24).pow(x || getBuyableAmount(this.layer, this.id)).mul(12) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.075).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(2) },
+        canAfford() { return player.h.slotblueenergy[2].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 2 Blue"
+        },
+        display() {
+            return "which are boosting transfer speed by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 2 Blue Energy"
+        },
+        buy() {
+            let base = new Decimal(12)
+            let growth = 1.24
+            let max = Decimal.affordGeometricSeries(player.h.slotblueenergy[2], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotblueenergy[2] = player.h.slotblueenergy[2].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "blue",}
+    },
+    62: {
+        cost(x) { return new Decimal(1.18).pow(x || getBuyableAmount(this.layer, this.id)).mul(7) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.025).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(3) },
+        canAfford() { return player.h.slotredenergy[3].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 3 Red"
+        },
+        display() {
+            return "which are boosting counting power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 3 Red Energy"
+        },
+        buy() {
+            let base = new Decimal(7)
+            let growth = 1.18
+            let max = Decimal.affordGeometricSeries(player.h.slotredenergy[3], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotredenergy[3] = player.h.slotredenergy[3].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "red",}
+    },
+    63: {
+        cost(x) { return new Decimal(1.18).pow(x || getBuyableAmount(this.layer, this.id)).mul(7) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.04).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(3) },
+        canAfford() { return player.h.slotgreenenergy[3].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 3 Green"
+        },
+        display() {
+            return "which are boosting counting points gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 3 Green Energy"
+        },
+        buy() {
+            let base = new Decimal(7)
+            let growth = 1.18
+            let max = Decimal.affordGeometricSeries(player.h.slotgreenenergy[3], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotgreenenergy[3] = player.h.slotgreenenergy[3].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "green",}
+    },
+    64: {
+        cost(x) { return new Decimal(1.18).pow(x || getBuyableAmount(this.layer, this.id)).mul(7) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.035).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(3) },
+        canAfford() { return player.h.slotblueenergy[3].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 3 Blue"
+        },
+        display() {
+            return "which are boosting user points gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 3 Blue Energy"
+        },
+        buy() {
+            let base = new Decimal(7)
+            let growth = 1.18
+            let max = Decimal.affordGeometricSeries(player.h.slotblueenergy[3], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotblueenergy[3] = player.h.slotblueenergy[3].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "blue",}
+    },
+    65: {
+        cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(15) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.025).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(4) },
+        canAfford() { return player.h.slotredenergy[4].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 4 Red"
+        },
+        display() {
+            return "which are boosting crafting power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 4 Red Energy"
+        },
+        buy() {
+            let base = new Decimal(15)
+            let growth = 1.2
+            let max = Decimal.affordGeometricSeries(player.h.slotredenergy[4], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotredenergy[4] = player.h.slotredenergy[4].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "red",}
+    },
+    66: {
+        cost(x) { return new Decimal(1.22).pow(x || getBuyableAmount(this.layer, this.id)).mul(18) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.04).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(4) },
+        canAfford() { return player.h.slotgreenenergy[4].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 4 Green"
+        },
+        display() {
+            return "which are boosting crafting points gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 4 Green Energy"
+        },
+        buy() {
+            let base = new Decimal(18)
+            let growth = 1.22
+            let max = Decimal.affordGeometricSeries(player.h.slotgreenenergy[4], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotgreenenergy[4] = player.h.slotgreenenergy[4].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "green",}
+    },
+    67: {
+        cost(x) { return new Decimal(1.18).pow(x || getBuyableAmount(this.layer, this.id)).mul(21) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.035).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(4) },
+        canAfford() { return player.h.slotblueenergy[4].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 4 Blue"
+        },
+        display() {
+            return "which are increasing solarity capacity by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 4 Blue Energy"
+        },
+        buy() {
+            let base = new Decimal(21)
+            let growth = 1.18
+            let max = Decimal.affordGeometricSeries(player.h.slotblueenergy[4], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotblueenergy[4] = player.h.slotblueenergy[4].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "blue",}
+    },
+    68: {
+        cost(x) { return new Decimal(1.15).pow(x || getBuyableAmount(this.layer, this.id)).mul(13) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.005).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(5) },
+        canAfford() { return player.h.slotredenergy[5].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 5 Red"
+        },
+        display() {
+            return "which are boosting meta-prestige score by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 5 Red Energy"
+        },
+        buy() {
+            let base = new Decimal(13)
+            let growth = 1.15
+            let max = Decimal.affordGeometricSeries(player.h.slotredenergy[5], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotredenergy[5] = player.h.slotredenergy[5].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "red",}
+    },
+    69: {
+        cost(x) { return new Decimal(1.16).pow(x || getBuyableAmount(this.layer, this.id)).mul(14) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.02).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(5) },
+        canAfford() { return player.h.slotgreenenergy[5].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 5 Green"
+        },
+        display() {
+            return "which are boosting incremental energy gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 5 Green Energy"
+        },
+        buy() {
+            let base = new Decimal(14)
+            let growth = 1.16
+            let max = Decimal.affordGeometricSeries(player.h.slotgreenenergy[5], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotgreenenergy[5] = player.h.slotgreenenergy[5].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "green",}
+    },
+    71: {
+        cost(x) { return new Decimal(1.17).pow(x || getBuyableAmount(this.layer, this.id)).mul(15) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.03).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(5) },
+        canAfford() { return player.h.slotblueenergy[5].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 5 Blue"
+        },
+        display() {
+            return "which are boosting meta-prestige time gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 5 Blue Energy"
+        },
+        buy() {
+            let base = new Decimal(15)
+            let growth = 1.17
+            let max = Decimal.affordGeometricSeries(player.h.slotblueenergy[5], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotblueenergy[5] = player.h.slotblueenergy[5].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "blue",}
+    },
+    72: {
+        cost(x) { return new Decimal(1.155).pow(x || getBuyableAmount(this.layer, this.id)).mul(15) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(6) },
+        canAfford() { return player.h.slotredenergy[6].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 6 Red"
+        },
+        display() {
+            return "which are boosting space gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 6 Red Energy"
+        },
+        buy() {
+            let base = new Decimal(15)
+            let growth = 1.155
+            let max = Decimal.affordGeometricSeries(player.h.slotredenergy[6], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotredenergy[6] = player.h.slotredenergy[6].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "red",}
+    },
+    73: {
+        cost(x) { return new Decimal(1.16).pow(x || getBuyableAmount(this.layer, this.id)).mul(11) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(6) },
+        canAfford() { return player.h.slotgreenenergy[6].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 6 Green"
+        },
+        display() {
+            return "which are boosting time energy gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 6 Green Energy"
+        },
+        buy() {
+            let base = new Decimal(11)
+            let growth = 1.16
+            let max = Decimal.affordGeometricSeries(player.h.slotgreenenergy[6], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotgreenenergy[6] = player.h.slotgreenenergy[6].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "green",}
+    },
+    74: {
+        cost(x) { return new Decimal(1.165).pow(x || getBuyableAmount(this.layer, this.id)).mul(9) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.075).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(6) },
+        canAfford() { return player.h.slotblueenergy[6].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 6 Blue"
+        },
+        display() {
+            return "which are boosting time energy capacity by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 6 Blue Energy"
+        },
+        buy() {
+            let base = new Decimal(9)
+            let growth = 1.165
+            let max = Decimal.affordGeometricSeries(player.h.slotblueenergy[6], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotblueenergy[6] = player.h.slotblueenergy[6].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "blue",}
+    },
+    75: {
+        cost(x) { return new Decimal(1.23).pow(x || getBuyableAmount(this.layer, this.id)).mul(25) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.05).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(7) },
+        canAfford() { return player.h.slotredenergy[7].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 7 Red"
+        },
+        display() {
+            return "which are boosting jacorbian energy gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 7 Red Energy"
+        },
+        buy() {
+            let base = new Decimal(25)
+            let growth = 1.23
+            let max = Decimal.affordGeometricSeries(player.h.slotredenergy[7], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotredenergy[7] = player.h.slotredenergy[7].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "red",}
+    },
+    76: {
+        cost(x) { return new Decimal(1.16).pow(x || getBuyableAmount(this.layer, this.id)).mul(22) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.02).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(7) },
+        canAfford() { return player.h.slotgreenenergy[7].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 7 Green"
+        },
+        display() {
+            return "which are boosting jacorbian runes gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 7 Green Energy"
+        },
+        buy() {
+            let base = new Decimal(22)
+            let growth = 1.225
+            let max = Decimal.affordGeometricSeries(player.h.slotgreenenergy[7], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotgreenenergy[7] = player.h.slotgreenenergy[7].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "green",}
+    },
+    77: {
+        cost(x) { return new Decimal(1.165).pow(x || getBuyableAmount(this.layer, this.id)).mul(24) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.03).add(1) },
+        unlocked() { return player.h.slotbuyablepage.eq(7) },
+        canAfford() { return player.h.slotblueenergy[7].gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Slot 7 Blue"
+        },
+        display() {
+            return "which are boosting beacon level gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Slot 7 Blue Energy"
+        },
+        buy() {
+            let base = new Decimal(24)
+            let growth = 1.22
+            let max = Decimal.affordGeometricSeries(player.h.slotblueenergy[7], base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.h.slotblueenergy[7] = player.h.slotblueenergy[7].sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "blue",}
     },
 },
 milestones: {
@@ -1512,6 +3032,16 @@ stuff: {
         ]
 
     },
+    "Prestige Power": {
+        buttonStyle() { return { 'color': '#68e8f4' } },
+        unlocked() { return hasUpgrade("h", 26) },
+        content:
+            [
+    ["microtabs", "prestigepower", { 'border-width': '0px' }],
+
+        ]
+
+    },
 },
 shrines: {
     "Crafting": {
@@ -1564,6 +3094,7 @@ willpower: {
             ["row", [["buyable", 25], ["buyable", 26]]],
             ["blank", "25px"],
             ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 21]]],
+            ["row", [["upgrade", 26]]],
         ]
 
     },
@@ -1639,7 +3170,9 @@ counting: {
     ["raw-html", function () { return "<h2>You have " + format(player.h.countingpoints) + " counting points, which boost counting power by x" + format(player.h.countingpointseffect) + "."}, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
     ["raw-html", function () { return "<h3>You will gain " + format(player.h.countingpointstoget) + " counting points on reset."}, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
     ["blank", "25px"], 
-    ["row", [["upgrade", 16], ["upgrade", 17], ["upgrade", 18], ["upgrade", 19], ["upgrade", 22], ["upgrade", 23], ["upgrade", 24]]],
+    ["row", [["upgrade", 16], ["upgrade", 17], ["upgrade", 18], ["upgrade", 19], ["upgrade", 22], ["upgrade", 23], ["upgrade", 24], ["upgrade", 25]]],
+    ["blank", "25px"], 
+    ["row", [["buyable", 38], ["buyable", 39], ["buyable", 41]]], 
 ],
     },
     "User Points": {
@@ -1671,12 +3204,138 @@ counting: {
 ],
     },
 },
+prestigepower: {
+    "Main": {
+        buttonStyle() { return {  'color': '#68e8f4', 'border-color': '#68e8f4' } },
+        unlocked() { return hasUpgrade("h", 26) },
+        content:
+        [
+            ["blank", "25px"],
+            ["raw-html", function () { return "<h2>You have " + format(player.h.prestigepower) + " prestige power."}, { "color": "#68e8f4", "font-size": "24px", "font-family": "monospace" }],
+            ["raw-html", function () { return "<h3>Your prestige power is boosting willpower gain by x" + format(player.h.prestigepowereffect) + "."}, { "color": "#68e8f4", "font-size": "24px", "font-family": "monospace" }],
+            ["raw-html", function () { return "<h3>You will gain " + format(player.h.prestigepowertoget) + " on reset."}, { "color": "#68e8f4", "font-size": "24px", "font-family": "monospace" }],
+            ["raw-html", function () { return "<h5>Prestige power and willpower are dividing prestige power gain by /" + format(player.h.prestigepowertogetdivide) + "."}, { "color": "#68e8f4", "font-size": "24px", "font-family": "monospace" }],
+            ["blank", "25px"],
+            ["row", [["clickable", 18]]],
+            ["raw-html", function () { return "<h5>(Resets willpower buyables and basic shrines.)"}, { "color": "#68e8f4", "font-size": "24px", "font-family": "monospace" }],
+            ["blank", "25px"],
+            ["row", [["upgrade", 27], ["upgrade", 28], ["upgrade", 29], ["upgrade", 31]]],
+],
+},
+"Factor Grid": {
+    buttonStyle() { return {  'color': '#68e8f4', 'border-color': '#68e8f4' } },
+    unlocked() { return hasUpgrade("h", 27) },
+    content:
+    [
+        ["blank", "25px"],
+        ["raw-html", function () { return player.factorgridscene.eq(1) ? "<h1>Today marks the day when we begin to retrieve the lost dimensions!" : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(2) ? "<h1>Commander, how are we going to complete such a task?" : "" }, { "color": "green", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(3) ? "<h1>Listen to me lieutenant, My son was born with immeasurable power." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(4) ? "<h1>Ever since he was little, he has shown me nothing but strength." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(5) ? "<h1>One day, he may be powerful enough to go face to face with that stupid dragon!" : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(6) ? "<h1>Commander! The dragon was way too powerful. Remember the previous king?" : "" }, { "color": "green", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(7) ? "<h1>We are stronger now. Nothing like that is going to happen again." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(8) ? "<h1>My child, his soul resonates almost the same as god himself!" : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(9) ? "<h1>We will only begin the true battle once my son gets into his teenage years." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(10) ? "<h1>At the age of seven, he already managed to destroy and absorb the mass of an entire universe." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(11) ? "<h1>His growth is expected to increase exponentially." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(12) ? "<h1>He may be able to match the power of the high gods of each realm." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.factorgridscene.eq(13) ? "<h1>Or maybe extend through the whole multiverse..." : "" }, { "color": "black", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return "<h3>You have " + format(player.h.prestigepower) + " prestige power."}, { "color": "#68e8f4", "font-size": "24px", "font-family": "monospace" }],
+            ["blank", "25px"],
+        ["row", [["clickable", 22], ["clickable", 21]]],
+        ["row", [["buyable", 42], ["buyable", 43], ["buyable", 44]]], 
+        ["row", [["buyable", 45], ["buyable", 46], ["buyable", 47]]], 
+        ["row", [["buyable", 48], ["buyable", 49], ["buyable", 51]]], 
+    ],
+},
+"Assembly Line": {
+    buttonStyle() { return {  'color': '#68e8f4', 'border-color': '#68e8f4' } },
+    unlocked() { return hasUpgrade("h", 29) },
+    content:
+    [
+        ["microtabs", "assemblyline", { 'border-width': '0px' }],
+    ],
+},
+},
+assemblyline: {
+    "Main": {
+        buttonStyle() { return {  'color': '#68e8f4', 'border-color': '#68e8f4' } },
+        unlocked() { return true },
+        content:
+        [
+            ["raw-html", function () { return player.assemblylinescene.eq(1) ? "<h1>You have unlocked the assembly line." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(2) ? "<h1>It played a significant role in your predecessor's journey." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(3) ? "<h1>This will be very useful for you as well." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(4) ? "<h1>You will eventually unlock aarexian energy." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(5) ? "<h1>In order to produce energy, you need a lot of help with the assembly line." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(6) ? "<h1>The assembly line produces color energy, which will help a lot." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(7) ? "<h1>The assembly line is also one of the gods' of incremental relics." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(8) ? "<h1>This used to belong to Drigganiz, who then gave it to Jacorb." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(9) ? "<h1>Jacorb then gave it to me." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(10) ? "<h1>I was able to find my own energy with it." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinescene.eq(11) ? "<h1>Maybe one day, you can find your own energy." : "" }, { "color": "#68e8f4", "font-size": "18px", "font-family": "monospace" }],
+            ["blank", "25px"],
+            ["row", [["clickable", 24], ["clickable", 23]]],
+            ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "You have " + format(player.h.redenergy) + " red energy." : ""}, { "color": "red", "font-size": "24px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "You have " + format(player.h.greenenergy) + " green energy." : ""}, { "color": "green", "font-size": "24px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "You have " + format(player.h.blueenergy) + " blue energy." : ""}, { "color": "blue", "font-size": "24px", "font-family": "monospace" }],
+            ["blank", "25px"],
+            ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "You are picking for slot " + format(player.h.assemblylineselect, 0) : ""}, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
+            ["blank", "25px"],
+            ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? player.h.slotstatuspic[1] + player.h.slotstatuspic[2] + player.h.slotstatuspic[3] + player.h.slotstatuspic[4] + player.h.slotstatuspic[5] + player.h.slotstatuspic[6] + player.h.slotstatuspic[7] : ""}],
+            ["row", [["clickable", 25], ["clickable", 26], ["clickable", 27], ["clickable", 28], ["clickable", 29], ["clickable", 31], ["clickable", 32]]],
+            ["blank", "25px"],
+            ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "R1: " + format(player.h.slotredenergy[1], 0) + " R2: " + format(player.h.slotredenergy[2], 0) + " R3: " + format(player.h.slotredenergy[3], 0) + " R4: " + format(player.h.slotredenergy[4], 0) + " R5: " + format(player.h.slotredenergy[5], 0) + " R6: " + format(player.h.slotredenergy[6], 0) + " R7: " + format(player.h.slotredenergy[7], 0) : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "G1: " + format(player.h.slotgreenenergy[1], 0) + " G2: " + format(player.h.slotgreenenergy[2], 0) + " G3: " + format(player.h.slotgreenenergy[3], 0) + " G4: " + format(player.h.slotgreenenergy[4], 0) + " G5: " + format(player.h.slotgreenenergy[5], 0) + " G6: " + format(player.h.slotgreenenergy[6], 0) + " G7: " + format(player.h.slotgreenenergy[7], 0) : ""}, { "color": "green", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "B1: " + format(player.h.slotblueenergy[1], 0) + " B2: " + format(player.h.slotblueenergy[2], 0) + " B3: " + format(player.h.slotblueenergy[3], 0) + " B4: " + format(player.h.slotblueenergy[4], 0) + " B5: " + format(player.h.slotblueenergy[5], 0) + " B6: " + format(player.h.slotblueenergy[6], 0) + " B7: " + format(player.h.slotblueenergy[7], 0) : ""}, { "color": "blue", "font-size": "18px", "font-family": "monospace" }],
+            ["blank", "25px"],
+            ["row", [["clickable", 33], ["clickable", 34], ["clickable", 35], ["clickable", 36], ["clickable", 37]]],
+            ["blank", "25px"],
+            ["raw-html", function () { return player.h.assemblylinetypeselect.eq(1) && player.assemblylinecutscene.eq(0) ? "<h2>Produces red energy " : "" }, { "color": "red", "font-size": "16px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.h.assemblylinetypeselect.eq(2) && player.assemblylinecutscene.eq(0) ? "<h2>Produces green energy " : "" }, { "color": "green", "font-size": "16px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.h.assemblylinetypeselect.eq(3) && player.assemblylinecutscene.eq(0) ? "<h2>Produces blue energy " : "" }, { "color": "blue", "font-size": "16px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.h.assemblylinetypeselect.eq(4) && player.assemblylinecutscene.eq(0) ? "<h2>Transports energy across the line " : "" }, { "color": "white", "font-size": "16px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.h.assemblylinetypeselect.eq(5) && player.assemblylinecutscene.eq(0) ? "<h2>Harvests the energy in the line " : "" }, { "color": "white", "font-size": "16px", "font-family": "monospace" }],
+],
+},
+"Buyables and Upgrades": {
+    buttonStyle() { return {  'color': '#68e8f4', 'border-color': '#68e8f4' } },
+    unlocked() { return true },
+    content:
+    [
+        ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "You have " + format(player.h.redenergy) + " red energy." : ""}, { "color": "red", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "You have " + format(player.h.greenenergy) + " green energy." : ""}, { "color": "green", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.assemblylinecutscene.eq(0) ? "You have " + format(player.h.blueenergy) + " blue energy." : ""}, { "color": "blue", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["buyable", 52], ["buyable", 53], ["buyable", 54]]], 
+        ["blank", "25px"],
+        ["row", [["clickable", 39], ["blank", "25px"], ["raw-html", function () { return player.assemblylinecutscene.eq(0) && hasUpgrade("h", 31) ? formatWhole(player.h.slotbuyablepage) + "/7" : ""}, { "color": "white", "font-size": "24px", "font-family": "monospace" }], ["blank", "25px"], ["clickable", 38]]], 
+        ["row", [["raw-html", function () { return player.h.slotbuyablepage.eq(1) ? "<h3>R: " + format(player.h.slotredenergy[1]) + "&nbsp"  : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }], ["raw-html", function () { return player.h.slotbuyablepage.eq(1) ? "<h3>G: " + format(player.h.slotgreenenergy[1])+ "&nbsp"    : ""}, { "color": "green", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(1) ? "<h3>B: " + format(player.h.slotblueenergy[1]) + "&nbsp" : ""}, { "color": "blue", "font-size": "18px", "font-family": "monospace" }], 
+        ["raw-html", function () { return player.h.slotbuyablepage.eq(2) ? "<h3>R: " + format(player.h.slotredenergy[2])+ "&nbsp"  : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }], ["raw-html", function () { return player.h.slotbuyablepage.eq(2) ? "<h3>G: " + format(player.h.slotgreenenergy[2])+ "&nbsp"  : ""}, { "color": "green", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(2) ? "<h3>B: " + format(player.h.slotblueenergy[2]) + "&nbsp" : ""}, { "color": "blue", "font-size": "18px", "font-family": "monospace" }], 
+        ["raw-html", function () { return player.h.slotbuyablepage.eq(3) ? "<h3>R: " + format(player.h.slotredenergy[3])+ "&nbsp"  : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(3) ? "<h3>G: " + format(player.h.slotgreenenergy[3])+ "&nbsp"  : ""}, { "color": "green", "font-size": "18px", "font-family": "monospace" }], ["raw-html", function () { return player.h.slotbuyablepage.eq(3) ? "<h3>B: " + format(player.h.slotblueenergy[3])  + "&nbsp": ""}, { "color": "blue", "font-size": "18px", "font-family": "monospace" }], 
+        ["raw-html", function () { return player.h.slotbuyablepage.eq(4) ? "<h3>R: " + format(player.h.slotredenergy[4])+ "&nbsp"  : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(4) ? "<h3>G: " + format(player.h.slotgreenenergy[4]) + "&nbsp" : ""}, { "color": "green", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(4) ? "<h3>B: " + format(player.h.slotblueenergy[4]) + "&nbsp" : ""}, { "color": "blue", "font-size": "18px", "font-family": "monospace" }], 
+        ["raw-html", function () { return player.h.slotbuyablepage.eq(5) ? "<h3>R: " + format(player.h.slotredenergy[5])+ "&nbsp"  : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(5) ? "<h3>G: " + format(player.h.slotgreenenergy[5]) + "&nbsp" : ""}, { "color": "green", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(5) ? "<h3>B: " + format(player.h.slotblueenergy[5]) + "&nbsp" : ""}, { "color": "blue", "font-size": "18px", "font-family": "monospace" }], 
+        ["raw-html", function () { return player.h.slotbuyablepage.eq(6) ? "<h3>R: " + format(player.h.slotredenergy[6])+ "&nbsp"  : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(6) ? "<h3>G: " + format(player.h.slotgreenenergy[6]) + "&nbsp" : ""}, { "color": "green", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(6) ? "<h3>B: " + format(player.h.slotblueenergy[6]) + "&nbsp" : ""}, { "color": "blue", "font-size": "18px", "font-family": "monospace" }], 
+        ["raw-html", function () { return player.h.slotbuyablepage.eq(7) ? "<h3>R: " + format(player.h.slotredenergy[7])+ "&nbsp" : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(7) ? "<h3>G: " + format(player.h.slotgreenenergy[7]) + "&nbsp" : ""}, { "color": "green", "font-size": "18px", "font-family": "monospace" }],  ["raw-html", function () { return player.h.slotbuyablepage.eq(7) ? "<h3>B: " + format(player.h.slotblueenergy[7])+ "&nbsp"  : ""}, { "color": "blue", "font-size": "18px", "font-family": "monospace" }]]], 
+        ["blank", "25px"],
+        ["row", [["buyable", 55], ["buyable", 56], ["buyable", 57]]], 
+        ["row", [["buyable", 58], ["buyable", 59], ["buyable", 61]]], 
+        ["row", [["buyable", 62], ["buyable", 63], ["buyable", 64]]], 
+        ["row", [["buyable", 65], ["buyable", 66], ["buyable", 67]]], 
+        ["row", [["buyable", 68], ["buyable", 69], ["buyable", 71]]], 
+        ["row", [["buyable", 72], ["buyable", 73], ["buyable", 74]]], 
+        ["row", [["buyable", 75], ["buyable", 76], ["buyable", 77]]], 
+],
+},
+},
 },
 tabFormat: [
     ["raw-html", function () { return "<h2>You have " + format(player.h.willpower) + " willpower, which boosts points by x" + format(player.h.willpowereffect) + "."}, { "color": "#68e8f4", "font-size": "24px", "font-family": "monospace" }],
     ["raw-html", function () { return "<h3>You are gaining " + format(player.h.willpowerpersecond) + " willpower per second." }, { "color": "#68e8f4", "font-size": "24px", "font-family": "monospace" }],
-                ["microtabs", "stuff", { 'border-width': '0px' }],
-    ["raw-html", function () { return options.musicToggle && player.inaarexhubcutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/hub.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+            ["row", [["clickable", 19]]],
+            ["microtabs", "stuff", { 'border-width': '0px' }],
+    ["raw-html", function () { return options.musicToggle && player.inaarexhubcutscene.eq(0) && !(player.factorgridscene.gte(1) && player.factorgridscene.lt(14)) ? "<audio controls autoplay loop hidden><source src=music/hub.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
     ["raw-html", function () { return options.musicToggle && player.inaarexhubcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/aarexcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
     layerShown() { return hasUpgrade("m", 34) && player.dimensionalrealm.eq(1) }

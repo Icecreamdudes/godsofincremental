@@ -736,3 +736,14 @@ button > * {
 	background-image: none !important;
 	--background: transparent !important;
 }
+.demonin-text {
+	font-family: 'Courier', monospace;
+	font-smooth: never;
+	-webkit-font-smoothing : none;
+}
+.raindrop {
+	position: absolute;
+	width: 2px;
+	height: 15px;
+	background-color: #880808;
+  }

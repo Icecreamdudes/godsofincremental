@@ -17,6 +17,7 @@ function getStartOptions() {
 		musicToggle: true,
 		musicVolume: 10,
 		toggleHotkey: true,
+		toggleParticle: true,
 	}
 }
 const audio = new Audio()

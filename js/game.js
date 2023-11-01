@@ -553,4 +553,19 @@ function adjustMusic() {
       "WHATEVER YOU DO, DO NOT GO TO THE VOID",
       // Add more texts here if needed
     ];
-	//addMistWithTextEffect(0.3, textsToShow)
+	const textsToShow2 = [
+		'The predecessor...',
+		'A very special kind of person.',
+		'So determined, despite being in the deepest state of failure.',
+		'Able to manipulate jacorbian energy well.',
+		'However, it could not even stand against a single celestial.',
+		'You have already defeated one. A pseudo-celestial.',
+		'And you have dealt with two more. The brothers.',
+		"You had access to so much more.",
+		"The power of the paths, meta-prestige, and crafting.",
+		"These things made you stronger along the way.",
+		"This won't happen again. You will be the one to do the deed.",
+		"",
+		// Add more texts here if needed
+	  ];
+	//addMistWithTextEffect(0.3, textsToShow2)

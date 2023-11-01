@@ -390,10 +390,12 @@ update(delta) {
     player.ti.timeenergycap = player.c.timecapsules.add(1).mul(60).pow(1.35)
     player.ti.timeenergycap = player.ti.timeenergycap.mul(player.hi.hindrancespiritseffect)
     player.ti.timeenergycap = player.ti.timeenergycap.mul(buyableEffect("h", 19))
+    player.ti.timeenergycap = player.ti.timeenergycap.mul(buyableEffect("h", 74))
 
     if (player.ti.timeenergy.lt(player.ti.timeenergycap)) player.ti.timeenergypersecond = player.c.timecapsules.pow(1.2)
     player.ti.timeenergypersecond = player.ti.timeenergypersecond.mul(player.ss.subspaceeffect)
     player.ti.timeenergypersecond = player.ti.timeenergypersecond.mul(buyableEffect("h", 18))
+    player.ti.timeenergypersecond = player.ti.timeenergypersecond.mul(buyableEffect("h", 73))
     if (player.ti.timeenergy.gte(player.ti.timeenergycap)) 
     {
         player.ti.timeenergypersecond = new Decimal(0)
@@ -544,6 +546,8 @@ update(delta) {
     player.sp.spacepersecond = player.c.spacebuildings.pow(1.5)
     player.sp.spacepersecond = player.sp.spacepersecond.mul(player.ss.subspaceeffect)
     player.sp.spacepersecond = player.sp.spacepersecond.mul(buyableEffect("h", 21))
+    player.sp.spacepersecond = player.sp.spacepersecond.mul(buyableEffect("be", 11))
+    player.sp.spacepersecond = player.sp.spacepersecond.mul(buyableEffect("h", 72))
     player.sp.space = player.sp.space.add(player.sp.spacepersecond.mul(delta))
 
     if (player.i.standardpath.eq(0)) player.sp.spacestandardeffect = new Decimal(1)
@@ -748,6 +752,7 @@ startData() { return {
 update(delta) {
     player.sg.supergeneratorpowerpersecond = buyableEffect("sg", 11)
     player.sg.supergeneratorpowerpersecond = player.sg.supergeneratorpowerpersecond.mul(buyableEffect("h", 22))
+    player.sg.supergeneratorpowerpersecond = player.sg.supergeneratorpowerpersecond.mul(buyableEffect("be", 12))
     player.sg.supergeneratorpower = player.sg.supergeneratorpower.add(player.sg.supergeneratorpowerpersecond.mul(delta))
     player.sg.supergeneratorpowereffect = player.sg.supergeneratorpower.div(1e6).pow(0.2).add(1)
 },
@@ -1254,4 +1259,362 @@ tabFormat: [
 ["raw-html", function () { return options.musicToggle ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.solaritylayer.eq(1) }
+})
+addLayer("be", {
+    name: "Balance Energy", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "BA", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Balance Energy", // Row the layer is in on the tree (0 is the first row)
+branches: ["ss", "qu"],
+color: "#fced9f",
+startData() { return {
+    unlocked: true,
+    balanceenergy: new Decimal(0),
+    balanceenergytoget: new Decimal(0),
+}
+},
+update(delta) {
+    if (player.balanceenergyscene.eq(7)) {
+        player.balanceenergycutscene = new Decimal(0)
+    }
+    
+    player.be.balanceenergytoget = player.i.jacorbianenergy.div(1000).pow(0.5)
+},
+clickables: {
+    11: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.balanceenergycutscene.eq(1) },
+        unlocked() { return player.balanceenergyscene.lt(7) },
+        onClick() {
+            player.balanceenergyscene = player.balanceenergyscene.add(1)
+        },
+    },
+    12: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.balanceenergycutscene.eq(1) },
+        unlocked() { return player.balanceenergyscene.lt(7) && player.balanceenergyscene.neq(0) },
+        onClick() {
+            player.balanceenergyscene = player.balanceenergyscene.sub(1)
+        },
+    },
+    13: {
+        title() { return "<h2>Desynthesize jacorbian energy for balance energy. Also resets meta-prestige time." },
+        canClick() { return player.be.balanceenergytoget.gte(1) },
+        unlocked() { return player.balanceenergycutscene.eq(0) },
+        onClick() {
+            player.i.metaprestigetime = new Decimal(0)
+            player.i.jacorbianenergy = new Decimal(0)
+            player.be.balanceenergy = player.be.balanceenergy.add(player.be.balanceenergytoget)
+        },
+        style: { "background-color": "#fced9f", width: '400px', "min-height": '100px' },
+    },
+},
+upgrades: {
+},
+buyables: {
+    11: {
+        cost(x) { return new Decimal(1.4).pow(x || getBuyableAmount(this.layer, this.id)).mul(20) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).pow(0.5).add(1) },
+        unlocked() { return true },
+        canAfford() { return player.be.balanceenergy.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Negativity"
+        },
+        display() {
+            return "which are boosting space energy gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Balance Energy"
+        },
+        buy() {
+            let base = new Decimal(20)
+            let growth = 1.4
+            let max = Decimal.affordGeometricSeries(player.be.balanceenergy, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.be.balanceenergy = player.be.balanceenergy.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "rgb(235, 64, 52)",}
+    },
+    12: {
+        cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(100) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).pow(0.5).add(1) },
+        unlocked() { return true },
+        canAfford() { return player.be.balanceenergy.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Positivity"
+        },
+        display() {
+            return "which are boosting super generator power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Balance Energy"
+        },
+        buy() {
+            let base = new Decimal(100)
+            let growth = 1.2
+            let max = Decimal.affordGeometricSeries(player.be.balanceenergy, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.be.balanceenergy = player.be.balanceenergy.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', "background-color": "rgb(162, 249, 252)",}
+    },
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#fced9f' } },
+unlocked() { return player.quirklayer.eq(1) },
+content:
+
+    [
+        ["raw-html", function () { return player.balanceenergyscene.eq(1) ? "<h1>Hello, Artis here! Strange seeing me in a prestige layer." : "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.balanceenergyscene.eq(2) ? "<h1>Sitra, my brother, you will fight him." : "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.balanceenergyscene.eq(3) ? "<h1>I know it's very hard, but we all agreed to do this." : "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.balanceenergyscene.eq(4) ? "<h1>This has been planned for a while." : "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.balanceenergyscene.eq(5) ? "<h1>Sitra is on our side. It would be easier to absorb his power." : "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.balanceenergyscene.eq(6) ? "<h1>Anyways, that's it. See ya." : "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["clickable", 12], ["clickable", 11]]],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.balanceenergycutscene.eq(1) ? " <div class=spinning-symbol>☭</div>" : "" }],
+        ["raw-html", function () { return player.balanceenergycutscene.eq(0) ? "<h2>You have " + format(player.be.balanceenergy) + " balance energy. (+" + format(player.be.balanceenergytoget) + ")" : "" }, { "color": "#fced9f", "font-size": "24px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.balanceenergycutscene.eq(0) ? "<h3>You have " + format(player.i.jacorbianenergy) + " jacorbian energy." : "" }, { "color": "purple", "font-size": "24px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["clickable", 13]]],
+        ["blank", "25px"],
+        ["row", [["buyable", 11], ["buyable", 12]]],
+    ],
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle && player.balanceenergycutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/craftingcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.balanceenergycutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.balanceenergylayer.eq(1) }
+})
+
+addLayer("ma", {
+    name: "Magic", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "M", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Magic", // Row the layer is in on the tree (0 is the first row)
+branches: ["so", "qu", "hi"],
+color: "#eb34c0",
+startData() { return {
+    unlocked: true,
+    currentspell: new Decimal(0),
+    scorecerereffect: new Decimal(1.1),
+    pointprestigesynergyeffect: new Decimal(1),
+    energyemulsifiereffect: new Decimal(1.2),
+}
+},
+update(delta) {
+    if (player.magicscene.eq(17)) {
+        player.magiccutscene = new Decimal(0)
+    }
+
+    player.ma.scorecerereffect = Decimal.add(buyableEffect("ma", 11), 1.1)
+    player.ma.pointprestigesynergyeffect = Decimal.pow(player.i.prestigepoints.add(1).log10().pow(1.5), buyableEffect("ma", 12))
+    player.ma.energyemulsifiereffect = Decimal.add(buyableEffect("ma", 13), 1.2)
+},
+clickables: {
+    11: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.magiccutscene.eq(1) },
+        unlocked() { return player.magicscene.lt(17) },
+        onClick() {
+            player.magicscene = player.magicscene.add(1)
+        },
+    },
+    12: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.magiccutscene.eq(1) },
+        unlocked() { return player.magicscene.lt(17) && player.magicscene.neq(0) },
+        onClick() {
+            player.magicscene = player.magicscene.sub(1)
+        },
+    },
+    13: {
+        title() { return "<h2>Scorecerer" },
+        canClick() { return player.ma.currentspell.eq(0) },
+        unlocked() { return player.magiccutscene.eq(0)},
+        display() {
+            return "<h3>Boosts score by x" + format(player.ma.scorecerereffect) + "."
+        },
+        onClick() {
+            player.ma.currentspell = new Decimal(1)
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    14: {
+        title() { return "<h2>Point-Prestige Synergy" },
+        canClick() { return player.ma.currentspell.eq(0) },
+        unlocked() { return player.magiccutscene.eq(0)},
+        display() {
+            return "<h3>Boosts points by x" + format(player.ma.pointprestigesynergyeffect) + ". (Based on prestige points)"
+        },
+        onClick() {
+            player.ma.currentspell = new Decimal(2)
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    15: {
+        title() { return "<h2>Energy Emulsifier" },
+        canClick() { return player.ma.currentspell.eq(0) },
+        unlocked() { return player.magiccutscene.eq(0)},
+        display() {
+            return "<h3>Boosts incremental energy by x" + format(player.ma.energyemulsifiereffect) + "."
+        },
+        onClick() {
+            player.ma.currentspell = new Decimal(3)
+        },
+        style: { width: '275px', height: '150px', }
+    },
+},
+upgrades: {
+},
+buyables: {
+    11: {
+        cost(x) { return new Decimal(1.33).pow(x || getBuyableAmount(this.layer, this.id)).mul(1000000) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.02) },
+        unlocked() { return true },
+        canAfford() { return player.m.points.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Level Scorecerer"
+        },
+        display() {
+            return "which are adding +x" + format(tmp[this.layer].buyables[this.id].effect) + " to the effect.\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Incremental Power"
+        },
+        buy() {
+            let base = new Decimal(1000000)
+            let growth = 1.33
+            let max = Decimal.affordGeometricSeries(player.m.points, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.m.points = player.m.points.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    12: {
+        cost(x) { return new Decimal(1.36).pow(x || getBuyableAmount(this.layer, this.id)).mul(1500000) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).pow(0.04).div(40).add(1) },
+        unlocked() { return true },
+        canAfford() { return player.m.points.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Level Point-Prestige Synergy"
+        },
+        display() {
+            return "which boosting the effect by ^" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Incremental Power"
+        },
+        buy() {
+            let base = new Decimal(1500000)
+            let growth = 1.36
+            let max = Decimal.affordGeometricSeries(player.m.points, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.m.points = player.m.points.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+    13: {
+        cost(x) { return new Decimal(1.4).pow(x || getBuyableAmount(this.layer, this.id)).mul(3000000) },
+        effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.02) },
+        unlocked() { return true },
+        canAfford() { return player.m.points.gte(this.cost()) },
+        title() {
+            return format(getBuyableAmount(this.layer, this.id), 0) + "<br/> Level Energy Emulsifier"
+        },
+        display() {
+            return "which are adding +x" + format(tmp[this.layer].buyables[this.id].effect) + " to the effect.\n\
+                Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Incremental Power"
+        },
+        buy() {
+            let base = new Decimal(3000000)
+            let growth = 1.4
+            let max = Decimal.affordGeometricSeries(player.m.points, base, growth, getBuyableAmount(this.layer, this.id))
+            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+            player.m.points = player.m.points.sub(cost)
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+        },
+        style: { width: '275px', height: '150px', }
+    },
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#eb34c0' } },
+unlocked() { return player.magiclayer.eq(1) },
+content:
+
+    [
+        ["raw-html", function () { return player.magicscene.eq(1) ? "<div class=demonin-text>Hi, you must be the hero, aren't you?</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(2) ? "<div class=demonin-text>I am Demonin. The mage from the death realm.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(3) ? "<div class=demonin-text>You've definitely heard about me. My life has been a long and eventful one.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(4) ? "<div class=demonin-text>I have done so many things,</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(5) ? "<div class=demonin-text>but the best choice I have made was joining you guys.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(6) ? "<div class=demonin-text>I've destroyed so much. Caused so much pain.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(7) ? "<div class=demonin-text>The death realm made me one of their pawns.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(8) ? "<div class=demonin-text>I've ended up killing trillions... No, maybe quadrillions!</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(9) ? "<div class=demonin-text>The dodecadragon. The entity I have commanded to put death on all.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(10) ? "<div class=demonin-text>I have eliminated so much of my realm, but for what?</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(11) ? "<div class=demonin-text>With more space we created purgatory. Only a much more useless, dry environment.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(12) ? "<div class=demonin-text>Instead, there could have been so many more elements in this world...</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(13) ? "<div class=demonin-text>I am here to assist you and revert the damage I have done.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(14) ? "<div class=demonin-text>I will teach you magic, but you need to unlock Incremental^2 first.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(15) ? "<div class=demonin-text>For now, enjoy the boost.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["raw-html", function () { return player.magicscene.eq(16) ? "<div class=demonin-text>I will be seeing you soon, sometime.</div>" : "" }, { "color": "#dcca5a", "font-size": "36px", }],
+        ["blank", "25px"],
+        ["row", [["clickable", 12], ["clickable", 11]]],
+        ["raw-html", function () { return player.magiccutscene.eq(0) ? "<h3>Current minute (updates on refresh): " + formatWhole(today.getMinutes()) + " -> x" + format(player.m.scorefromminutes) : "" }, { "color": "#eb34c0", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.magiccutscene.eq(0) ? "<h2>You have " + format(player.m.points) + " incremental power.": "" }, { "color": "#eb34c0", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.ma.currentspell.eq(0) && player.magiccutscene.eq(0) ? "<h2>Current spell: None": "" }, { "color": "#eb34c0", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.ma.currentspell.eq(1) && player.magiccutscene.eq(0) ? "<h2>Current spell: Scorecerer": "" }, { "color": "#eb34c0", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.ma.currentspell.eq(2) && player.magiccutscene.eq(0) ? "<h2>Current spell: Point-Prestige Synergy": "" }, { "color": "#eb34c0", "font-size": "18px", "font-family": "monospace" }],
+        ["raw-html", function () { return player.ma.currentspell.eq(3) && player.magiccutscene.eq(0) ? "<h2>Current spell: Energy Emulsifier": "" }, { "color": "#eb34c0", "font-size": "18px", "font-family": "monospace" }],
+        ["blank", "25px"],
+        ["row", [["clickable", 13], ["clickable", 14], ["clickable", 15]]],
+        ["row", [["buyable", 11], ["buyable", 12], ["buyable", 13]]],
+        ["blank", "25px"],
+        ["raw-html", function () { return player.magiccutscene.eq(0) ? "<h3>Spells last an entire meta-prestige run." : "" }, { "color": "#eb34c0", "font-size": "18px", "font-family": "monospace" }],
+    ],
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle && player.magiccutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/demonin.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.magiccutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.magiclayer.eq(1) }
 })

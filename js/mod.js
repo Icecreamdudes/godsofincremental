@@ -3,7 +3,7 @@
 	id: "godsofincremental",
 	author: "Icecreamdude",
 	pointsName: "points",
-	modFiles: ["incremental.js", "metaprestige.js", "tree.js", "prestigetree.js", "crafting.js", "hub.js"],
+	modFiles: ["incremental.js", "metaprestige.js", "tree.js", "prestigetree.js", "crafting.js", "hub.js", "cutscene.js"],
 
 	discordName: "Gods of Incremental Server",
 	discordLink: "https://discord.gg/icecreamdude-s-incremental-games-850817562040467556",
@@ -13,11 +13,21 @@
 
 // Set your version in num and name
 let VERSION = {
-	num: "1.1b",
-	name: "Beta Update 2 - Chapter 2 Part 1: The Dimensional Realm"
+	num: "1.2b",
+	name: "Beta Update 3 - Chapter 2 Part 2: More Enhance & Jacorb"
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+<h3>v1.2b - Chapter 2 Part 2: More Enhance & Jacorb<br>
+-Added quirks.<br>
+-Added jacorbian balancing.<br>
+-Added prestige power, factor grid, and assembly line.<br>
+-Added new crafting recipes, counting content, and crafting content.<br>
+-Added 2 more prestige tree layers.<br>
+-Added 4 new songs.<br>
+-Added a bunch of lore.<br>
+Endgame: Unlocked enhance path extension, ~150,000,000 Incremental Power, ~1e14 Willpower, ~1e250 points in Standard Path, ~1e70 points in Enhance Path.<br>
+<br>
 <h3>v1.1b - Chapter 2 Part 1: The Dimensional Realm<br>
 -Added the dimensional realm.<br>
 -Added the hub.<br>
@@ -26,7 +36,7 @@ let changelog = `<h1>Changelog:</h1><br>
 -Added crafting points.<br>
 -Added only 2 new songs.<br>
 -Added a bit of lore here and there.<br>
-Endgame: Unlocked enhance path extension, ~1,000,000 Willpower, ~1e220 points in Standard Path, ~1e30 points in Enhance Path<br>
+Endgame: Unlocked enhance path extension, ~1,000,000 Willpower, ~1e220 points in Standard Path, ~1e30 points in Enhance Path.<br>
 <br>
 <h3>v1.0.1b - The Hotkey Minor Update<br>
 -Added hotkeys for tab changes.<br>
@@ -54,7 +64,7 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset", "celestialenergyreset", "hindrancereset", "checkforcountingreset", "countingreset", "checkforclaimsolaritycoal", "claimsolaritycoal"]
+var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset", "celestialenergyreset", "hindrancereset", "checkforcountingreset", "countingreset", "checkforclaimsolaritycoal", "claimsolaritycoal", "quirkreset", "prestigepowerreset",]
 
 function getStartPoints() {
 	return new Decimal(modInfo.initialStartPoints)
@@ -89,6 +99,14 @@ function getPointGen() {
 	gain = gain.mul(buyableEffect("i", 102))
 	if (player.i.enhancebeacontoggle.eq(1)) gain = gain.sqrt()
 	gain = gain.mul(player.h.willpowereffect)
+	gain = gain.mul(buyableEffect("i", 105))
+	gain = gain.mul(player.m.pointperk)
+	gain = gain.mul(player.i.sacrificedsolariseffect)
+	gain = gain.mul(buyableEffect("i", 119))
+	gain = gain.mul(buyableEffect("i", 121))
+	gain = gain.mul(buyableEffect("i", 122))
+	gain = gain.mul(buyableEffect("i", 123))
+	if (player.ma.currentspell.eq(2)) gain = gain.mul(player.ma.pointprestigesynergyeffect)
 	player.gain = gain
 	return gain
 }
@@ -173,6 +191,26 @@ function addedPlayerData() {
 		solarforgescene: new Decimal(0),
 		enhancequirkcutscene: new Decimal(1),
 		enhancequirkscene: new Decimal(0),
+		jacorbbalancingcutscene: new Decimal(1),
+		jacorbbalancingscene: new Decimal(0),
+		balanceenergycutscene: new Decimal(1),
+		balanceenergyscene: new Decimal(0),
+		altarcutscene: new Decimal(1),
+		altarscene: new Decimal(0),
+		translatorcutscene: new Decimal(1),
+		translatorscene: new Decimal(0),
+		magiccutscene: new Decimal(1),
+		magicscene: new Decimal(0),
+		factorgridcutscene: new Decimal(1),
+		factorgridscene: new Decimal(0),
+		assemblylinecutscene: new Decimal(1),
+		assemblylinescene: new Decimal(0),
+		sitraunlockcutscene: new Decimal(1),
+		sitraunlockscene: new Decimal(0),
+
+		//Immersed Cutscenes
+		celestialflashbackcutscene: new Decimal(1),
+		celestialflashbackscene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),
@@ -184,6 +222,9 @@ function addedPlayerData() {
 		yhvrcutscene7: new Decimal(0),
 		yhvrcutscene8: new Decimal(0),
 		yhvrcutscene9: new Decimal(0),
+		yhvrcutscene10: new Decimal(0),
+		yhvrcutscene11: new Decimal(0),
+		yhvrcutscene12: new Decimal(0),
 
 		//counting cutscene
 		downvoidcountingcutscene: new Decimal(0),
@@ -193,6 +234,9 @@ function addedPlayerData() {
 		ducdatcountingscene: new Decimal(0),
 		flamecountingcutscene: new Decimal(0),
 		flamecountingscene: new Decimal(0),
+
+		//other cutscenes
+		enterjacorbcutscene: new Decimal(1),
 
 		//PT layers
 		prestigelayer: new Decimal(0),
@@ -207,6 +251,8 @@ function addedPlayerData() {
 		hindrancelayer: new Decimal(0),
 		subspacelayer: new Decimal(0),
 		solaritylayer: new Decimal(0),
+		balanceenergylayer: new Decimal(0),
+		magiclayer: new Decimal(0),
 
 		//Realm Travel
 		dimensionalrealm: new Decimal(0)
