@@ -4619,16 +4619,6 @@ opacity: "0.9",
     },
     microtabs: {
         stuff: {
-            "Jacorb": {
-                buttonStyle() { return { 'color': 'purple', 'border-color': 'purple', 'background-color': '#b82fbd' } },
-                unlocked() { return hasUpgrade("i", 112) },
-                content:
-
-                    [
-                        ["microtabs", "jacorb", { 'border-width': '0px' }],
-                    ]
-
-            },
             "Main": {
                 buttonStyle() { return { 'color': 'white' } },
                 unlocked() { return player.i.ce308bossactivate.eq(0) },
@@ -4658,6 +4648,16 @@ opacity: "0.9",
                            ["infobox", "jacorblog23"],
                            ["infobox", "jacorblog24"],
                            ["blank", "25px"],
+                    ]
+
+            },
+            "Jacorb": {
+                buttonStyle() { return { 'color': 'purple', 'border-color': 'purple', 'background-color': '#b82fbd' } },
+                unlocked() { return hasUpgrade("i", 112) },
+                content:
+
+                    [
+                        ["microtabs", "jacorb", { 'border-width': '0px' }],
                     ]
 
             },
