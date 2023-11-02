@@ -255,7 +255,10 @@ function addedPlayerData() {
 		magiclayer: new Decimal(0),
 
 		//Realm Travel
-		dimensionalrealm: new Decimal(0)
+		dimensionalrealm: new Decimal(0),
+
+		//Buymax
+		buymaxtoggle: new Decimal(0),
 	}
 }
 

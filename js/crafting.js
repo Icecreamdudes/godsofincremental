@@ -1337,12 +1337,20 @@ buyables: {
                 Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Crafting Points"
         },
         buy() {
-            let base = new Decimal(5)
-            let growth = 1.4
-            let max = Decimal.affordGeometricSeries(player.c.craftingpoints, base, growth, getBuyableAmount(this.layer, this.id))
-            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.c.craftingpoints = player.c.craftingpoints.sub(cost)
-            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            if (player.buymaxtoggle.eq(0))
+            {
+                let base = new Decimal(5)
+                let growth = 1.4
+                let max = Decimal.affordGeometricSeries(player.c.craftingpoints, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.c.craftingpoints = player.c.craftingpoints.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            } else
+            {
+                let notmaxcost = new Decimal(1.4).pow(x || getBuyableAmount(this.layer, this.id)).mul(5)
+                player.c.craftingpoints = player.c.craftingpoints.sub(notmaxcost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            }
         },
         style: { width: '275px', height: '150px', }
     },
@@ -1362,12 +1370,20 @@ buyables: {
                 Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Crafting Points"
         },
         buy() {
-            let base = new Decimal(8)
-            let growth = 1.45
-            let max = Decimal.affordGeometricSeries(player.c.craftingpoints, base, growth, getBuyableAmount(this.layer, this.id))
-            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.c.craftingpoints = player.c.craftingpoints.sub(cost)
-            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            if (player.buymaxtoggle.eq(0))
+            {
+                let base = new Decimal(8)
+                let growth = 1.45
+                let max = Decimal.affordGeometricSeries(player.c.craftingpoints, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.c.craftingpoints = player.c.craftingpoints.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            } else
+            {
+                let notmaxcost = new Decimal(1.45).pow(x || getBuyableAmount(this.layer, this.id)).mul(8)
+                player.c.craftingpoints = player.c.craftingpoints.sub(notmaxcost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            }
         },
         style: { width: '275px', height: '150px', }
     },
@@ -1387,12 +1403,20 @@ buyables: {
                 Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Crafting Points"
         },
         buy() {
-            let base = new Decimal(10)
-            let growth = 1.5
-            let max = Decimal.affordGeometricSeries(player.c.craftingpoints, base, growth, getBuyableAmount(this.layer, this.id))
-            let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-            player.c.craftingpoints = player.c.craftingpoints.sub(cost)
-            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            if (player.buymaxtoggle.eq(0))
+            {
+                let notmaxcost = new Decimal(1.5).pow(x || getBuyableAmount(this.layer, this.id)).mul(10)
+                player.c.craftingpoints = player.c.craftingpoints.sub(notmaxcost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            } else
+            {
+                let base = new Decimal(10)
+                let growth = 1.5
+                let max = Decimal.affordGeometricSeries(player.c.craftingpoints, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                player.c.craftingpoints = player.c.craftingpoints.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            }
         },
         style: { width: '275px', height: '150px', }
     },

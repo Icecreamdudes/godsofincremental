@@ -126,7 +126,7 @@
         player.m.beaconpointperk = player.m.beaconpointperk.add(buyableEffect("i", 114))
         player.m.quirkperk = player.m.quirkperk.add(buyableEffect("i", 115))
         }
-        
+
         player.ma.currentspell = new Decimal(0)
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
@@ -815,6 +815,18 @@ document.addEventListener('keydown', function(event) {
       player.tab = "h"
       if (player.dimensionalrealm.eq(0)) player.m.dimensionalrealmtravels = player.m.dimensionalrealmtravels.sub(1)
       player.dimensionalrealm = new Decimal(1)     
+    }
+  });
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'b') {
+        if (player.buymaxtoggle.eq(0))
+        {
+            player.buymaxtoggle = new Decimal(1)
+        }
+        else
+        {
+            player.buymaxtoggle = new Decimal(0)
+        }
     }
   });
 var today = new Date();

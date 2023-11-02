@@ -2105,7 +2105,7 @@ opacity: "0.9",
         99: {
             title() { return "Transfer 10% of your quirk energy into the jacorb orbs. (uses up one orb)" },
             canClick() { return player.i.quirkenergy.gt(0) && player.c.jacorborbs.gt(0) },
-            unlocked() { return player.m.translatorunlock.eq(1) },
+            unlocked() { return true},
             onClick() {
                 player.m.storedquirkenergy = player.m.storedquirkenergy.add(player.i.quirkenergy.mul(0.1))
                 player.i.quirkenergy = player.i.quirkenergy.sub(player.i.quirkenergy.mul(0.1))
