@@ -957,7 +957,7 @@
             player.insitracutscene = new Decimal(1)
         }
 
-        if (player.i.sitraunlock.eq(1) && options.toggleParticle)
+        if (player.i.sitraunlock.eq(1) && player.dimensionalrealm.eq(0) && options.toggleParticle)
         {
             startRain();
         }

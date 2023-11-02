@@ -118,12 +118,15 @@
         player.playdotpm = new Decimal(0)
         player.c.solaritycoaltoget = new Decimal(0)
 
+        if (player.jacorbbalancingcutscene.eq(0))
+        {
         player.m.pointperk = player.m.pointperk.add(buyableEffect("i", 111))
         player.m.prestigepointperk = player.m.prestigepointperk.add(buyableEffect("i", 112))
         player.m.enhancepointperk = player.m.enhancepointperk.add(buyableEffect("i", 113))
         player.m.beaconpointperk = player.m.beaconpointperk.add(buyableEffect("i", 114))
         player.m.quirkperk = player.m.quirkperk.add(buyableEffect("i", 115))
-
+        }
+        
         player.ma.currentspell = new Decimal(0)
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
