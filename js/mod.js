@@ -256,9 +256,6 @@ function addedPlayerData() {
 
 		//Realm Travel
 		dimensionalrealm: new Decimal(0),
-
-		//Buymax
-		buymaxtoggle: new Decimal(0),
 	}
 }
 

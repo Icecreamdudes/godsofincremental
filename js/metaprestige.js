@@ -171,7 +171,7 @@
          
         if (hasUpgrade("i", 27) && player.i.beatce308.eq(0) && player.dimensionalrealm.eq(0)) player.lightningtimer = player.lightningtimer.add(1)
         if (player.i.ce308bossactivate.eq(1) && player.i.beatce308.eq(0) && player.dimensionalrealm.eq(0)) player.lightningtimer = player.lightningtimer.add(4)
-        if (player.lightningtimer.gte(60))
+        if (player.lightningtimer.gte(60) && options.toggleParticle)
         {
             createLightning();
             player.lightningtimer = new Decimal(0)
@@ -815,18 +815,6 @@ document.addEventListener('keydown', function(event) {
       player.tab = "h"
       if (player.dimensionalrealm.eq(0)) player.m.dimensionalrealmtravels = player.m.dimensionalrealmtravels.sub(1)
       player.dimensionalrealm = new Decimal(1)     
-    }
-  });
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'b') {
-        if (player.buymaxtoggle.eq(0))
-        {
-            player.buymaxtoggle = new Decimal(1)
-        }
-        else
-        {
-            player.buymaxtoggle = new Decimal(0)
-        }
     }
   });
 var today = new Date();
