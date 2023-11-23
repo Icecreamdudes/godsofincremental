@@ -185,6 +185,34 @@
 
         //SITRA
         sitraunlock: new Decimal(0),
+
+        //Blood
+        blood: new Decimal(0),
+        blooddust: new Decimal(0),
+        bloodeffect: new Decimal(1),
+        bloodeffect2: new Decimal(1),
+        bloodtoggle: new Decimal(0),
+        bloodpersecond: new Decimal(0),
+        bloodcapacity: new Decimal(10),
+
+        //Plasma
+        plasma: new Decimal(0),
+        plasmaeffect: new Decimal(1),
+        plasmaeffectchoice: new Decimal(0),
+        plasmapersecond: new Decimal(0),
+
+        //Phantom Souls
+        phantomsouls: new Decimal(0),
+        bestphantomsouls: new Decimal(0),
+        phantomsoulspause: new Decimal(0),
+        phantomsoulstoget: new Decimal(0),
+        damnedsouls: new Decimal(0),
+        damnedsoulseffect: new Decimal(1),
+        damnedsoulspersecond: new Decimal(0),
+
+        //Phantom Power
+        phantompower: new Decimal(0),
+        phantompowerpersecond: new Decimal(0),
     }
     },
     automate() {
@@ -233,11 +261,72 @@
             buyBuyable("i", 33)
             buyBuyable("i", 34)
         }
+        if (hasUpgrade("m", 43))
+        {
+            buyBuyable("i", 24)
+            buyBuyable("i", 25)
+            buyBuyable("i", 26)
+            buyBuyable("i", 27)
+            buyBuyable("i", 28)
+            buyBuyable("i", 29)
+            buyBuyable("i", 31)
+            buyBuyable("i", 32)
+            buyBuyable("i", 33)
+            buyBuyable("i", 34)
+            buyBuyable("i", 35)
+            buyBuyable("i", 36)
+            buyBuyable("i", 37)
+            buyBuyable("i", 38)
+            buyBuyable("i", 39)
+            buyBuyable("i", 41)
+            buyBuyable("i", 42)
+        }
         if (hasUpgrade("i", 112))
         {
             buyBuyable("i", 102)
             buyBuyable("i", 103)
             buyBuyable("i", 104)
+        }
+        if (hasUpgrade("i", 119))
+        {
+            buyBuyable("i", 105)
+            buyBuyable("i", 106)
+            buyBuyable("i", 107)
+            buyBuyable("i", 119)
+            buyBuyable("i", 121)
+            buyBuyable("i", 122)
+            buyBuyable("i", 123)
+            buyBuyable("i", 124)
+            buyBuyable("i", 125)
+            buyBuyable("i", 126)
+            buyBuyable("i", 127)
+        }
+        if (hasUpgrade("m", 46))
+        {
+            buyBuyable("i", 128)
+            buyBuyable("i", 129)
+            buyBuyable("i", 131)
+            buyBuyable("i", 132)
+            buyBuyable("i", 133)
+            buyBuyable("i", 134)
+            buyBuyable("i", 135)
+            buyBuyable("i", 136)
+            buyBuyable("i", 137)
+            buyBuyable("i", 138)
+            buyBuyable("i", 139)
+            buyBuyable("i", 141)
+            buyBuyable("i", 142)
+            buyBuyable("i", 143)
+            buyBuyable("i", 144)
+            buyBuyable("i", 145)
+            buyBuyable("i", 146)
+            buyBuyable("i", 147)
+            buyBuyable("i", 148)
+            buyBuyable("i", 149)
+            buyBuyable("i", 151)
+            buyBuyable("i", 152)
+            buyBuyable("i", 153)
+            buyBuyable("i", 154)
         }
     },
     nodeStyle() {
@@ -304,6 +393,7 @@
         metaprestigetimemult = metaprestigetimemult.mul(player.ti.timeenergyeffect)
         metaprestigetimemult = metaprestigetimemult.mul(player.hi.hindrancespiritseffect)
         metaprestigetimemult = metaprestigetimemult.mul(buyableEffect("h", 71))
+        if (hasUpgrade("m", 38)) metaprestigetimemult = metaprestigetimemult.mul(upgradeEffect("m", 38))
 
         player.i.metaprestigetime = player.i.metaprestigetime.add(onepersec.mul(metaprestigetimemult).mul(delta))
 
@@ -335,6 +425,7 @@
         player.i.prestigepointstoget = player.i.prestigepointstoget.mul(buyableEffect("i", 125))
         player.i.prestigepointstoget = player.i.prestigepointstoget.mul(buyableEffect("i", 126))
         player.i.prestigepointstoget = player.i.prestigepointstoget.mul(buyableEffect("i", 127))
+        player.i.prestigepointstoget = player.i.prestigepointstoget.mul(buyableEffect("i", 142))
 
         if (hasUpgrade("i", 22)) player.i.prestigepoints = player.i.prestigepoints.add(player.i.prestigepointstoget.mul(delta))
         if (hasUpgrade("m", 25) && player.i.standardpath.eq(1)) player.i.prestigepoints = player.i.prestigepoints.add(player.i.prestigepointstoget.mul(0.03).mul(delta))
@@ -412,6 +503,7 @@
         player.i.pureenergytoget = player.i.pureenergytoget.mul(player.i.celestialenergyeffect)
         if (player.i.pureenergy.gte(player.i.bestpureenergy)) player.i.bestpureenergy = player.i.pureenergy
         if (player.i.currentenergizer.eq(4)) player.i.pureenergy = player.i.pureenergy.add(player.i.pureenergytoget.mul(delta))
+        if (hasUpgrade("m", 44)) player.i.pureenergy = player.i.pureenergy.add(player.i.pureenergytoget.mul(0.1).mul(delta))
 
         if (player.i.generatorenergy.gte(player.i.bestgeneratorenergy)) player.i.bestgeneratorenergy = player.i.generatorenergy
         player.i.generatorenergypersecond = buyableEffect("i", 16)
@@ -534,6 +626,7 @@
         player.i.celestialenergytoget = player.i.celestialenergytoget.mul(buyableEffect("i", 36))
         player.i.celestialenergytoget = player.i.celestialenergytoget.mul(buyableEffect("i", 37))
         player.i.celestialenergytoget = player.i.celestialenergytoget.mul(buyableEffect("i", 38))
+        if (hasUpgrade("m", 44)) player.i.celestialenergy = player.i.celestialenergy.add(player.i.celestialenergytoget.mul(0.1).mul(delta))
 
         player.i.celestialenergyeffect = player.i.celestialenergy.pow(1.6).add(1)
 
@@ -613,6 +706,7 @@
         if (hasUpgrade("i", 41)) player.i.hindranceenergypersecond = player.i.hindranceenergypersecond.mul(upgradeEffect("i", 41))
 
         player.i.hindrancepointstoget = player.i.hindranceenergy.pow(0.12)
+        if (hasUpgrade("m", 44)) player.i.hindrancepoints = player.i.hindrancepoints.add(player.i.hindrancepointstoget.mul(0.1).mul(delta))
         player.i.hindrancepointseffect = player.i.hindrancepoints.mul(10).pow(0.8).add(1)
 
         if (player.i.hindrancepointpause.gt(0)) {
@@ -781,6 +875,7 @@
         player.i.enhancepointspersecond = player.i.enhancepointspersecond.mul(buyableEffect("i", 107))
         player.i.enhancepointspersecond = player.i.enhancepointspersecond.mul(player.m.enhancepointperk)
         player.i.enhancepointspersecond = player.i.enhancepointspersecond.mul(player.i.sacrificedeternityeffect)
+        player.i.enhancepointspersecond = player.i.enhancepointspersecond.mul(buyableEffect("i", 138))
 
         if (player.i.enhancepoints.gte(player.i.bestenhancepoints)) player.i.bestenhancepoints = player.i.enhancepoints
 
@@ -803,11 +898,13 @@
         if (player.i.enhancebeacontoggle.eq(0)) player.i.beaconpowerpersecond = new Decimal(0)
         if (player.i.enhancebeacontoggle.eq(1)) player.i.beaconpowerpersecond = player.i.enhancebeaconlevel
         player.i.beaconpowerpersecond = player.i.beaconpowerpersecond.mul(buyableEffect("i", 118))
+        if (hasUpgrade("i", 125)) player.i.beaconpowerpersecond = player.i.beaconpowerpersecond.mul(upgradeEffect("i", 125))
         player.i.beaconpower = player.i.beaconpower.add(player.i.beaconpowerpersecond.mul(delta))
 
         player.i.beaconpowerreq = new Decimal(25)
         player.i.beaconpowerreq = player.i.beaconpowerreq.mul(player.i.quirkimprovementeffect)
         player.i.beaconpowerreq = player.i.beaconpowerreq.mul(player.i.jacorbianruneseffect2)
+        player.i.beaconpowerreq = player.i.beaconpowerreq.mul(player.i.bloodeffect2)
         player.i.incrementalpowergain = new Decimal(0.3)
         if (hasUpgrade("m", 31)) player.i.incrementalpowergain = player.i.incrementalpowergain.mul(2)
         if (player.i.beaconpower.gt(player.i.beaconpowerreq) && player.i.injacorbianbalancing.eq(0))
@@ -861,6 +958,10 @@
         player.i.quirkstarboost = player.c.quirkstars.div(50).add(1)
         player.i.quirkstoget = player.i.quirkstoget.mul(player.i.sacrificedrealityeffect)
         player.i.quirkstoget = player.i.quirkstoget.mul(player.i.superquirkseffect)
+        player.i.quirkstoget = player.i.quirkstoget.mul(buyableEffect("i", 137))
+        if (hasUpgrade("i", 121)) player.i.quirkstoget = player.i.quirkstoget.mul(upgradeEffect("i", 121))
+
+        if (hasUpgrade("i", 123)) player.i.quirks = player.i.quirks.add(player.i.quirkstoget.mul(0.1).mul(delta))
 
         player.i.quirkeffect = player.i.quirks.pow(0.75).add(1)
 
@@ -899,6 +1000,9 @@
         player.i.jacorbianenergytoget = player.i.jacorbianenergytoget.mul(buyableEffect("i", 116))
         player.i.jacorbianenergytoget = player.i.jacorbianenergytoget.mul(player.i.jacorbianruneseffect)
         player.i.jacorbianenergytoget = player.i.jacorbianenergytoget.mul(buyableEffect("h", 75))
+        player.i.jacorbianenergytoget = player.i.jacorbianenergytoget.mul(buyableEffect("i", 136))
+        player.i.jacorbianenergytoget = player.i.jacorbianenergytoget.mul(player.m.jacorbperk)
+        if (hasUpgrade("i", 124)) player.i.jacorbianenergytoget = player.i.jacorbianenergytoget.mul(upgradeEffect("i", 124))
 
         if (player.i.injacorbianbalancing.eq(1))
         {
@@ -931,7 +1035,7 @@
         player.i.jacorbianrunestoget = player.i.jacorbianenergy.pow(0.4).div(100)
         player.i.jacorbianrunestoget = player.i.jacorbianrunestoget.mul(buyableEffect("h", 76))
         
-        player.i.jacorbianruneseffect = player.i.jacorbianrunes.pow(0.6).div(3).add(1)
+        player.i.jacorbianruneseffect = player.i.jacorbianrunes.pow(0.75).div(3).add(1)
         player.i.jacorbianruneseffect2 = player.i.jacorbianrunes.pow(0.8).div(2).add(1)
 
         if (player.translatorscene.eq(15)) {
@@ -957,7 +1061,7 @@
             player.insitracutscene = new Decimal(1)
         }
 
-        if (player.i.sitraunlock.eq(1) && player.dimensionalrealm.eq(0) && options.toggleParticle)
+        if (player.i.sitraunlock.eq(1) && player.dimensionalrealm.eq(0) && options.toggleParticle && !(player.phantomsoulslayer.eq(1) && player.artisflashbackcutscene.eq(1)))
         {
             startRain();
         }
@@ -975,6 +1079,117 @@
             player.celestialflashbackcutscene = new Decimal(0)
             player.tab = "i"
             player.celestialflashbackscene = new Decimal(28)
+        }
+
+        if (player.sitrascene.eq(16)) {
+            player.sitracutscene = new Decimal(0)
+            player.insitracutscene = new Decimal(0)
+        }
+        if (player.sitrascene.gt(0) && player.sitracutscene.eq(1))
+        {
+            player.insitracutscene = new Decimal(1)
+        }
+
+        //BLOOD
+        player.i.bloodpersecond = new Decimal(1)
+        player.i.bloodpersecond = player.i.bloodpersecond.mul(buyableEffect("i", 128))
+        player.i.bloodpersecond = player.i.bloodpersecond.mul(buyableEffect("i", 133))
+        player.i.bloodpersecond = player.i.bloodpersecond.mul(player.i.damnedsoulseffect)
+        player.i.bloodpersecond = player.i.bloodpersecond.mul(player.m.bloodgainperk)
+        if (player.i.plasmaeffectchoice.eq(1)) player.i.bloodpersecond = player.i.bloodpersecond.mul(player.i.plasmaeffect)
+        if (hasUpgrade("i", 127)) player.i.bloodpersecond = player.i.bloodpersecond.mul(upgradeEffect("i", 127))
+
+        player.i.bloodcapacity = new Decimal(10)
+        player.i.bloodcapacity = player.i.bloodcapacity.mul(buyableEffect("i", 129))
+        player.i.bloodcapacity = player.i.bloodcapacity.mul(buyableEffect("i", 134))
+        player.i.bloodcapacity = player.i.bloodcapacity.mul(player.i.damnedsoulseffect)
+        player.i.bloodcapacity = player.i.bloodcapacity.mul(player.m.bloodcapacityperk)
+        if (player.i.plasmaeffectchoice.eq(0)) player.i.bloodcapacity = player.i.bloodcapacity.mul(player.i.plasmaeffect)
+
+        if (player.i.blood.lt(player.i.bloodcapacity) && player.i.bloodtoggle.eq(1))
+        {
+            player.i.blood = player.i.blood.add(player.i.bloodpersecond.mul(delta))
+        }
+        if (player.i.blood.gt(player.i.bloodcapacity))
+        {
+            player.i.blood = player.i.bloodcapacity
+        }
+
+        player.i.bloodeffect = player.i.blood.pow(1.5).add(1)
+        player.i.bloodeffect2 = player.i.blood.pow(0.75).add(1)
+
+        //Plasma
+        player.i.plasmapersecond = buyableEffect("i", 131)
+        player.i.plasmapersecond = player.i.plasmapersecond.mul(buyableEffect("i", 132))
+
+        player.i.plasma = player.i.plasma.add(player.i.plasmapersecond.mul(delta))
+
+        if (player.i.plasmaeffectchoice.eq(0))
+        {
+            player.i.plasmaeffect = player.i.plasma.pow(0.5).div(10).add(1)
+        }
+        if (player.i.plasmaeffectchoice.eq(1))
+        {
+            player.i.plasmaeffect = player.i.plasma.pow(0.4).div(10).add(1)
+        }
+
+        if (player.phantomsoulslayer.eq(1) && player.artisflashbackcutscene.eq(1))
+        {
+            player.tab = "cu"
+        }
+        if (player.artisflashbackscene.eq(25))
+        {
+            player.artisflashbackcutscene = new Decimal(0)
+            player.tab = "i"
+            player.artisflashbackscene = new Decimal(26)
+        }
+
+        //phantom souls
+        player.i.phantomsoulstoget = player.i.quirks.div(50).pow(0.35).div(2500)
+        player.i.phantomsoulstoget = player.i.phantomsoulstoget.mul(buyableEffect("i", 139))
+        player.i.phantomsoulstoget = player.i.phantomsoulstoget.mul(player.m.phantomsoulperk)
+        if (player.i.phantomsouls.gte(player.i.phantomsouls)) player.i.bestphantomsouls = player.i.phantomsouls
+        if (hasUpgrade("i", 128)) player.i.phantomsoulstoget = player.i.phantomsoulstoget.mul(upgradeEffect("i", 128))
+
+        if (player.i.phantomsoulspause.gt(0)) {
+            layers.i.phantomsoulreset();
+        }
+        player.i.phantomsoulspause = player.i.phantomsoulspause.sub(1)
+
+        player.i.damnedsoulspersecond = player.gain.log10().mul(player.i.phantomsouls.pow(0.65)).div(65)
+        player.i.damnedsoulspersecond = player.i.damnedsoulspersecond.mul(buyableEffect("i", 135))
+        player.i.damnedsoulspersecond = player.i.damnedsoulspersecond.mul(buyableEffect("i", 151))
+        player.i.damnedsoulspersecond = player.i.damnedsoulspersecond.mul(buyableEffect("i", 152))
+        player.i.damnedsoulspersecond = player.i.damnedsoulspersecond.mul(buyableEffect("i", 153))
+        player.i.damnedsoulspersecond = player.i.damnedsoulspersecond.mul(buyableEffect("i", 154))
+        player.i.damnedsoulseffect = player.i.damnedsouls.pow(0.45).add(1)
+        player.i.damnedsouls = player.i.damnedsouls.add(player.i.damnedsoulspersecond.mul(delta))
+
+        if (player.phantomboosterscene.eq(16)) {
+            player.phantomboostercutscene = new Decimal(0)
+            player.insitracutscene = new Decimal(0)
+        }
+        if (player.phantomboosterscene.gt(0) && player.phantomboostercutscene.eq(1))
+        {
+            player.insitracutscene = new Decimal(1)
+        }
+
+        player.i.phantompowerpersecond = buyableEffect("i", 148)
+        player.i.phantompowerpersecond = player.i.phantompowerpersecond.mul(buyableEffect("i", 149))
+        player.i.phantompowerpersecond = player.i.phantompowerpersecond.mul(buyableEffect("i", 151))
+        player.i.phantompowerpersecond = player.i.phantompowerpersecond.mul(buyableEffect("i", 152))
+        player.i.phantompowerpersecond = player.i.phantompowerpersecond.mul(buyableEffect("i", 153))
+        player.i.phantompowerpersecond = player.i.phantompowerpersecond.mul(buyableEffect("i", 154))
+
+        player.i.phantompower = player.i.phantompower.add(player.i.phantompowerpersecond.mul(delta))
+
+        if (player.sitramachinescene.eq(14)) {
+            player.sitramachinecutscene = new Decimal(0)
+            player.insitracutscene = new Decimal(0)
+        }
+        if (player.sitramachinescene.gt(0) && player.sitramachinecutscene.eq(1))
+        {
+            player.insitracutscene = new Decimal(1)
         }
     },
     prestigereset()
@@ -1155,6 +1370,46 @@
         player.i.buyables[102] = new Decimal(0)
         player.i.buyables[103] = new Decimal(0)
         player.i.buyables[104] = new Decimal(0)
+    }, 
+    phantomsoulreset()
+    {
+        player.points = new Decimal(1)
+        player.i.prestigeenergy = new Decimal(0)
+        player.i.prestigepoints = new Decimal(0)
+
+        //Enhance
+        player.i.enhancepoints = new Decimal(0)
+        player.i.enhancedprestigepoints = new Decimal(0)
+
+        //Beacon
+        player.i.enhancebeaconlevel = new Decimal(0)
+        player.i.beaconpower = new Decimal(0)
+
+        //Beacon Points
+        player.i.beaconpoints = new Decimal(0)
+
+        player.i.quirks = new Decimal(0)
+        player.i.superquirks = new Decimal(0)
+
+        player.i.buyables[11] = new Decimal(0)
+        player.i.buyables[12] = new Decimal(0)
+        player.i.buyables[13] = new Decimal(0)
+        player.i.buyables[14] = new Decimal(0)
+        player.i.buyables[101] = new Decimal(0)
+        player.i.buyables[102] = new Decimal(0)
+        player.i.buyables[103] = new Decimal(0)
+        player.i.buyables[104] = new Decimal(0)
+        player.i.buyables[105] = new Decimal(0)
+        player.i.buyables[106] = new Decimal(0)
+        player.i.buyables[107] = new Decimal(0)
+        player.i.buyables[119] = new Decimal(0)
+        player.i.buyables[121] = new Decimal(0)
+        player.i.buyables[122] = new Decimal(0)
+        player.i.buyables[123] = new Decimal(0)
+        player.i.buyables[124] = new Decimal(0)
+        player.i.buyables[125] = new Decimal(0)
+        player.i.buyables[126] = new Decimal(0)
+        player.i.buyables[127] = new Decimal(0)
     }, 
     clickables: {
         11: {
@@ -2611,6 +2866,134 @@ opacity: "0.9",
         "background-image":  "repeating-radial-gradient( circle at 0 0, transparent 0, #ff0000 40px ), repeating-linear-gradient( #88080855, #880808 )",
      },
     },
+    143: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.sitracutscene.eq(1) },
+        unlocked() { return player.sitrascene.lt(16) },
+        onClick() {
+            player.sitrascene = player.sitrascene.add(1)
+        },
+    },
+    144: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.sitracutscene.eq(1) },
+        unlocked() { return player.sitrascene.lt(16) && player.sitrascene.neq(0) },
+        onClick() {
+            player.sitrascene = player.sitrascene.sub(1)
+        },
+    },
+    145: {
+        title() { return "Stop Producing" },
+        canClick() { return player.i.bloodtoggle.eq(1) },
+        unlocked() { return player.i.enhancepath.eq(1) && player.sitracutscene.eq(0) },
+        onClick() {
+            player.i.bloodtoggle = new Decimal(0)
+        },
+        style: { width: '75px', "min-height": '75px', "font-size": '8px' },
+    },
+    146: {
+        title() { return "Start Producing" },
+        canClick() { return player.i.bloodtoggle.eq(0) },
+        unlocked() { return player.i.enhancepath.eq(1) && player.sitracutscene.eq(0) },
+        onClick() {
+            player.i.bloodtoggle = new Decimal(1)
+        },
+        style: { width: '75px', "min-height": '75px', "font-size": '8px' },
+    },
+    147: {
+        title() { return "Reset Blood for Dust" },
+        canClick() { return true },
+        unlocked() { return player.i.enhancepath.eq(1) && player.sitracutscene.eq(0) },
+        onClick() {
+            player.i.blooddust = player.i.blooddust.add(player.i.blood)
+            player.i.blood = new Decimal(0)
+        },
+        style: { width: '75px', "min-height": '75px', "font-size": '8px' },
+    },
+    148: {
+        title() { return "Change Effect" },
+        canClick() { return true },
+        unlocked() { return player.i.enhancepath.eq(1) && player.sitracutscene.eq(0) },
+        onClick() {
+            if (player.i.plasmaeffectchoice.eq(0))
+            {
+                player.i.plasmaeffectchoice = new Decimal(1)
+            } else
+            {
+                player.i.plasmaeffectchoice = new Decimal(0)
+            }
+        },
+        style: { width: '75px', "min-height": '75px', "font-size": '8px' },
+    },
+    149: {
+        title() { return "<h2>Layer 15: Phantom Souls <br><h3>Req: 1,000 Blood." },
+        canClick() { return player.i.blood.gte(1000) },
+        unlocked() { return player.phantomsoulslayer.eq(0) },
+        onClick() {
+            player.phantomsoulslayer = new Decimal(1)
+            // Particle effect
+        },
+        style: {   background: '#b38fbf',
+        width: '275px', height: '150px',
+        position: 'relative',
+        overflow: 'hidden', 
+        boxShadow: '0 0 20px 10px #b38fbf',
+        textShadow: '1px 1px 2px rgba(0.8, 0.8, 0.8, 0.8)', // Text shadow
+        border: '4px solid rgba(255, 255, 255, 0.3)', // Glowing border
+        },
+    },
+    151: {
+        title() { return "<h2>Synthesise your resources into phantom souls." },
+        canClick() { return player.i.enhancepath.eq(1) && player.i.phantomsoulstoget.gte(1)  },
+        unlocked() { return true },
+        onClick() {
+            player.i.phantomsoulspause = new Decimal(3)
+            player.i.phantomsouls = player.i.phantomsouls.add(player.i.phantomsoulstoget)
+        },
+        style: { "background-color": "#b38fbf", width: '400px', "min-height": '100px' },
+    },
+    152: {
+        title() { return "+" + format(player.i.phantomsoulstoget) + " PS" },
+        canClick() { return player.i.enhancepath.eq(1) && player.i.phantomsoulstoget.gte(1)  },
+        unlocked() { return player.i.sitraunlock.eq(1) && player.phantomsoulslayer.eq(1) },
+        onClick() {
+            player.i.phantomsoulspause = new Decimal(3)
+            player.i.phantomsouls = player.i.phantomsouls.add(player.i.phantomsoulstoget)
+        },
+        style: {  width: '150px', "min-height": '60px', "background-color": "#b38fbf",  }
+    },
+    153: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.phantomboostercutscene.eq(1) },
+        unlocked() { return player.phantomboosterscene.lt(16) },
+        onClick() {
+            player.phantomboosterscene = player.phantomboosterscene.add(1)
+        },
+    },
+    154: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.phantomboostercutscene.eq(1) },
+        unlocked() { return player.phantomboosterscene.lt(16) && player.phantomboosterscene.neq(0) },
+        onClick() {
+            player.phantomboosterscene = player.phantomboosterscene.sub(1)
+        },
+    },
+    155: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.sitramachinecutscene.eq(1) },
+        unlocked() { return player.sitramachinescene.lt(14) },
+        onClick() {
+            player.sitramachinescene = player.sitramachinescene.add(1)
+        },
+    },
+    156: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.sitramachinecutscene.eq(1) },
+        unlocked() { return player.sitramachinescene.lt(14) && player.sitramachinescene.neq(0) },
+        onClick() {
+            player.sitramachinescene = player.sitramachinescene.sub(1)
+        },
+    },
     },
     bars: {
         beaconbar: {
@@ -2656,6 +3039,21 @@ opacity: "0.9",
             },
             display() {
                 return "<h5>" + format(player.i.truemachines) + "/1,000,000 True Machines to defeat Ce308</h5>";
+            },
+        },
+        bloodbar: {
+            unlocked() { return player.i.enhancepath.eq(1) && player.sitracutscene.eq(0) },
+            direction: RIGHT,
+            width: 333,
+            height: 50,
+            progress() {
+                return player.i.blood.div(player.i.bloodcapacity)
+            },
+            fillStyle: {
+                "background-color": "#880808",
+            },
+            display() {
+                return "<h5>" + format(player.i.blood) + "/" + format(player.i.bloodcapacity) + "<h5> Blood.</h5>";
             },
         },
     },
@@ -3265,6 +3663,174 @@ opacity: "0.9",
             currencyDisplayName: "Quirks",
             currencyInternalName: "quirks",
         },
+        117:
+        {
+            title: "Blood Upgrade I",
+            unlocked() { return player.i.enhancepath.eq(1) && player.sitracutscene.eq(0) },
+            description: "Unlocks Plasma.",
+            cost: new Decimal(25),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Blood",
+            currencyInternalName: "blood",
+        },
+        118:
+        {
+            title: "Blood Upgrade II",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 117)  },
+            description: "Unlocks more blood buyables.",
+            cost: new Decimal(80),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Blood",
+            currencyInternalName: "blood",
+        },
+        119:
+        {
+            title: "Blood Upgrade III",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 118)  },
+            description: "Autobuys quirk and super quirk upgrades.",
+            cost: new Decimal(500),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Blood",
+            currencyInternalName: "blood",
+        },
+        121:
+        {
+            title: "Blood Upgrade IV",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 119)  },
+            description: "Blood boosts quirk gain.",
+            cost: new Decimal(1e6),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Blood",
+            currencyInternalName: "blood",
+            effect() 
+            {
+                 return player.i.blood.pow(0.4).div(10).add(1)
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) }, // Add formatting to the effect
+        },
+        122:
+        {
+            title: "Phantom Upgrade I",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 119)  },
+            description: "Unlock more wraiths.",
+            cost: new Decimal(200),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Phantom Souls",
+            currencyInternalName: "phantomsouls",
+        },
+        123:
+        {
+            title: "Phantom Upgrade II",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 122)  },
+            description: "Gain 10% of quirks per second.",
+            cost: new Decimal(1000),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Phantom Souls",
+            currencyInternalName: "phantomsouls",
+        },
+        124:
+        {
+            title: "Jacorb Upgrade I",
+            unlocked() { return player.i.enhancepath.eq(1) && player.i.sitraunlock.eq(1)  },
+            description: "The first five perks boost jacorbian energy gain.",
+            cost: new Decimal(1e14),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Jacorbian Energy",
+            currencyInternalName: "jacorbianenergy",
+            effect() 
+            {
+                 return player.i.buyables[111].add(player.i.buyables[112].add(player.i.buyables[113]).add(player.i.buyables[114].add(player.i.buyables[115]))).add(1)
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) }, // Add formatting to the effect
+        },
+        125:
+        {
+            title: "Jacorb Upgrade II",
+            unlocked() { return player.i.enhancepath.eq(1) && player.i.sitraunlock.eq(1) && hasUpgrade("i", 124)  },
+            description: "Jacorbian energy boosts beacon power gain",
+            cost: new Decimal(1e16),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Jacorbian Energy",
+            currencyInternalName: "jacorbianenergy",
+            effect() 
+            {
+                 return player.i.jacorbianenergy.pow(0.3).div(40).add(40)
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) }, // Add formatting to the effect
+        },
+        126:
+        {
+            title: "Jacorb Upgrade III",
+            unlocked() { return player.i.enhancepath.eq(1) && player.i.sitraunlock.eq(1) && hasUpgrade("i", 125)  },
+            description: "Unlocks more perks.",
+            cost: new Decimal(1e19),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Jacorbian Energy",
+            currencyInternalName: "jacorbianenergy",
+        },
+        127:
+        {
+            title: "Phantom Upgrade III",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 123)  },
+            description: "Phantom souls boost blood gain.",
+            cost: new Decimal(20000),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Phantom Souls",
+            currencyInternalName: "phantomsouls",
+            effect() 
+            {
+                 return player.i.phantomsouls.pow(0.4).div(10 ).add(1)
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) }, // Add formatting to the effect
+        },
+        128:
+        {
+            title: "Blood Upgrade V",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 121)  },
+            description: "Blood boosts phantom soul gain.",
+            cost: new Decimal(1e9),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Blood",
+            currencyInternalName: "blood",
+            effect() 
+            {
+                 return player.i.blood.pow(0.25).div(30).add(1)
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) }, // Add formatting to the effect
+        },
+        129:
+        {
+            title: "Phantom Upgrade IV",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 128)  },
+            description: "Unlock phantom boosters.",
+            cost: new Decimal(500000),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Phantom Souls",
+            currencyInternalName: "phantomsouls",
+        },
+        131:
+        {
+            title: "Phantom Upgrade IV",
+            unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("m", 45)  },
+            description: "Unlock gear machines.",
+            cost: new Decimal(7500000),
+            currencyLocation() { return player.i },
+            canAfford() { return player.i.enhancepath.eq(1)},
+            currencyDisplayName: "Phantom Souls",
+            currencyInternalName: "phantomsouls",
+        },
     },
     buyables: {
         11: {
@@ -3604,7 +4170,10 @@ opacity: "0.9",
                 let growth = 1.3
                 let max = Decimal.affordGeometricSeries(player.i.quirkenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 player.i.quirkenergy = player.i.quirkenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -3629,7 +4198,10 @@ opacity: "0.9",
                 let growth = 1.25
                 let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', 'color': 'white', 'border-color': 'blue', 'background-image': 'radial-gradient(circle, rgba(16,15,16,1) 0%, rgba(8,0,255,1) 0%, rgba(0,0,0,1) 100%)', animation: "gradient 1s infinite", }
@@ -3651,7 +4223,10 @@ opacity: "0.9",
                 let growth = 1.2
                 let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 if (!hasUpgrade("i", 39)) player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3673,7 +4248,10 @@ opacity: "0.9",
                 let growth = 1.225
                 let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 if (!hasUpgrade("i", 39)) player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3695,7 +4273,10 @@ opacity: "0.9",
                 let growth = 1.25
                 let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 if (!hasUpgrade("i", 39)) player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3717,7 +4298,10 @@ opacity: "0.9",
                 let growth = 1.275
                 let max = Decimal.affordGeometricSeries(player.i.celestialenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 if (!hasUpgrade("i", 39)) player.i.celestialenergy = player.i.celestialenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3739,7 +4323,10 @@ opacity: "0.9",
                 let growth = 1.15
                 let max = Decimal.affordGeometricSeries(player.i.hindranceenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 if (!hasUpgrade("i", 39)) player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3761,7 +4348,10 @@ opacity: "0.9",
                 let growth = 1.2
                 let max = Decimal.affordGeometricSeries(player.i.hindranceenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 if (!hasUpgrade("i", 39)) player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3783,7 +4373,10 @@ opacity: "0.9",
                 let growth = 1.15
                 let max = Decimal.affordGeometricSeries(player.i.hindranceenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 if (!hasUpgrade("i", 39)) player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3805,7 +4398,10 @@ opacity: "0.9",
                 let growth = 1.3
                 let max = Decimal.affordGeometricSeries(player.i.hindranceenergy, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 if (!hasUpgrade("i", 39)) player.i.hindranceenergy = player.i.hindranceenergy.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3827,7 +4423,10 @@ opacity: "0.9",
                 let growth = 1.45
                 let max = Decimal.affordGeometricSeries(player.i.hindrancepoints, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 player.i.hindrancepoints = player.i.hindrancepoints.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3849,7 +4448,10 @@ opacity: "0.9",
                 let growth = 1.5
                 let max = Decimal.affordGeometricSeries(player.i.hindrancepoints, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 player.i.hindrancepoints = player.i.hindrancepoints.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3871,7 +4473,10 @@ opacity: "0.9",
                 let growth = 1.55
                 let max = Decimal.affordGeometricSeries(player.i.hindrancepoints, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 player.i.hindrancepoints = player.i.hindrancepoints.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3893,7 +4498,10 @@ opacity: "0.9",
                 let growth = 1.6
                 let max = Decimal.affordGeometricSeries(player.i.hindrancepoints, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 player.i.hindrancepoints = player.i.hindrancepoints.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#a14040",}
@@ -3915,7 +4523,10 @@ opacity: "0.9",
                 let growth = 1.2
                 let max = Decimal.affordGeometricSeries(player.i.truemachines, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 player.i.truemachines = player.i.truemachines.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#ffffaa",}
@@ -3937,7 +4548,10 @@ opacity: "0.9",
                 let growth = 1.25
                 let max = Decimal.affordGeometricSeries(player.i.truemachines, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 player.i.truemachines = player.i.truemachines.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#ffffaa",}
@@ -3959,7 +4573,10 @@ opacity: "0.9",
                 let growth = 1.3
                 let max = Decimal.affordGeometricSeries(player.i.truemachines, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 43))
+                {
                 player.i.truemachines = player.i.truemachines.sub(cost)
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#ffffaa",}
@@ -4083,7 +4700,7 @@ opacity: "0.9",
                 let growth = 1.25
                 let max = Decimal.affordGeometricSeries(player.i.quirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.quirks = player.i.quirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.quirks = player.i.quirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4105,7 +4722,7 @@ opacity: "0.9",
                 let growth = 1.3
                 let max = Decimal.affordGeometricSeries(player.i.quirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.quirks = player.i.quirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.quirks = player.i.quirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4127,7 +4744,7 @@ opacity: "0.9",
                 let growth = 1.35
                 let max = Decimal.affordGeometricSeries(player.i.quirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.quirks = player.i.quirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.quirks = player.i.quirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4178,7 +4795,7 @@ opacity: "0.9",
         },
         111: {
             cost(x) { return new Decimal(1.1).pow(x || getBuyableAmount(this.layer, this.id)).mul(10000) },
-            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.5).add(1)},
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.5)},
             unlocked() { return player.jacorbbalancingcutscene.eq(0) && player.i.injacorbianbalancing.eq(1) },
             canAfford() { return player.i.jacorbianenergy.gte(this.cost()) },
             title() {
@@ -4200,7 +4817,7 @@ opacity: "0.9",
         },
         112: {
             cost(x) { return new Decimal(1.12).pow(x || getBuyableAmount(this.layer, this.id)).mul(25000) },
-            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.4).add(1)},
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.4)},
             unlocked() { return player.jacorbbalancingcutscene.eq(0) && player.i.injacorbianbalancing.eq(1) },
             canAfford() { return player.i.jacorbianenergy.gte(this.cost()) },
             title() {
@@ -4222,7 +4839,7 @@ opacity: "0.9",
         },
         113: {
             cost(x) { return new Decimal(1.14).pow(x || getBuyableAmount(this.layer, this.id)).mul(70000) },
-            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.4).add(1)},
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.4)},
             unlocked() { return player.jacorbbalancingcutscene.eq(0) && player.i.injacorbianbalancing.eq(1) },
             canAfford() { return player.i.jacorbianenergy.gte(this.cost()) },
             title() {
@@ -4244,7 +4861,7 @@ opacity: "0.9",
         },
         114: {
             cost(x) { return new Decimal(1.16).pow(x || getBuyableAmount(this.layer, this.id)).mul(200000) },
-            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.35).add(1)},
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.35)},
             unlocked() { return player.jacorbbalancingcutscene.eq(0) && player.i.injacorbianbalancing.eq(1) },
             canAfford() { return player.i.jacorbianenergy.gte(this.cost()) },
             title() {
@@ -4266,7 +4883,7 @@ opacity: "0.9",
         },
         115: {
             cost(x) { return new Decimal(1.18).pow(x || getBuyableAmount(this.layer, this.id)).mul(500000) },
-            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.3).add(1)},
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.3)},
             unlocked() { return player.jacorbbalancingcutscene.eq(0) && player.i.injacorbianbalancing.eq(1) },
             canAfford() { return player.i.jacorbianenergy.gte(this.cost()) },
             title() {
@@ -4375,7 +4992,7 @@ opacity: "0.9",
                 let growth = 1.1
                 let max = Decimal.affordGeometricSeries(player.i.superquirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.superquirks = player.i.superquirks.sub(cost)
+                if (!hasUpgrade("i", 119))  player.i.superquirks = player.i.superquirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4397,7 +5014,7 @@ opacity: "0.9",
                 let growth = 1.11
                 let max = Decimal.affordGeometricSeries(player.i.superquirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.superquirks = player.i.superquirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.superquirks = player.i.superquirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4419,7 +5036,7 @@ opacity: "0.9",
                 let growth = 1.12
                 let max = Decimal.affordGeometricSeries(player.i.superquirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.superquirks = player.i.superquirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.superquirks = player.i.superquirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4441,7 +5058,7 @@ opacity: "0.9",
                 let growth = 1.13
                 let max = Decimal.affordGeometricSeries(player.i.superquirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.superquirks = player.i.superquirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.superquirks = player.i.superquirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4463,7 +5080,7 @@ opacity: "0.9",
                 let growth = 1.12
                 let max = Decimal.affordGeometricSeries(player.i.superquirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.superquirks = player.i.superquirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.superquirks = player.i.superquirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4485,7 +5102,7 @@ opacity: "0.9",
                 let growth = 1.14
                 let max = Decimal.affordGeometricSeries(player.i.superquirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.superquirks = player.i.superquirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.superquirks = player.i.superquirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4507,7 +5124,7 @@ opacity: "0.9",
                 let growth = 1.16
                 let max = Decimal.affordGeometricSeries(player.i.superquirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.superquirks = player.i.superquirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.superquirks = player.i.superquirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
@@ -4529,10 +5146,562 @@ opacity: "0.9",
                 let growth = 1.18
                 let max = Decimal.affordGeometricSeries(player.i.superquirks, base, growth, getBuyableAmount(this.layer, this.id))
                 let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
-                player.i.superquirks = player.i.superquirks.sub(cost)
+                if (!hasUpgrade("i", 119)) player.i.superquirks = player.i.superquirks.sub(cost)
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
             },
             style: { width: '275px', height: '150px', "background-color": "#c20282",}
+        },
+        128: {
+            cost(x) { return new Decimal(1.22).pow(x || getBuyableAmount(this.layer, this.id)).mul(3) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1).add(1)},
+            unlocked() { return player.sitracutscene.eq(0) },
+            canAfford() { return player.i.blood.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Blood Gain"
+            },
+            display() {
+                return "which are boosting blood gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Blood"
+            },
+            buy() {
+                let base = new Decimal(3)
+                let growth = 1.22
+                let max = Decimal.affordGeometricSeries(player.i.blood, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.blood = player.i.blood.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#880808",}
+        },
+        129: {
+            cost(x) { return new Decimal(1.25).pow(x || getBuyableAmount(this.layer, this.id)).mul(6) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.2).add(1)},
+            unlocked() { return player.sitracutscene.eq(0) },
+            canAfford() { return player.i.blooddust.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Blood Capacity"
+            },
+            display() {
+                return "which are boosting blood capacity by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Blood Dust"
+            },
+            buy() {
+                let base = new Decimal(6)
+                let growth = 1.25
+                let max = Decimal.affordGeometricSeries(player.i.blooddust, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.blooddust = player.i.blooddust.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#880808",}
+        },
+        131: {
+            cost(x) { return new Decimal(1.25).pow(x || getBuyableAmount(this.layer, this.id)).mul(20) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1)},
+            unlocked() { return player.sitracutscene.eq(0) },
+            canAfford() { return player.i.blood.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Plasma Generator"
+            },
+            display() {
+                return "which are producing +" + format(tmp[this.layer].buyables[this.id].effect) + " plasma per second.\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Blood"
+            },
+            buy() {
+                let base = new Decimal(20)
+                let growth = 1.25
+                let max = Decimal.affordGeometricSeries(player.i.blood, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.blood = player.i.blood.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#880808",}
+        },
+        132: {
+            cost(x) { return new Decimal(1.22).pow(x || getBuyableAmount(this.layer, this.id)).mul(5) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1).add(1)},
+            unlocked() { return player.sitracutscene.eq(0) },
+            canAfford() { return player.i.plasma.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Plasma Booster"
+            },
+            display() {
+                return "which are boosting plasma gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Plasma"
+            },
+            buy() {
+                let base = new Decimal(5)
+                let growth = 1.22
+                let max = Decimal.affordGeometricSeries(player.i.plasma, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.plasma = player.i.plasma.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#880808",}
+        },
+        133: {
+            cost(x) { return new Decimal(1.23).pow(x || getBuyableAmount(this.layer, this.id)).mul(25) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1).add(1)},
+            unlocked() { return hasUpgrade("i", 118)},
+            canAfford() { return player.i.blooddust.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Blood Gain II"
+            },
+            display() {
+                return "which are boosting blood gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Blood Dust"
+            },
+            buy() {
+                let base = new Decimal(25)
+                let growth = 1.23
+                let max = Decimal.affordGeometricSeries(player.i.blooddust, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.blooddust = player.i.blooddust.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#880808",}
+        },
+        134: {
+            cost(x) { return new Decimal(1.24).pow(x || getBuyableAmount(this.layer, this.id)).mul(14) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.2).add(1)},
+            unlocked() { return hasUpgrade("i", 118) },
+            canAfford() { return player.i.blood.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Blood Capacity II"
+            },
+            display() {
+                return "which are boosting blood capacity by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Blood"
+            },
+            buy() {
+                let base = new Decimal(14)
+                let growth = 1.24
+                let max = Decimal.affordGeometricSeries(player.i.blood, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.blood = player.i.blood.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#880808",}
+        },
+        135: {
+            cost(x) { return new Decimal(1.27).pow(x || getBuyableAmount(this.layer, this.id)).mul(15) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.25).add(1)},
+            unlocked() { return true },
+            canAfford() { return player.i.damnedsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Damned Wraith"
+            },
+            tooltip() {
+                return "<h5>This one is just sitting, waiting for the end of the world."
+            },
+            display() {
+                return "which are boosting damned soul gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Damned Souls"
+            },
+            buy() {
+                let base = new Decimal(15)
+                let growth = 1.27
+                let max = Decimal.affordGeometricSeries(player.i.damnedsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.damnedsouls = player.i.damnedsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#b38fbf",}
+        },
+        136: {
+            cost(x) { return new Decimal(1.3).pow(x || getBuyableAmount(this.layer, this.id)).mul(30) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.4).add(1)},
+            unlocked() { return true },
+            canAfford() { return player.i.damnedsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Jacorbian Wraith"
+            },
+            tooltip() {
+                return "<h5>This one is praising a being who has never helped them."
+            },
+            display() {
+                return "which are boosting jacorbian energy gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Damned Souls"
+            },
+            buy() {
+                let base = new Decimal(30)
+                let growth = 1.3
+                let max = Decimal.affordGeometricSeries(player.i.damnedsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.damnedsouls = player.i.damnedsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#b38fbf",}
+        },
+        137: {
+            cost(x) { return new Decimal(1.33).pow(x || getBuyableAmount(this.layer, this.id)).mul(75) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.2).add(1)},
+            unlocked() { return true },
+            canAfford() { return player.i.damnedsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Quirky Wraith"
+            },
+            tooltip() {
+                return "<h5>This one is a social outcast."
+            },
+            display() {
+                return "which are boosting quirk gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Damned Souls"
+            },
+            buy() {
+                let base = new Decimal(75)
+                let growth = 1.33
+                let max = Decimal.affordGeometricSeries(player.i.damnedsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.damnedsouls = player.i.damnedsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#b38fbf",}
+        },
+        138: {
+            cost(x) { return new Decimal(1.37).pow(x || getBuyableAmount(this.layer, this.id)).mul(200) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.25).add(1)},
+            unlocked() { return true },
+            canAfford() { return player.i.damnedsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Enhanced Wraith"
+            },
+            tooltip() {
+                return "<h5>This one tries to reach infinity, but they are stuck at zero."
+            },
+            display() {
+                return "which are boosting enhance points gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Damned Souls"
+            },
+            buy() {
+                let base = new Decimal(200)
+                let growth = 1.37
+                let max = Decimal.affordGeometricSeries(player.i.damnedsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.damnedsouls = player.i.damnedsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#b38fbf",}
+        },
+        139: {
+            cost(x) { return new Decimal(1.4).pow(x || getBuyableAmount(this.layer, this.id)).mul(2000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(0.125).add(1)},
+            unlocked() { return hasUpgrade("i", 122)  },
+            canAfford() { return player.i.damnedsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Phantom Wraith"
+            },
+            tooltip() {
+                return "<h5>This one is decomposing."
+            },
+            display() {
+                return "which are boosting phantom soul gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Damned Souls"
+            },
+            buy() {
+                let base = new Decimal(2000)
+                let growth = 1.4
+                let max = Decimal.affordGeometricSeries(player.i.damnedsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.damnedsouls = player.i.damnedsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#b38fbf",}
+        },
+        141: {
+            cost(x) { return new Decimal(1.42).pow(x || getBuyableAmount(this.layer, this.id)).mul(5000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(17).pow(2).add(1)},
+            unlocked() { return hasUpgrade("i", 122)  },
+            canAfford() { return player.i.damnedsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Point Wraith"
+            },
+            tooltip() {
+                return "<h5>This one is living a very basic, boring life."
+            },
+            display() {
+                return "which are boosting point gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Damned Souls"
+            },
+            buy() {
+                let base = new Decimal(5000)
+                let growth = 1.42
+                let max = Decimal.affordGeometricSeries(player.i.damnedsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.damnedsouls = player.i.damnedsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#b38fbf",}
+        },
+        142: {
+            cost(x) { return new Decimal(1.44).pow(x || getBuyableAmount(this.layer, this.id)).mul(15000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(12).pow(1.8).add(1)},
+            unlocked() { return hasUpgrade("i", 122)  },
+            canAfford() { return player.i.damnedsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Prestige Wraith"
+            },
+            tooltip() {
+                return "<h5>This one wants to restart it's life, but it's trapped in eternal purgatory."
+            },
+            display() {
+                return "which are boosting prestige point gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Damned Souls"
+            },
+            buy() {
+                let base = new Decimal(15000)
+                let growth = 1.44
+                let max = Decimal.affordGeometricSeries(player.i.damnedsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.damnedsouls = player.i.damnedsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#b38fbf",}
+        },
+        143: {
+            cost(x) { return new Decimal(10).pow(x || getBuyableAmount(this.layer, this.id)).mul(100000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.01).add(1)},
+            unlocked() { return hasUpgrade("i", 122) },
+            canAfford() { return player.i.damnedsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Meta-Prestige Wraith"
+            },
+            tooltip() {
+                return "<h5>This one wants to give up."
+            },
+            display() {
+                return "which are boosting meta-prestige score by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Damned Souls"
+            },
+            buy() {
+                let base = new Decimal(100000)
+                let growth = 10
+                let max = Decimal.affordGeometricSeries(player.i.damnedsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.damnedsouls = player.i.damnedsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '200px', height: '125px', "background-color": "#b38fbf",}
+        },
+        144: {
+            cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(1e14) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.15).mul(0.1)},
+            unlocked() { return player.jacorbbalancingcutscene.eq(0) && player.i.injacorbianbalancing.eq(1) && hasUpgrade("i", 126)  },
+            canAfford() { return player.i.jacorbianenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Blood Gain Perk"
+            },
+            display() {
+                return "which are going to boost blood by +x" + format(tmp[this.layer].buyables[this.id].effect) + " next reset.\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Jacorbian Energy"
+            },
+            buy() {
+                let base = new Decimal(1e14)
+                let growth = 1.2
+                let max = Decimal.affordGeometricSeries(player.i.jacorbianenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.jacorbianenergy = player.i.jacorbianenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "purple",}
+        },
+        145: {
+            cost(x) { return new Decimal(1.2).pow(x || getBuyableAmount(this.layer, this.id)).mul(1e15) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.13).mul(0.1)},
+            unlocked() { return player.jacorbbalancingcutscene.eq(0) && player.i.injacorbianbalancing.eq(1) && hasUpgrade("i", 126) },
+            canAfford() { return player.i.jacorbianenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Blood Capacity Perk"
+            },
+            display() {
+                return "which are going to boost blood capacity by +x" + format(tmp[this.layer].buyables[this.id].effect) + " next reset.\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Jacorbian Energy"
+            },
+            buy() {
+                let base = new Decimal(1e15)
+                let growth = 1.2
+                let max = Decimal.affordGeometricSeries(player.i.jacorbianenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.jacorbianenergy = player.i.jacorbianenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "purple",}
+        },
+        146: {
+            cost(x) { return new Decimal(1.22).pow(x || getBuyableAmount(this.layer, this.id)).mul(1e17) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.1).mul(0.1)},
+            unlocked() { return player.jacorbbalancingcutscene.eq(0) && player.i.injacorbianbalancing.eq(1) && hasUpgrade("i", 126) },
+            canAfford() { return player.i.jacorbianenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Phantom Perk"
+            },
+            display() {
+                return "which are going to boost phantom souls by +x" + format(tmp[this.layer].buyables[this.id].effect) + " next reset.\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Jacorbian Energy"
+            },
+            buy() {
+                let base = new Decimal(1e17)
+                let growth = 1.22
+                let max = Decimal.affordGeometricSeries(player.i.jacorbianenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.jacorbianenergy = player.i.jacorbianenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "purple",}
+        },
+        147: {
+            cost(x) { return new Decimal(1.235).pow(x || getBuyableAmount(this.layer, this.id)).mul(1e18) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).pow(1.34)},
+            unlocked() { return player.jacorbbalancingcutscene.eq(0) && player.i.injacorbianbalancing.eq(1) && hasUpgrade("i", 126) },
+            canAfford() { return player.i.jacorbianenergy.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Jacorbian Perk"
+            },
+            display() {
+                return "which are going to boost jacorbian energy by +x" + format(tmp[this.layer].buyables[this.id].effect) + " next reset.\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Jacorbian Energy"
+            },
+            buy() {
+                let base = new Decimal(1e18)
+                let growth = 1.235
+                let max = Decimal.affordGeometricSeries(player.i.jacorbianenergy, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.jacorbianenergy = player.i.jacorbianenergy.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "purple",}
+        },
+        148: {
+            cost(x) { return new Decimal(1.35).pow(x || getBuyableAmount(this.layer, this.id)).mul(1000000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id)},
+            unlocked() { return player.phantomboostercutscene.eq(0)  },
+            canAfford() { return player.i.damnedsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Ghost Spirit"
+            },
+            display() {
+                return "which are producing +" + format(tmp[this.layer].buyables[this.id].effect) + " phantom power per second.\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Damned Souls"
+            },
+            buy() {
+                let base = new Decimal(1000000)
+                let growth = 1.35
+                let max = Decimal.affordGeometricSeries(player.i.damnedsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.damnedsouls = player.i.damnedsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#b38fbf",}
+        },
+        149: {
+            cost(x) { return new Decimal(1.3).pow(x || getBuyableAmount(this.layer, this.id)).mul(100000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1).add(1)},
+            unlocked() { return player.phantomboostercutscene.eq(0)  },
+            canAfford() { return player.i.phantomsouls.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Phantom Spirit"
+            },
+            display() {
+                return "which are boosting phantom power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Phantom Souls"
+            },
+            buy() {
+                let base = new Decimal(100000)
+                let growth = 1.3
+                let max = Decimal.affordGeometricSeries(player.i.phantomsouls, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.phantomsouls = player.i.phantomsouls.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#b38fbf",}
+        },
+        151: {
+            cost(x) { return new Decimal(1.255).pow(x || getBuyableAmount(this.layer, this.id)).mul(33) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1).add(1)},
+            unlocked() { return player.phantomboostercutscene.eq(0)  },
+            canAfford() { return player.i.phantompower.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Phantom Booster I"
+            },
+            display() {
+                return "which are boosting damned soul and phantom power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Phantom Power"
+            },
+            buy() {
+                let base = new Decimal(33)
+                let growth = 1.255
+                let max = Decimal.affordGeometricSeries(player.i.phantompower, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.phantompower = player.i.phantompower.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#b38fbf",}
+        },
+        152: {
+            cost(x) { return new Decimal(1.27).pow(x || getBuyableAmount(this.layer, this.id)).mul(100) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1).add(1)},
+            unlocked() { return player.phantomboostercutscene.eq(0)  },
+            canAfford() { return player.i.phantompower.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Phantom Booster II"
+            },
+            display() {
+                return "which are boosting damned soul and phantom power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Phantom Power"
+            },
+            buy() {
+                let base = new Decimal(100)
+                let growth = 1.27
+                let max = Decimal.affordGeometricSeries(player.i.phantompower, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.phantompower = player.i.phantompower.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#b38fbf",}
+        },
+        153: {
+            cost(x) { return new Decimal(1.285).pow(x || getBuyableAmount(this.layer, this.id)).mul(333) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.25).add(1)},
+            unlocked() { return player.phantomboostercutscene.eq(0)  },
+            canAfford() { return player.i.phantompower.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Phantom Booster III"
+            },
+            display() {
+                return "which are boosting damned soul and phantom power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Phantom Power"
+            },
+            buy() {
+                let base = new Decimal(333)
+                let growth = 1.285
+                let max = Decimal.affordGeometricSeries(player.i.phantompower, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.phantompower = player.i.phantompower.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#b38fbf",}
+        },
+        154: {
+            cost(x) { return new Decimal(1.3).pow(x || getBuyableAmount(this.layer, this.id)).mul(1000) },
+            effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.1).add(1)},
+            unlocked() { return player.phantomboostercutscene.eq(0)  },
+            canAfford() { return player.i.phantompower.gte(this.cost()) },
+            title() {
+                return format(getBuyableAmount(this.layer, this.id), 0) + "<br/>Phantom Booster IV"
+            },
+            display() {
+                return "which are boosting damned soul and phantom power gain by x" + format(tmp[this.layer].buyables[this.id].effect) + ".\n\
+                    Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " Phantom Power"
+            },
+            buy() {
+                let base = new Decimal(1000)
+                let growth = 1.3
+                let max = Decimal.affordGeometricSeries(player.i.phantompower, base, growth, getBuyableAmount(this.layer, this.id))
+                let cost = Decimal.sumGeometricSeries(max, base, growth, getBuyableAmount(this.layer, this.id))
+                if (!hasUpgrade("m", 46)) player.i.phantompower = player.i.phantompower.sub(cost)
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(max))
+            },
+            style: { width: '275px', height: '150px', "background-color": "#b38fbf",}
         },
     },
     milestones: {
@@ -4642,6 +5811,10 @@ opacity: "0.9",
                         ["raw-html", function () { return player.m.enhancepointperk.gt(1) ? "<h3>Enhance Points: x" + format(player.m.enhancepointperk) + ". " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.m.beaconpointperk.gt(1) ? "<h3>Beacon Points: x" + format(player.m.beaconpointperk) + ". " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.m.quirkperk.gt(1) ? "<h3>Quirks: x" + format(player.m.quirkperk) + ". " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.m.bloodgainperk.gt(1) ? "<h3>Blood Gain: x" + format(player.m.bloodgainperk) + ". " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.m.bloodcapacityperk.gt(1) ? "<h3>Blood Capacity: x" + format(player.m.bloodcapacityperk) + ". " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.m.phantomsoulperk.gt(1) ? "<h3>Phantom Souls: x" + format(player.m.phantomsoulperk) + ". " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.m.jacorbperk.gt(1) ? "<h3>Jacorbian Energy: x" + format(player.m.jacorbperk) + ". " : ""}, { "color": "purple", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                            ["infobox", "jacorblog13"],
                            ["infobox", "jacorblog12"],
@@ -4863,6 +6036,15 @@ opacity: "0.9",
         ]
 
             },
+            "Phantom Souls": {
+                buttonStyle() { return { 'border-color': '#b38fbf', 'background-color': '#b38fbf', "color": 'purple'} },
+                unlocked() { return player.i.sitraunlock.eq(1) && player.phantomsoulslayer.eq(1) },
+                content:
+                    [
+         ["microtabs", "phantomsouls", { 'border-width': '0px' }],
+
+                    ]
+            },    
             "Celestials": {
                 buttonStyle() { return { 'border-color': 'blue', 'background-image': 'radial-gradient(circle, rgba(16,15,16,1) 0%, rgba(8,0,255,1) 0%, rgba(0,0,0,1) 100%)', animation: "gradient 1s infinite"} },
                 unlocked() { return hasUpgrade("i", 27) && player.i.ce308bossactivate.eq(0) || hasUpgrade("i", 116) },
@@ -5682,7 +6864,7 @@ opacity: "0.9",
                     ]],
                 ]],
                         ["blank", "25px"],
-                        ["raw-html", function () { return "<h4>You will spend " + format(player.i.altaramount) + " resources." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h4>You will spend " + formatWhole(player.i.altaramount) + " resources." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["text-input", "altaramountinput", { 
                             color: "var(--color)", 
                             width: "400px",
@@ -5768,9 +6950,10 @@ opacity: "0.9",
                         ["row", [["buyable", 108], ["buyable", 109], ["buyable", 116]]],
                         ["blank", "25px"],
                         ["row", [["clickable", 121]]],
+                        ["row", [["upgrade", 124], ["upgrade", 125], ["upgrade", 126]]],
                     ]
             },
-            "Perks": {
+            "Perks": {                                     
                 buttonStyle() { return { 'color': 'purple', 'border-color': 'purple', 'background-color': '#b82fbd' }},
                 unlocked() { return player.i.injacorbianbalancing.eq(1) },
                 content:
@@ -5780,7 +6963,8 @@ opacity: "0.9",
                         ["raw-html", function () { return "<h4>Check the main tab for perk effects." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["buyable", 111], ["buyable", 112], ["buyable", 113]]],
-                        ["row", [["buyable", 114], ["buyable", 115]]],
+                        ["row", [["buyable", 114], ["buyable", 115], ["buyable", 144]]],
+                        ["row", [["buyable", 145], ["buyable", 146], ["buyable", 147]]],
                         ["blank", "25px"],
                     ]
             },
@@ -5844,7 +7028,7 @@ opacity: "0.9",
                         ["raw-html", function () { return player.sitraunlockcutscene.eq(0) && player.m.sitraunlock.eq(0) ? "<h3>" + formatTime(player.i.metaprestigetime) + "/about a month meta prestige time. " : ""}, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["raw-html", function () { return player.sitraunlockcutscene.eq(0) && player.m.sitraunlock.eq(0) ? "<h3>" + format(player.points) + "/1e70 points. " : ""}, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
 
-                        ["raw-html", function () { return "<h2>You have " + formatWhole(player.c.enhancemedals) + "<h2> enhance medals." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.m.sitraunlock.eq(1) ? "<h2>You have " + formatWhole(player.c.enhancemedals) + "<h2> enhance medals." : "" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
                         ["blank", "25px"],
                         ["row", [["clickable", 142]]],
                         ["raw-html", function () { return player.sitraunlockcutscene.eq(0) && player.m.sitraunlock.eq(0) ? "<h3>TRUE CHALLENGE" : ""}, { "color": "red", "font-size": "18px", "font-family": "monospace" }],
@@ -5857,17 +7041,142 @@ opacity: "0.9",
                         ["row", [["clickable", 141]]],
                     ]
             },
-            "Main": {
+            "Blood": {
                 buttonStyle() { return { 'border-color': 'red', 'background-color': '#880808', "color": 'black'} },
                 unlocked() { return player.i.enhancepath.eq(1) && player.i.sitraunlock.eq(1) },
                 content:
                     [
-                        ["raw-html", function () { return "<h1>COMING SOON! (Enjoy the new music for now)" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
-                        ["raw-html", function () { return "<h1>Also join the discord please" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(1) ? "<h1>You have passed my requirements. Impressive." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(2) ? "<h1>Now your numbers will go up very high." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(3) ? "<h1>Each meta-prestige run, you will be making a machine." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(4) ? "<h1>It will vary every single time." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(5) ? "<h1>You must also produce blood, which will contribute to your point gains." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(6) ? "<h1>You see, prior to my celestialship, I was a mere human." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(7) ? "<h1>But I lived in a special universe where one can manipulate physics." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(8) ? "<h1>I was able to manipulate blood, Artis was able to manipulate metal." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(9) ? "<h1>We lived in a very prosperous world. We were reconstructing after a long war." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(10) ? "<h1>Until he came... The celestial of celestials!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(11) ? "<h1>He took everything. The whole entire dimension." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(12) ? "<h1>I had to do a job in order to get our universe back." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(13) ? "<h1>It was the same job as you. Freeing the nobles." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(14) ? "<h1>We all left them, it was no use." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitrascene.eq(15) ? "<h1>Why am I still here?" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 144], ["clickable", 143]]],
+                        ["raw-html", function () { return player.sitracutscene.eq(1) ? "<div class=spinning-symbol3>⚙</div>" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["row", [["clickable", 145], ["clickable", 146], ["clickable", 147], ["bar", "bloodbar"]]],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return "<h3>You have " + format(player.i.blooddust) + "<h3> blood dust." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h3>You are gaining " + format(player.i.bloodpersecond) + "<h3> blood per second." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h4>Blood gives a x" + format(player.i.bloodeffect) + " boost to points, but it also gives a x" + format(player.i.bloodeffect2) + " increase to beacon req." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["buyable", 128], ["buyable", 129], ["buyable", 133], ["buyable", 134]]],
+                        ["blank", "25px"],
+                        ["row", [["upgrade", 117], ["upgrade", 118], ["upgrade", 119], ["upgrade", 121], ["upgrade", 128]]],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 149]]],
                     ]
             },
+            "Plasma": {
+                buttonStyle() { return { 'border-color': 'red', 'background-color': '#880808', "color": 'black'} },
+                unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 117) },
+                content:
+                    [
+                        ["row", [["clickable", 145], ["clickable", 146], ["clickable", 147], ["bar", "bloodbar"]]],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return "<h3>You have " + format(player.i.plasma) + "<h3> plasma." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h4>You are gaining " + format(player.i.plasmapersecond) + " plasma per second." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.plasmaeffectchoice.eq(0) ? "<h4>Your plasma gives a x" + format(player.i.plasmaeffect) + " boost to blood capacity." : ""}, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.i.plasmaeffectchoice.eq(1) ? "<h4>Your plasma gives a x" + format(player.i.plasmaeffect) + " boost to blood gain." : ""}, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 148]]],
+                        ["blank", "25px"],
+                        ["row", [["buyable", 131], ["buyable", 132]]],
+                    ]
+            },       
+            "Machines": {
+                buttonStyle() { return { 'border-color': 'red', 'background-color': '#880808', "color": 'black'} },
+                unlocked() { return player.i.enhancepath.eq(1) && hasUpgrade("i", 131) },
+                content:
+                    [
+                        ["raw-html", function () { return player.sitramachinescene.eq(1) ? "<h1>So, you can make machines now." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(2) ? "<h1>They will help with every area, hub, meta-prestige, you name it." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(3) ? "<h1>After I left Hevipelle, I got a lot of help from the other celestials." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(4) ? "<h1>They got me interested in building machines." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(5) ? "<h1>I made a lot, until one completely changed everything." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(6) ? "<h1>THE SITRA MACHINE. It is my greatest treasure." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(7) ? "<h1>I will give it to you when this is all over." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(8) ? "<h1>You can build one machine per meta-prestige." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(9) ? "<h1>While you are building, you will gain lots of boosts." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(10) ? "<h1>Once you finish, you will gain permanent boosts." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(11) ? "<h1>I hope this helps you out." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(12) ? "<h1>Make sure to craft a lot of gears." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinescene.eq(13) ? "<h1>This is my gift, for you." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 156], ["clickable", 155]]],
+                        ["raw-html", function () { return player.sitramachinecutscene.eq(1) ? "<div class=spinning-symbol3>⚙</div>" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinecutscene.eq(0) ? "<h3>You have " + format(player.c.gears) + "<h3> gears." : "" }, { "color": "grey", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinecutscene.eq(0) ? "<h3>You have " + format(player.c.energygears) + "<h3> energy gears." : "" }, { "color": "#ffffaa", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinecutscene.eq(0) ? "<h3>You have " + format(player.c.enhancegears) + "<h3> enhance gears." : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.sitramachinecutscene.eq(0) ? "<h3>You have " + format(player.c.sitragears) + "<h3> sitra gears." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                    ]
+            },                                              
         },
-    },
+        phantomsouls: {     
+            "Main": {
+                buttonStyle() { return { 'border-color': '#b38fbf', 'background-color': '#b38fbf', "color": 'purple'} },
+                unlocked() { return player.i.sitraunlock.eq(1) && player.phantomsoulslayer.eq(1) },
+                content:
+                    [
+                        ["raw-html", function () { return "<h2>You have " + format(player.i.phantomsouls) + "<h2> phantom souls." }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h3>You will gain " + format(player.i.phantomsoulstoget) + " phantom souls on reset." }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 151]]],
+                        ["raw-html", function () { return "<h3>You have " + format(player.i.damnedsouls) + "<h3> damned souls." }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h3>You are gaining " + format(player.i.damnedsoulspersecond) + "<h3> damned souls per second." }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h3>Your damned souls give a x" + format(player.i.damnedsoulseffect) + "<h3> boost to blood gain and capacity." }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h4>(Damned souls gain is based off points per second and phantom souls)" }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["row", [["buyable", 135], ["buyable", 136], ["buyable", 137], ["buyable", 138]]],
+                        ["row", [["buyable", 139], ["buyable", 141], ["buyable", 142], ["buyable", 143]]],
+                        ["blank", "25px"],
+                        ["row", [["upgrade", 122], ["upgrade", 123], ["upgrade", 127], ["upgrade", 129], ["upgrade", 131]]],
+                    ]
+            },                    
+            "Boosters": {
+                buttonStyle() { return { 'border-color': '#b38fbf', 'background-color': '#b38fbf', "color": 'purple'} },
+                unlocked() { return player.i.sitraunlock.eq(1) && player.phantomsoulslayer.eq(1) && hasUpgrade("i", 129) },
+                content:
+                    [
+                        ["raw-html", function () { return player.phantomboosterscene.eq(1) ? "<h1>So you made contact with my memories." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(2) ? "<h1>It was very painful. Going with Hevi was the worst decision I've ever made." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(3) ? "<h1>So much time has passed, I forgot what freedom feels like." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(4) ? "<h1>After the war, there was hope in our universe." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(5) ? "<h1>We were rebuilding. We were under new authority." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(6) ? "<h1>They came and screwed everything up." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(7) ? "<h1>Hevi never fulfilled his promise." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(8) ? "<h1>I want you to make him pay!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(9) ? "<h1>The king of celestials... He's somewhere out there." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(10) ? "<h1>Turning innocent people into celestials. How evil." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(11) ? "<h1>At this rate, there must be billions of celestials!" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(12) ? "<h1>Do you even know how it feels like?" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(13) ? "<h1>You are just floating in your own reality, for eons and eons." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(14) ? "<h1>While you control a vessel the size of universes." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboosterscene.eq(15) ? "<h1>It sucks. I'm glad that you will free me." : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["row", [["clickable", 154], ["clickable", 153]]],
+                        ["raw-html", function () { return player.phantomboostercutscene.eq(1) ? "<div class=spinning-symbol3>⚙</div>" : "" }, { "color": "#880808", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboostercutscene.eq(0) ? "<h2>You have " + format(player.i.phantomsouls) + "<h2> phantom souls." : "" }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return player.phantomboostercutscene.eq(0) ? "<h3>You have " + format(player.i.damnedsouls) + "<h3> damned souls." : "" }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["blank", "25px"],
+                        ["raw-html", function () { return player.phantomboostercutscene.eq(0) ? "<h2>You have " + format(player.i.phantompower) + "<h2> phantom power." : "" }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["raw-html", function () { return "<h3>You are gaining " + format(player.i.phantompowerpersecond) + "<h3> phantom power per second." }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                        ["row", [["buyable", 148], ["buyable", 149]]],
+                        ["blank", "25px"],
+                        ["row", [["buyable", 151], ["buyable", 152], ["buyable", 153], ["buyable", 154]]],
+                    ]
+            },                 
+        },
+    }, 
 
     tabFormat: [
                            ["raw-html", function () { return player.i.ce308bossactivate.eq(0) && player.i.injacorbianbalancing.eq(1) ? "You have " + format(player.i.jacorbianenergy) + " jacorbian energy." : "" }, { "color": "#b82fbd", "font-size": "32px", "font-family": "monospace" }],
@@ -5875,7 +7184,7 @@ opacity: "0.9",
                            ["raw-html", function () { return player.i.ce308bossactivate.eq(0) && player.i.injacorbianbalancing.eq(1) ? "You have " + format(player.points) + " points." : "" }, { "color": "white", "font-size": "14px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.ce308bossactivate.eq(0) && player.i.injacorbianbalancing.eq(0) ? "You have " + format(player.points) + " points." : "" }, { "color": "white", "font-size": "32px", "font-family": "monospace" }],
         ["raw-html", function () { return player.i.ce308bossactivate.eq(0) && player.i.injacorbianbalancing.eq(0) ? "You are gaining " + format(player.gain) + " points per second." : ""}, { "color": "white", "font-size": "24px", "font-family": "monospace" }],
-        ["row", [["clickable", 14], ["clickable", 23], ["clickable", 27], ["clickable", 55], ["clickable", 88], ["clickable", 102], ["clickable", 116], ["clickable", 132]]],
+        ["row", [["clickable", 14], ["clickable", 23], ["clickable", 27], ["clickable", 55], ["clickable", 88], ["clickable", 102], ["clickable", 116], ["clickable", 132], ["clickable", 152]]],
          ["microtabs", "stuff", { 'border-width': '0px' }],
          ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(0) && player.injacorbcutscene.eq(1) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) && player.insitracutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
          ["raw-html", function () { return options.musicToggle && player.inreddiamondcutscene.eq(1) && player.injacorbcutscene.eq(0) && player.inartiscutscene.eq(0) && player.inaarexcutscene.eq(0) && player.ince308cutscene.eq(0) && player.inconfrontcutscene.eq(0) && player.playdotpm.eq(0) && player.inchapter1ending.eq(0) && player.insitracutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/reddiamond.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],

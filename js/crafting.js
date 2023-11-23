@@ -56,6 +56,8 @@ startData() { return {
     celestialcellstoget: new Decimal(0),
     solaritycoal: new Decimal(0),
     solaritycoaltoget: new Decimal(0),
+    gears: new Decimal(0),
+    gearstoget: new Decimal(0),
 
     //Anvil
     craftingspeed: new Decimal(1),
@@ -202,6 +204,32 @@ startData() { return {
     enhancemedalcraftingtimereq: new Decimal(20000),
     puremachinedrain: new Decimal(100),
     solaritydraincraftingmedals: new Decimal(6),
+
+    //Bulk
+    craftingbulkinput: "",
+    craftingbulk: new Decimal(1),
+
+    //Gears
+    energygears: new Decimal(0),
+    energygearstoget: new Decimal(1),
+    energygearcosts: [new Decimal(1), new Decimal(10), new Decimal(4)],
+    craftingenergygears: new Decimal(0),
+    energygearcraftingtime: new Decimal(0),
+    energygearcraftingtimereq: new Decimal(2000),
+
+    enhancegears: new Decimal(0),
+    enhancegearstoget: new Decimal(1),
+    enhancegearcosts: [new Decimal(1), new Decimal(10), new Decimal(4)],
+    craftingenhancegears: new Decimal(0),
+    enhancegearcraftingtime: new Decimal(0),
+    enhancegearcraftingtimereq: new Decimal(2000),
+
+    sitragears: new Decimal(0),
+    sitragearstoget: new Decimal(1),
+    sitragearcosts: [new Decimal(1), new Decimal(10), new Decimal(1)],
+    craftingsitragears: new Decimal(0),
+    sitragearcraftingtime: new Decimal(0),
+    sitragearcraftingtimereq: new Decimal(3500),
 }
 },
 update(delta) {
@@ -248,6 +276,7 @@ update(delta) {
     player.c.enhancepowdertoget = player.i.enhancepoints.add(1).slog().pow(5).mul(3).mul(player.c.enhancepowdercancel).mul(buyableEffect("h", 16)).floor()
 
     player.c.celestialcellstoget = player.i.celestialenergy.mul(100).add(1).slog().pow(2).mul(3).mul(buyableEffect("h", 17)).floor()
+    if (hasUpgrade("m", 45)) player.c.gearstoget = player.i.phantomsouls.mul(66).add(1).slog().pow(2).mul(10).floor()
 
     //ANVIL
     let craftingspeed = new Decimal(1)
@@ -264,7 +293,9 @@ update(delta) {
 
     //time metal
     player.c.timemetalcosts[0] = new Decimal(1)
+    player.c.timemetalcosts[0] = player.c.timemetalcosts[0].mul(player.c.craftingbulk)
     player.c.timemetalcosts[1] = new Decimal(2)
+    player.c.timemetalcosts[1] = player.c.timemetalcosts[1].mul(player.c.craftingbulk)
     if (player.c.craftingtimemetal.eq(1))
     {
         player.c.timemetalcraftingtime = player.c.timemetalcraftingtime.add(player.c.craftingspeed.mul(delta))
@@ -272,6 +303,8 @@ update(delta) {
     player.c.timemetalcraftingtimereq = new Decimal(20)
     if (hasUpgrade("m", 32)) player.c.timemetalcraftingtimereq = new Decimal(12)
     player.c.timemetaltoget = new Decimal(1)
+    player.c.timemetalcraftingtimereq = player.c.timemetalcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.timemetaltoget = player.c.timemetaltoget.mul(player.c.craftingbulk)
     if (player.c.timemetalcraftingtime.gte(player.c.timemetalcraftingtimereq))
     {
         player.c.timemetal = player.c.timemetal.add(player.c.timemetaltoget)
@@ -283,7 +316,9 @@ update(delta) {
 
     //space metal
     player.c.spacemetalcosts[0] = new Decimal(1)
+    player.c.spacemetalcosts[0] = player.c.spacemetalcosts[0].mul(player.c.craftingbulk)
     player.c.spacemetalcosts[1] = new Decimal(2)
+    player.c.spacemetalcosts[1] = player.c.spacemetalcosts[1].mul(player.c.craftingbulk)
     if (player.c.craftingspacemetal.eq(1))
     {
         player.c.spacemetalcraftingtime = player.c.spacemetalcraftingtime.add(player.c.craftingspeed.mul(delta))
@@ -291,6 +326,8 @@ update(delta) {
     player.c.spacemetalcraftingtimereq = new Decimal(25)
     if (hasUpgrade("m", 32)) player.c.spacemetalcraftingtimereq = new Decimal(16)
     player.c.spacemetaltoget = new Decimal(1)
+    player.c.spacemetalcraftingtimereq = player.c.spacemetalcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.spacemetaltoget = player.c.spacemetaltoget.mul(player.c.craftingbulk)
     if (player.c.spacemetalcraftingtime.gte(player.c.spacemetalcraftingtimereq))
     {
         player.c.spacemetal = player.c.spacemetal.add(player.c.spacemetaltoget)
@@ -302,8 +339,11 @@ update(delta) {
 
     //time capsule
     player.c.timecapsulecosts[0] = new Decimal(3)
+    player.c.timecapsulecosts[0] = player.c.timecapsulecosts[0].mul(player.c.craftingbulk)
     player.c.timecapsulecosts[1] = new Decimal(1)
+    player.c.timecapsulecosts[1] = player.c.timecapsulecosts[1].mul(player.c.craftingbulk)
     player.c.timecapsulecosts[2] = new Decimal(600)
+    player.c.timecapsulecosts[2] = player.c.timecapsulecosts[2].mul(player.c.craftingbulk)
     if (player.c.craftingtimecapsules.eq(1))
     {
         player.c.timecapsulecraftingtime = player.c.timecapsulecraftingtime.add(player.c.craftingspeed.mul(delta))
@@ -311,6 +351,8 @@ update(delta) {
     player.c.timecapsulecraftingtimereq = new Decimal(80)
     if (hasUpgrade("m", 33)) player.c.timecapsulecraftingtimereq = new Decimal(50)
     player.c.timecapsulestoget = new Decimal(1)
+    player.c.timecapsulecraftingtimereq = player.c.timecapsulecraftingtimereq.mul(player.c.craftingbulk)
+    player.c.timecapsulestoget = player.c.timecapsulestoget.mul(player.c.craftingbulk)
     if (player.c.timecapsulecraftingtime.gte(player.c.timecapsulecraftingtimereq))
     {
         player.c.timecapsules = player.c.timecapsules.add(player.c.timecapsulestoget)
@@ -322,8 +364,11 @@ update(delta) {
 
     //space building
     player.c.spacebuildingcosts[0] = new Decimal(4)
+    player.c.spacebuildingcosts[0] = player.c.spacebuildingcosts[0].mul(player.c.craftingbulk)
     player.c.spacebuildingcosts[1] = new Decimal(2)
+    player.c.spacebuildingcosts[1] = player.c.spacebuildingcosts[1].mul(player.c.craftingbulk)
     player.c.spacebuildingcosts[2] = new Decimal(8)
+    player.c.spacebuildingcosts[2] = player.c.spacebuildingcosts[0].mul(player.c.craftingbulk)
     if (player.c.craftingspacebuildings.eq(1))
     {
         player.c.spacebuildingcraftingtime = player.c.spacebuildingcraftingtime.add(player.c.craftingspeed.mul(delta))
@@ -331,6 +376,8 @@ update(delta) {
     player.c.spacebuildingcraftingtimereq = new Decimal(150)
     if (hasUpgrade("m", 33)) player.c.spacebuildingcraftingtimereq = new Decimal(80)
     player.c.spacebuildingstoget = new Decimal(1)
+    player.c.spacebuildingcraftingtimereq = player.c.spacebuildingcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.spacebuildingstoget = player.c.spacebuildingstoget.mul(player.c.craftingbulk)
     if (player.c.spacebuildingcraftingtime.gte(player.c.spacebuildingcraftingtimereq))
     {
         player.c.spacebuildings = player.c.spacebuildings.add(player.c.spacebuildingstoget)
@@ -342,18 +389,27 @@ update(delta) {
 
     //battery
     player.c.celestialbatterycosts[0] = new Decimal(25)
+    player.c.celestialbatterycosts[0] = player.c.celestialbatterycosts[0].mul(player.c.craftingbulk)
     player.c.celestialbatterycosts[1] = new Decimal(25)
+    player.c.celestialbatterycosts[1] = player.c.celestialbatterycosts[1].mul(player.c.craftingbulk)
     player.c.celestialbatterycosts[2] = new Decimal(10)
+    player.c.celestialbatterycosts[2] = player.c.celestialbatterycosts[2].mul(player.c.craftingbulk)
     player.c.celestialbatterycosts[3] = new Decimal(10)
+    player.c.celestialbatterycosts[3] = player.c.celestialbatterycosts[3].mul(player.c.craftingbulk)
     player.c.celestialbatterycosts[4] = new Decimal(10)
+    player.c.celestialbatterycosts[4] = player.c.celestialbatterycosts[4].mul(player.c.craftingbulk)
     player.c.celestialbatterycosts[5] = new Decimal(2)
+    player.c.celestialbatterycosts[5] = player.c.celestialbatterycosts[5].mul(player.c.craftingbulk)
     player.c.celestialbatterycosts[6] = new Decimal(1)
+    player.c.celestialbatterycosts[6] = player.c.celestialbatterycosts[6].mul(player.c.craftingbulk)
     if (player.c.craftingcelestialbatteries.eq(1))
     {
         player.c.celestialbatterycraftingtime = player.c.celestialbatterycraftingtime.add(player.c.craftingspeed.mul(delta))
     }
     player.c.celestialbatterycraftingtimereq = new Decimal(400)
     player.c.celestialbatteriestoget = new Decimal(1)
+    player.c.celestialbatterycraftingtimereq = player.c.celestialbatterycraftingtimereq.mul(player.c.craftingbulk)
+    player.c.celestialbatteriestoget = player.c.celestialbatteriestoget.mul(player.c.craftingbulk)
     if (player.c.celestialbatterycraftingtime.gte(player.c.celestialbatterycraftingtimereq))
     {
         player.c.celestialbatteries = player.c.celestialbatteries.add(player.c.celestialbatteriestoget)
@@ -365,14 +421,19 @@ update(delta) {
 
     //quirk layer
     player.c.quirklayercosts[0] = new Decimal(2)
+    player.c.quirklayercosts[0] = player.c.quirklayercosts[0].mul(player.c.craftingbulk)
     player.c.quirklayercosts[1] = new Decimal(8)
+    player.c.quirklayercosts[1] = player.c.quirklayercosts[1].mul(player.c.craftingbulk)
     player.c.quirklayercosts[2] = new Decimal(3)
+    player.c.quirklayercosts[2] = player.c.quirklayercosts[2].mul(player.c.craftingbulk)
     if (player.c.craftingquirklayers.eq(1))
     {
         player.c.quirklayercraftingtime = player.c.quirklayercraftingtime.add(player.c.craftingspeed.mul(delta))
     }
     player.c.quirklayercraftingtimereq = new Decimal(150)
     player.c.quirklayerstoget = new Decimal(1)
+    player.c.quirklayercraftingtimereq = player.c.quirklayercraftingtimereq.mul(player.c.craftingbulk)
+    player.c.quirklayerstoget = player.c.quirklayerstoget.mul(player.c.craftingbulk)
     if (player.c.quirklayercraftingtime.gte(player.c.quirklayercraftingtimereq))
     {
         player.c.quirklayers = player.c.quirklayers.add(player.c.quirklayerstoget)
@@ -384,14 +445,19 @@ update(delta) {
 
     //quirk star
     player.c.quirkstarcosts[0] = new Decimal(2)
+    player.c.quirkstarcosts[0] = player.c.quirkstarcosts[0].mul(player.c.craftingbulk)
     player.c.quirkstarcosts[1] = new Decimal(4)
+    player.c.quirkstarcosts[1] = player.c.quirkstarcosts[1].mul(player.c.craftingbulk)
     player.c.quirkstarcosts[2] = new Decimal(5)
+    player.c.quirkstarcosts[2] = player.c.quirkstarcosts[2].mul(player.c.craftingbulk)
     if (player.c.craftingquirkstars.eq(1))
     {
         player.c.quirkstarcraftingtime = player.c.quirkstarcraftingtime.add(player.c.craftingspeed.mul(delta))
     }
     player.c.quirkstarcraftingtimereq = new Decimal(220)
     player.c.quirkstarstoget = new Decimal(1)
+    player.c.quirkstarcraftingtimereq = player.c.quirkstarcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.quirkstarstoget = player.c.quirkstarstoget.mul(player.c.craftingbulk)
     if (player.c.quirkstarcraftingtime.gte(player.c.quirkstarcraftingtimereq))
     {
         player.c.quirkstars = player.c.quirkstars.add(player.c.quirkstarstoget)
@@ -402,14 +468,19 @@ update(delta) {
     }
 
     player.c.dimensionalticketcosts[0] = new Decimal(6)
+    player.c.dimensionalticketcosts[0] = player.c.dimensionalticketcosts[0].mul(player.c.craftingbulk)
     player.c.dimensionalticketcosts[1] = new Decimal(6)
+    player.c.dimensionalticketcosts[1] = player.c.dimensionalticketcosts[1].mul(player.c.craftingbulk)
     player.c.dimensionalticketcosts[2] = new Decimal(5)
+    player.c.dimensionalticketcosts[2] = player.c.dimensionalticketcosts[2].mul(player.c.craftingbulk)
     if (player.c.craftingdimensionaltickets.eq(1))
     {
         player.c.dimensionalticketcraftingtime = player.c.dimensionalticketcraftingtime.add(player.c.craftingspeed.mul(delta))
     }
     player.c.dimensionalticketcraftingtimereq = new Decimal(120)
     player.c.dimensionalticketstoget = new Decimal(1)
+    player.c.dimensionalticketcraftingtimereq = player.c.dimensionalticketcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.dimensionalticketstoget = player.c.dimensionalticketstoget.mul(player.c.craftingbulk)
     if (player.c.dimensionalticketcraftingtime.gte(player.c.dimensionalticketcraftingtimereq))
     {
         player.c.dimensionaltickets = player.c.dimensionaltickets.add(player.c.dimensionalticketstoget)
@@ -439,7 +510,9 @@ update(delta) {
 
     //sand
     player.c.solarsandcosts[0] = new Decimal(5)
+    player.c.solarsandcosts[0] = player.c.solarsandcosts[0].mul(player.c.craftingbulk)
     player.c.solarsandcosts[1] = new Decimal(1)
+    player.c.solarsandcosts[1] = player.c.solarsandcosts[1].mul(player.c.craftingbulk)
     player.c.solaritydrainsolarsand = new Decimal(0.2)
     player.c.incrementalpowerdrain = new Decimal(10000)
     if (player.c.craftingsolarsand.eq(1) && player.c.solarity.gt(0.2) && player.m.points.gt(10000))
@@ -450,6 +523,8 @@ update(delta) {
     }
     player.c.solarsandcraftingtimereq = new Decimal(200)
     player.c.solarsandtoget = new Decimal(1)
+    player.c.solarsandcraftingtimereq = player.c.solarsandcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.solarsandtoget = player.c.solarsandtoget.mul(player.c.craftingbulk)
     if (player.c.solarsandcraftingtime.gte(player.c.solarsandcraftingtimereq))
     {
         player.c.solarsand = player.c.solarsand.add(player.c.solarsandtoget)
@@ -513,6 +588,18 @@ update(delta) {
     player.c.enhancepowdertogetanvil = new Decimal(1)
     player.c.celestialcellstogetanvil = new Decimal(1)
 
+    player.c.scrapmetalcraftingpowerreq = player.c.scrapmetalcraftingpowerreq.mul(player.c.craftingbulk)
+    player.c.scrapmetaltogetanvil = player.c.scrapmetaltogetanvil.mul(player.c.craftingbulk)
+
+    player.c.wirecraftingpowerreq = player.c.wirecraftingpowerreq.mul(player.c.craftingbulk)
+    player.c.wirestogetanvil = player.c.wirestogetanvil.mul(player.c.craftingbulk)
+
+    player.c.enhancepowdercraftingpowerreq = player.c.enhancepowdercraftingpowerreq.mul(player.c.craftingbulk)
+    player.c.enhancepowdertogetanvil = player.c.enhancepowdertogetanvil.mul(player.c.craftingbulk)
+
+    player.c.celestialcellcraftingpowerreq = player.c.celestialcellcraftingpowerreq.mul(player.c.craftingbulk)
+    player.c.celestialcellstogetanvil = player.c.celestialcellstogetanvil.mul(player.c.craftingbulk)
+
     if (player.c.scrapmetalcraftingpower.gte(player.c.scrapmetalcraftingpowerreq))
     {
         player.c.scrapmetal = player.c.scrapmetal.add(player.c.scrapmetaltogetanvil)
@@ -536,9 +623,13 @@ update(delta) {
 
     //jacorb orbs
     player.c.jacorborbcosts[0] = new Decimal(100)
+    player.c.jacorborbcosts[0] = player.c.jacorborbcosts[0].mul(player.c.craftingbulk)
     player.c.jacorborbcosts[1] = new Decimal(100)
+    player.c.jacorborbcosts[1] = player.c.jacorborbcosts[1].mul(player.c.craftingbulk)
     player.c.jacorborbcosts[2] = new Decimal(10)
+    player.c.jacorborbcosts[2] = player.c.jacorborbcosts[2].mul(player.c.craftingbulk)
     player.c.jacorborbcosts[3] = new Decimal(1)
+    player.c.jacorborbcosts[3] = player.c.jacorborbcosts[3].mul(player.c.craftingbulk)
     player.c.jacorbianrunedrain = new Decimal(0.25)
     player.c.solaritydrainjacorborbs = new Decimal(2)
     if (player.c.craftingjacorborbs.eq(1) && player.c.solarity.gt(2) && player.i.jacorbianrunes.gt(0.25))
@@ -548,7 +639,9 @@ update(delta) {
         player.i.jacorbianrunes = player.i.jacorbianrunes.sub(player.c.jacorbianrunedrain.mul(delta))
     }
     player.c.jacorborbcraftingtimereq = new Decimal(2000)
-    player.c.jacorborbstoget = new Decimal(1)
+    player.c.jacorborbstoget = new Decimal(1)    
+    player.c.jacorborbcraftingtimereq = player.c.jacorborbcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.jacorborbstoget = player.c.jacorborbstoget.mul(player.c.craftingbulk)
     if (player.c.jacorborbcraftingtime.gte(player.c.jacorborbcraftingtimereq))
     {
         player.c.jacorborbs = player.c.jacorborbs.add(player.c.jacorborbstoget)
@@ -560,13 +653,21 @@ update(delta) {
 
     //enhance medal
     player.c.enhancemedalcosts[0] = new Decimal(1000)
+    player.c.enhancemedalcosts[0] = player.c.enhancemedalcosts[0].mul(player.c.craftingbulk)
     player.c.enhancemedalcosts[1] = new Decimal(1000)
+    player.c.enhancemedalcosts[1] = player.c.enhancemedalcosts[1].mul(player.c.craftingbulk)
     player.c.enhancemedalcosts[2] = new Decimal(1000)
+    player.c.enhancemedalcosts[2] = player.c.enhancemedalcosts[2].mul(player.c.craftingbulk)
     player.c.enhancemedalcosts[3] = new Decimal(300)
+    player.c.enhancemedalcosts[3] = player.c.enhancemedalcosts[3].mul(player.c.craftingbulk)
     player.c.enhancemedalcosts[4] = new Decimal(25)
+    player.c.enhancemedalcosts[4] = player.c.enhancemedalcosts[4].mul(player.c.craftingbulk)
     player.c.enhancemedalcosts[5] = new Decimal(25)
+    player.c.enhancemedalcosts[5] = player.c.enhancemedalcosts[5].mul(player.c.craftingbulk)
     player.c.enhancemedalcosts[6] = new Decimal(10)
+    player.c.enhancemedalcosts[6] = player.c.enhancemedalcosts[6].mul(player.c.craftingbulk)
     player.c.enhancemedalcosts[7] = new Decimal(10)
+    player.c.enhancemedalcosts[7] = player.c.enhancemedalcosts[7].mul(player.c.craftingbulk)
     player.c.puremachinedrain = new Decimal(100)
     player.c.solaritydrainenhancemedals = new Decimal(6)
     if (player.c.craftingenhancemedals.eq(1) && player.c.solarity.gt(6) && player.i.puremachines.gt(100))
@@ -577,6 +678,8 @@ update(delta) {
     }
     player.c.enhancemedalcraftingtimereq = new Decimal(20000)
     player.c.enhancemedalstoget = new Decimal(1)
+    player.c.enhancemedalcraftingtimereq = player.c.enhancemedalcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.enhancemedalstoget = player.c.enhancemedalstoget.mul(player.c.craftingbulk)
     if (player.c.enhancemedalcraftingtime.gte(player.c.enhancemedalcraftingtimereq))
     {
         player.c.enhancemedals = player.c.enhancemedals.add(player.c.enhancemedalstoget)
@@ -584,6 +687,85 @@ update(delta) {
         player.c.enhancemedalcraftingtime = new Decimal(0)
         
         player.c.craftingpoints = player.c.craftingpoints.add(player.c.craftingpointstoget.mul(player.c.enhancemedalcraftingtimereq))
+    }
+
+    //Bulk
+    if (player.c.anvilslots.eq(player.c.maxanvilslots) && player.c.craftingsolarsand.eq(0) && player.c.craftingjacorborbs.eq(0) && player.c.craftinganvils.eq(0) && player.c.craftingsolarsand.eq(0) && player.c.craftingenhancemedals.eq(0)) player.c.craftingbulk = Math.abs(Math.round(player.c.craftingbulkinput))
+    if (player.c.craftingbulk == 0)
+    {
+        player.c.craftingbulk = new Decimal(1)
+    }
+
+    //energy gear
+    player.c.energygearcosts[0] = new Decimal(1)
+    player.c.energygearcosts[0] = player.c.energygearcosts[0].mul(player.c.craftingbulk)
+    player.c.energygearcosts[1] = new Decimal(50)
+    player.c.energygearcosts[1] = player.c.energygearcosts[1].mul(player.c.craftingbulk)
+    player.c.energygearcosts[2] = new Decimal(8)
+    player.c.energygearcosts[2] = player.c.energygearcosts[2].mul(player.c.craftingbulk)
+    if (player.c.craftingenergygears.eq(1))
+    {
+        player.c.energygearcraftingtime = player.c.energygearcraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.energygearcraftingtimereq = new Decimal(2000)
+    player.c.energygearstoget = new Decimal(1)
+    player.c.energygearcraftingtimereq = player.c.energygearcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.energygearstoget = player.c.energygearstoget.mul(player.c.craftingbulk)
+    if (player.c.energygearcraftingtime.gte(player.c.energygearcraftingtimereq))
+    {
+        player.c.energygears = player.c.energygears.add(player.c.energygearstoget)
+        player.c.craftingenergygears = new Decimal(0)
+        player.c.energygearcraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+        player.c.craftingpoints = player.c.craftingpoints.add(player.c.craftingpointstoget.mul(player.c.energygearcraftingtimereq))
+    }
+
+    //enhance gear
+    player.c.enhancegearcosts[0] = new Decimal(1)
+    player.c.enhancegearcosts[0] = player.c.enhancegearcosts[0].mul(player.c.craftingbulk)
+    player.c.enhancegearcosts[1] = new Decimal(50)
+    player.c.enhancegearcosts[1] = player.c.enhancegearcosts[1].mul(player.c.craftingbulk)
+    player.c.enhancegearcosts[2] = new Decimal(8)
+    player.c.enhancegearcosts[2] = player.c.enhancegearcosts[2].mul(player.c.craftingbulk)
+    if (player.c.craftingenhancegears.eq(1))
+    {
+        player.c.enhancegearcraftingtime = player.c.enhancegearcraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.enhancegearcraftingtimereq = new Decimal(2000)
+    player.c.enhancegearstoget = new Decimal(1)
+    player.c.enhancegearcraftingtimereq = player.c.enhancegearcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.enhancegearstoget = player.c.enhancegearstoget.mul(player.c.craftingbulk)
+    if (player.c.enhancegearcraftingtime.gte(player.c.enhancegearcraftingtimereq))
+    {
+        player.c.enhancegears = player.c.enhancegears.add(player.c.enhancegearstoget)
+        player.c.craftingenhancegears = new Decimal(0)
+        player.c.enhancegearcraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+        player.c.craftingpoints = player.c.craftingpoints.add(player.c.craftingpointstoget.mul(player.c.enhancegearcraftingtimereq))
+    }
+
+    //sitra gear
+    player.c.sitragearcosts[0] = new Decimal(1)
+    player.c.sitragearcosts[0] = player.c.sitragearcosts[0].mul(player.c.craftingbulk)
+    player.c.sitragearcosts[1] = new Decimal(10)
+    player.c.sitragearcosts[1] = player.c.sitragearcosts[1].mul(player.c.craftingbulk)
+    player.c.sitragearcosts[2] = new Decimal(1)
+    player.c.sitragearcosts[2] = player.c.sitragearcosts[2].mul(player.c.craftingbulk)
+    if (player.c.craftingsitragears.eq(1))
+    {
+        player.c.sitragearcraftingtime = player.c.sitragearcraftingtime.add(player.c.craftingspeed.mul(delta))
+    }
+    player.c.sitragearcraftingtimereq = new Decimal(3500)
+    player.c.sitragearstoget = new Decimal(1)
+    player.c.sitragearcraftingtimereq = player.c.sitragearcraftingtimereq.mul(player.c.craftingbulk)
+    player.c.sitragearstoget = player.c.sitragearstoget.mul(player.c.craftingbulk)
+    if (player.c.sitragearcraftingtime.gte(player.c.sitragearcraftingtimereq))
+    {
+        player.c.sitragears = player.c.sitragears.add(player.c.sitragearstoget)
+        player.c.craftingsitragears = new Decimal(0)
+        player.c.sitragearcraftingtime = new Decimal(0)
+        player.c.anvilslots = player.c.anvilslots.add(1)
+        player.c.craftingpoints = player.c.craftingpoints.add(player.c.craftingpointstoget.mul(player.c.sitragearcraftingtimereq))
     }
 },
 clickables: {
@@ -1287,6 +1469,132 @@ clickables: {
         },
         style: { width: '150px', "min-height": '100px' },
     },
+    75: {
+        title() { return format(player.c.gears, 0)  + "<img src='resources/gear.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return hasUpgrade("m", 45) },
+        onClick() {
+            player.c.currentresourcedisplay = new Decimal(6)
+        },
+        style: { background: "grey", width: '100px', "min-height": '100px' },
+    },
+    76: {
+        title() { return format(player.c.energygears, 0) + "<img src='resources/energygear.png.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return hasUpgrade("m", 45) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(9)
+        },
+        style: { "background-color": "#ffffaa", width: '100px', "min-height": '100px' },
+    },
+    77: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingenergygears.eq(0) && player.c.gears.gte(player.c.energygearcosts[0]) && player.c.wires.gte(player.c.energygearcosts[1]) && player.c.timemetal.gte(player.c.energygearcosts[2]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(9) },
+        onClick() {
+            player.c.craftingenergygears = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.gears = player.c.gears.sub(player.c.energygearcosts[0])
+            player.c.wires = player.c.wires.sub(player.c.energygearcosts[1])
+            player.c.timemetal = player.c.timemetal.sub(player.c.energygearcosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    78: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingenergygears.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(9) },
+        onClick() {
+            
+            player.c.energygearcraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingenergygears = new Decimal(0)
+
+            player.c.gears = player.c.gears.add(player.c.energygearcosts[0])
+            player.c.wires = player.c.wires.add(player.c.energygearcosts[1])
+            player.c.timemetal = player.c.timemetal.add(player.c.energygearcosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    79: {
+        title() { return format(player.c.enhancegears, 0) + "<img src='resources/enhancegear.png.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return hasUpgrade("m", 45) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(10)
+        },
+        style: { "background-color": "#b82fbd", width: '100px', "min-height": '100px' },
+    },
+    81: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingenhancegears.eq(0) && player.c.gears.gte(player.c.enhancegearcosts[0]) && player.c.wires.gte(player.c.enhancegearcosts[1]) && player.c.timemetal.gte(player.c.enhancegearcosts[2]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(10) },
+        onClick() {
+            player.c.craftingenhancegears = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.gears = player.c.gears.sub(player.c.enhancegearcosts[0])
+            player.c.enhancepowder = player.c.enhancepowder.sub(player.c.enhancegearcosts[1])
+            player.c.spacemetal = player.c.spacemetal.sub(player.c.enhancegearcosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    82: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingenhancegears.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(10) },
+        onClick() {
+            
+            player.c.enhancegearcraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingenhancegears = new Decimal(0)
+
+            player.c.gears = player.c.gears.add(player.c.enhancegearcosts[0])
+            player.c.enhancepowder = player.c.enhancepowder.add(player.c.enhancegearcosts[1])
+            player.c.spacemetal = player.c.spacemetal.add(player.c.enhancegearcosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    83: {
+        title() { return format(player.c.sitragears, 0) + "<img src='resources/sitragear.png.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return true },
+        unlocked() { return hasUpgrade("m", 45) },
+        onClick() {
+            player.c.currentcraftingdisplay = new Decimal(11)
+        },
+        style: { "background-color": "#880808", width: '100px', "min-height": '100px' },
+    },
+    84: {
+        title() { return "Start Crafting" },
+        canClick() { return player.c.anvilslots.gte(1) && player.c.craftingsitragears.eq(0) && player.c.gears.gte(player.c.sitragearcosts[0]) && player.c.solarsand.gte(player.c.sitragearcosts[1]) && player.c.celestialbatteries.gte(player.c.sitragearcosts[2]) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(11) },
+        onClick() {
+            player.c.craftingsitragears = new Decimal(1)
+            player.c.anvilslots = player.c.anvilslots.sub(1)
+
+            player.c.gears = player.c.gears.sub(player.c.sitragearcosts[0])
+            player.c.solarsand = player.c.solarsand.sub(player.c.sitragearcosts[1])
+            player.c.celestialbatteries = player.c.celestialbatteries.sub(player.c.sitragearcosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
+    85: {
+        title() { return "Stop Crafting" },
+        canClick() { return player.c.craftingsitragears.eq(1) },
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(11) },
+        onClick() {
+            
+            player.c.sitragearcraftingtime = new Decimal(0)
+            player.c.anvilslots = player.c.anvilslots.add(1)
+            player.c.craftingsitragears = new Decimal(0)
+
+            player.c.gears = player.c.gears.add(player.c.sitragearcosts[0])
+            player.c.solarsand = player.c.solarsand.add(player.c.sitragearcosts[1])
+            player.c.celestialbatteries = player.c.celestialbatteries.add(player.c.sitragearcosts[2])
+        },
+        style: { width: '150px', "min-height": '100px' },
+    },
 },
 upgrades: {
     11:
@@ -1663,6 +1971,51 @@ bars: {
         },
         style: { color: "red" },
     },
+    energygearbar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(9) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.energygearcraftingtime.div(player.c.energygearcraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.energygearcraftingtime) + "/" + format(player.c.energygearcraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
+    enhancegearbar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(10) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.enhancegearcraftingtime.div(player.c.enhancegearcraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.enhancegearcraftingtime) + "/" + format(player.c.enhancegearcraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
+    sitragearbar: {
+        unlocked() { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(11) },
+        direction: RIGHT,
+        width: 476,
+        height: 50,
+        progress() {
+            return player.c.sitragearcraftingtime.div(player.c.sitragearcraftingtimereq)
+        },
+        fillStyle: {
+            "background-color": "#ff5500",
+        },
+        display() {
+            return "<h5>" + format(player.c.sitragearcraftingtime) + "/" + format(player.c.sitragearcraftingtimereq) + " crafting power<h5></h5>";
+        },
+    },
 },
 infoboxes: {
     scrapmetal: {
@@ -1760,6 +2113,26 @@ infoboxes: {
         title: "Item Description",
         body() { return "There isn't a real significant value of this item, but it could eventually be used for something. It is only a trinket that is used to prove to Sitra that you are worthy." },         
     }, 
+    gear: {
+        unlocked() { return player.c.currentresourcedisplay.eq(6) },
+        title: "Item Description",
+        body() { return "These gears are not your ordinary gears. Only Sitra knows it's chemical makeup, and it has very unique properties. Many people have rumored there to be phantom souls in each gear, or maybe even antimatter." },         
+    }, 
+    energygear: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(9) },
+        title: "Item Description",
+        body() { return "When merged with the power of prestige energy, these gears would be more energized, and turn a lot faster. It would provide a lot of boosts. These gears are inside of prestige machines and are what produces incremental energy." },         
+    }, 
+    enhancegear: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(10) },
+        title: "Item Description",
+        body() { return "When merged with the power of enhance powder, these gears would be more efficient. When included in machines, the power of enhance will surge through the whole machine." },         
+    }, 
+    sitragear: {
+        unlocked() { return player.c.currentcraftingdisplay.eq(11) },
+        title: "Item Description",
+        body() { return "These gears are very special. The power of a true celestial radiates while these gears turn. Sitra's blood manipulation power are what control these gears, and the more blood, the more powerful these machines will be." },         
+    }, 
 },
 microtabs: {
 stuff: {
@@ -1847,6 +2220,9 @@ content:
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(6) ? "<h2>You have " + formatWhole(player.c.quirklayers) + "<h2> quirk layers (+" + formatWhole(player.c.quirklayerstoget) + ")<br><h5>(Check the quirk energy tab in the celestial tab)": "" }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(7) ? "<h2>You have " + formatWhole(player.c.quirkstars) + "<h2> quirk stars (+" + formatWhole(player.c.quirkstarstoget) + ")<br><h5>(Check the quirk prestige tree tab)": "" }, { "color": "#c20282", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(8) ? "<h2>You have " + formatWhole(player.c.dimensionaltickets) + "<h2> dimensional realm tickets (+" + formatWhole(player.c.dimensionalticketstoget) + ")<br><h5>(CHECK META PRESTIGE FOR TRAVELLING)": "" }, { "color": "#90EE90", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(9) ? "<h2>You have " + formatWhole(player.c.energygears) + "<h2> energy gears (+" + formatWhole(player.c.energygearstoget) + ")<br><h5>": "" }, { "color": "grey", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(10) ? "<h2>You have " + formatWhole(player.c.enhancegears) + "<h2> enhance gears (+" + formatWhole(player.c.enhancegearstoget) + ")<br><h5>": "" }, { "color": "grey", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(11) ? "<h2>You have " + formatWhole(player.c.sitragears) + "<h2> sitra gears (+" + formatWhole(player.c.sitragearstoget) + ")<br><h5>": "" }, { "color": "grey", "font-size": "18px", "font-family": "monospace" }],
             ["blank", "25px"],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(1) ? "<h4>" + formatWhole(player.c.timemetalcosts[0]) + " scrap metal (you have " + formatWhole(player.c.scrapmetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
@@ -1882,6 +2258,18 @@ content:
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(8) ? "<h4>" + formatWhole(player.c.dimensionalticketcosts[0]) + " time metal (you have " + formatWhole(player.c.timemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(8) ? "<h4>" + formatWhole(player.c.dimensionalticketcosts[1]) + " space metal (you have " + formatWhole(player.c.spacemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(8) ? "<h4>" + formatWhole(player.c.dimensionalticketcosts[2]) + " celestial cells (you have " + formatWhole(player.c.celestialcells) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(9) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(9) ? "<h4>" + formatWhole(player.c.energygearcosts[0]) + " gears (you have " + formatWhole(player.c.gears) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(9) ? "<h4>" + formatWhole(player.c.energygearcosts[1]) + " wires (you have " + formatWhole(player.c.wires) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(9) ? "<h4>" + formatWhole(player.c.energygearcosts[2]) + " time metal (you have " + formatWhole(player.c.timemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(10) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(10) ? "<h4>" + formatWhole(player.c.enhancegearcosts[0]) + " gears (you have " + formatWhole(player.c.gears) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(10) ? "<h4>" + formatWhole(player.c.enhancegearcosts[1]) + " enhance powder (you have " + formatWhole(player.c.enhancepowder) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(10) ? "<h4>" + formatWhole(player.c.enhancegearcosts[2]) + " space metal (you have " + formatWhole(player.c.spacemetal) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(11) ? "<h2>Recipe:" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(11) ? "<h4>" + formatWhole(player.c.sitragearcosts[0]) + " gears (you have " + formatWhole(player.c.gears) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(11) ? "<h4>" + formatWhole(player.c.sitragearcosts[1]) + " solar sand (you have " + formatWhole(player.c.solarsand) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentcraftingdisplay.eq(11) ? "<h4>" + formatWhole(player.c.sitragearcosts[2]) + " celestial batteries (you have " + formatWhole(player.c.celestialbatteries) + ")": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["blank", "25px"],
             ["row", [["clickable", 24], ["clickable", 25], ["bar", "timemetalbar"]]],
             ["row", [["clickable", 26], ["clickable", 27], ["bar", "spacemetalbar"]]],
@@ -1891,8 +2279,11 @@ content:
             ["row", [["clickable", 42], ["clickable", 43], ["bar", "quirklayerbar"]]],
             ["row", [["clickable", 45], ["clickable", 46], ["bar", "quirkstarbar"]]],
             ["row", [["clickable", 48], ["clickable", 49], ["bar", "dimensionalticketbar"]]],
+            ["row", [["clickable", 77], ["clickable", 78], ["bar", "energygearbar"]]],
+            ["row", [["clickable", 81], ["clickable", 82], ["bar", "enhancegearbar"]]],
+            ["row", [["clickable", 84], ["clickable", 85], ["bar", "sitragearbar"]]],
             ["blank", "25px"],
-            ["row", [["clickable", 21], ["clickable", 29], ["clickable", 22], ["clickable", 34], ["clickable", 23], ["clickable", 41], ["clickable", 44], ["clickable", 47]]],
+            ["row", [["clickable", 21], ["clickable", 29], ["clickable", 22], ["clickable", 34], ["clickable", 23], ["clickable", 41], ["clickable", 44], ["clickable", 76], ["clickable", 79], ["clickable", 83]]],
             ["blank", "25px"],          
             ["row", [["clickable", 28], ["infobox", "jacorblog16"], ["infobox", "timemetal"]]],
             ["row", [["clickable", 33], ["infobox", "jacorblog14"], ["infobox", "spacemetal"]]],
@@ -1902,6 +2293,9 @@ content:
             ["infobox", "quirklayer"],
             ["infobox", "quirkstar"],
             ["infobox", "dimensionalticket"],
+            ["infobox", "energygear"],
+            ["infobox", "enhancegear"],
+            ["infobox", "sitragear"],
     ]
     
     },
@@ -1918,20 +2312,23 @@ content:
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(3) ? "<h2>You have " + formatWhole(player.c.enhancepowder) + "<h2> enhance powder. (+" + formatWhole(player.c.enhancepowdertoget) + ")": "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(4) ? "<h2>You have " + formatWhole(player.c.celestialcells) + "<h2> celestial cells. (+" + formatWhole(player.c.celestialcellstoget) + ")": "" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(5) ? "<h2>You have " + formatWhole(player.c.solaritycoal) + "<h2> solarity coal. (+" + formatWhole(player.c.solaritycoaltoget) + ")": "" }, { "color": "#ffcd00", "font-size": "18px", "font-family": "monospace" }],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(6) ? "<h2>You have " + formatWhole(player.c.gears) + "<h2> gears. (+" + formatWhole(player.c.gearstoget) + ")": "" }, { "color": "grey", "font-size": "18px", "font-family": "monospace" }],
             ["blank", "25px"],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(1) ? "<h3>In order to earn scrap metal, one must NOT produce prestige energy. (Based on machines)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(2) ? "<h3>In order to earn wires, one must NOT produce prestige machines. (Based on prestige energy)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(3) ? "<h3>In order to earn enhance powder, one must NOT let enhanced prestige points decay to nothing. (Based on enhance points)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(4) ? "<h3>In order to earn celestial cells, one must FEED the pseudo-celestial. (Based on celestial energy)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(5) ? "<h3>In order to earn solarity coal, one must COUNT. (Based on [REDACTED])": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
+            ["raw-html", function () { return player.crafting2cutscene.eq(0) && player.c.currentresourcedisplay.eq(6) ? "<h3>In order to earn gears, one must make the celestial of machines happy. (Based on phantom souls)": "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "18px"}],
             ["blank", "25px"],
-            ["row", [["clickable", 17], ["clickable", 18], ["clickable", 19], ["clickable", 39], ["clickable", 53]]],
+            ["row", [["clickable", 17], ["clickable", 18], ["clickable", 19], ["clickable", 39], ["clickable", 53], ["clickable", 75]]],
             ["blank", "25px"],
             ["infobox", "scrapmetal"],
             ["infobox", "wires"],
             ["infobox", "enhancepowder"],
             ["infobox", "celestialcells"],
             ["infobox", "solaritycoal"],
+            ["infobox", "gear"],
             ["blank", "25px"],
             ["raw-html", function () { return hasUpgrade("c", 12) ? "<h3>You have " + formatWhole(player.c.anvils) + "<h3> anvils (+" + formatWhole(player.c.anvilstoget) + ") (No crafting points are earned)": "" }, { "color": "grey", "font-size": "18px", "font-family": "monospace" }],
             ["raw-html", function () { return hasUpgrade("c", 12) && player.c.currentresourcedisplay.eq(1) ? "<h2>You have " + formatWhole(player.c.scrapmetalanvils) + "<h2> anvils producing scrap metal. (+" + formatWhole(player.c.scrapmetaltogetanvil) + ")" : "" }, { "color": "#ff5500", "font-size": "18px", "font-family": "monospace" }],
@@ -2050,6 +2447,26 @@ content:
         ]
                 
                 },      
+                "Optimization": {
+                    buttonStyle() { return { 'color': 'orange' } },
+                    unlocked() { return hasUpgrade("m", 41) },
+                    content:
+                    
+                        [
+            ["blank", "25px"],
+            ["raw-html", function () { return "<h4>Your crafting bulk is " + formatWhole(player.c.craftingbulk) + "." }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+                            ["text-input", "craftingbulkinput", { 
+                                color: "var(--color)", 
+                                width: "400px",
+                                "text-align": "left",
+                                "font-size": "32px",
+                                border: "2px solid #ffffff17", 
+                                background: "var(--background)", 
+                            }],
+            ["raw-html", function () { return "<h4>(You can't change bulk while crafting something.)" }, { "color": "white", "font-size": "18px", "font-family": "monospace" }],
+        ]
+                    
+                    },  
 },
 
 

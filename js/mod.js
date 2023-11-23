@@ -64,7 +64,7 @@ let winText = `Congratulations! You have reached the end and beaten this game, b
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset", "celestialenergyreset", "hindrancereset", "checkforcountingreset", "countingreset", "checkforclaimsolaritycoal", "claimsolaritycoal", "quirkreset", "prestigepowerreset",]
+var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "prestigereset", "pureenergyreset", "celestialenergyreset", "hindrancereset", "checkforcountingreset", "countingreset", "checkforclaimsolaritycoal", "claimsolaritycoal", "quirkreset", "prestigepowerreset", "phantomsoulreset", ]
 
 function getStartPoints() {
 	return new Decimal(modInfo.initialStartPoints)
@@ -107,6 +107,8 @@ function getPointGen() {
 	gain = gain.mul(buyableEffect("i", 122))
 	gain = gain.mul(buyableEffect("i", 123))
 	if (player.ma.currentspell.eq(2)) gain = gain.mul(player.ma.pointprestigesynergyeffect)
+	gain = gain.mul(player.i.bloodeffect)
+	gain = gain.mul(buyableEffect("i", 141))
 	player.gain = gain
 	return gain
 }
@@ -207,10 +209,20 @@ function addedPlayerData() {
 		assemblylinescene: new Decimal(0),
 		sitraunlockcutscene: new Decimal(1),
 		sitraunlockscene: new Decimal(0),
+		sitracutscene: new Decimal(1),
+		sitrascene: new Decimal(0),
+		phantomsoulscutscene: new Decimal(1),
+		phantomsoulsscene: new Decimal(0),
+		phantomboostercutscene: new Decimal(1),
+		phantomboosterscene: new Decimal(0),
+		sitramachinecutscene: new Decimal(1),
+		sitramachinescene: new Decimal(0),
 
 		//Immersed Cutscenes
 		celestialflashbackcutscene: new Decimal(1),
 		celestialflashbackscene: new Decimal(0),
+		artisflashbackcutscene: new Decimal(1),
+		artisflashbackscene: new Decimal(0),
 
 		//YHVR cutscenes
 		yhvrcutscene1: new Decimal(0),
@@ -253,6 +265,7 @@ function addedPlayerData() {
 		solaritylayer: new Decimal(0),
 		balanceenergylayer: new Decimal(0),
 		magiclayer: new Decimal(0),
+		phantomsoulslayer: new Decimal(0),
 
 		//Realm Travel
 		dimensionalrealm: new Decimal(0),

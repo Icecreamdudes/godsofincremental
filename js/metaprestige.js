@@ -1,5 +1,5 @@
 ﻿var prestigetree = [["pr"],
-["bo", "ge"], ["sb", "ti", "en", "sp", "sg"], ["so", "hi", "qu", "ss"], ["ma", "be"]]
+["bo", "ge"], ["sb", "ti", "en", "sp", "sg"], ["so", "hi", "qu", "ss"], ["ma", "ps", "be"]]
           
           addLayer("m", {
     name: "Meta-Prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -45,6 +45,7 @@
         //ENHANCE PATH FACTORS
         scorefrombestenhancepoints: new Decimal(1),
         scorefrombestbeaconpoints: new Decimal(1),
+        scorefrombestphantomsouls: new Decimal(1),
 
         //PT Factors
         scorefromincrementalpower: new Decimal(1),
@@ -70,6 +71,10 @@
         enhancepointperk: new Decimal(1),
         beaconpointperk: new Decimal(1),
         quirkperk: new Decimal(1),
+        bloodgainperk: new Decimal(1),
+        bloodcapacityperk: new Decimal(1),
+        phantomsoulperk: new Decimal(1),
+        jacorbperk: new Decimal(1),
     }
     },
     onPrestige()
@@ -125,9 +130,18 @@
         player.m.enhancepointperk = player.m.enhancepointperk.add(buyableEffect("i", 113))
         player.m.beaconpointperk = player.m.beaconpointperk.add(buyableEffect("i", 114))
         player.m.quirkperk = player.m.quirkperk.add(buyableEffect("i", 115))
+        player.m.bloodgainperk = player.m.bloodgainperk.add(buyableEffect("i", 144))
+        player.m.bloodcapacityperk = player.m.bloodcapacityperk.add(buyableEffect("i", 145))
+        player.m.phantomsoulperk = player.m.phantomsoulperk.add(buyableEffect("i", 146))
+        player.m.jacorbperk = player.m.jacorbperk.add(buyableEffect("i", 147))
         }
 
         player.ma.currentspell = new Decimal(0)
+
+        if (player.i.sitraunlock.eq(1))
+        {
+            player.c.gears = player.c.gears.add(player.c.gearstoget)
+        }
     },
     requires: new Decimal(2.25), // Can be a function that takes requirement increases into account
     resource: "Incremental Power", // Name of prestige currency
@@ -162,12 +176,13 @@
          : player.i.ce308bossactivate.eq(1) && player.i.beatce308.eq(0) && player.dimensionalrealm.eq(0) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" 
          : player.ce308defeatscene.gte(1)  && player.ce308defeatscene.lt(0) && player.dimensionalrealm.eq(0) ? "radial-gradient(circle, #000000, #000000, #1a1a11, #333322, #4d4d33, #666644, #808055, #999966, #b3b377, #e6e699, #ffffaa)" 
          : player.ce308defeatscene.gte(1) && player.ce308defeatscene.lt(11) && player.dimensionalrealm.eq(0) || player.factorgridscene.gte(1) && player.factorgridscene.lt(14) && player.dimensionalrealm.eq(1) ? "#999999" 
-         : player.dimensionalrealm.eq(0) && player.i.injacorbianbalancing.eq(1) ? "linear-gradient(90deg, #3B0051, #0f0f0f)": player.dimensionalrealm.eq(1) ? "#1e2e1d" 
-         : player.dimensionalrealm.eq(0) && player.i.injacorbianbalancing.eq(0) && player.i.sitraunlock.eq(1) ? "linear-gradient(90deg, #180000, #300005, rgba(71,0,14,1))": player.dimensionalrealm.eq(1) ? "#1e2e1d" 
+         : player.dimensionalrealm.eq(0) && player.i.injacorbianbalancing.eq(1) ? "linear-gradient(90deg, #3B0051, #0f0f0f)" : player.dimensionalrealm.eq(1) ? "#1e2e1d" 
+         : player.dimensionalrealm.eq(0) && player.i.injacorbianbalancing.eq(0) && player.i.sitraunlock.eq(1) && !(player.phantomsoulslayer.eq(1) && player.artisflashbackcutscene.eq(1)) ? "linear-gradient(90deg, #180000, #300005, rgba(71,0,14,1))": player.dimensionalrealm.eq(1) ? "#1e2e1d" 
+         : player.phantomsoulslayer.eq(1) && player.artisflashbackcutscene.eq(1) ? "#0e1530"
          : "#161616");
 
 
-
+ 
          
         if (hasUpgrade("i", 27) && player.i.beatce308.eq(0) && player.dimensionalrealm.eq(0)) player.lightningtimer = player.lightningtimer.add(1)
         if (player.i.ce308bossactivate.eq(1) && player.i.beatce308.eq(0) && player.dimensionalrealm.eq(0)) player.lightningtimer = player.lightningtimer.add(4)
@@ -175,7 +190,7 @@
         {
             createLightning();
             player.lightningtimer = new Decimal(0)
-        }
+        }                                  
  
         //SCORE CALC
         player.m.scorefrombestpoints = player.bestpoints.add(1).slog().pow(2)
@@ -206,12 +221,15 @@
         if (player.i.enhancepath.eq(0)) player.m.scorefrombestbeaconpoints = new Decimal(1)
         if (player.i.enhancepath.eq(1) && player.i.bestbeaconpoints.neq(0)) player.m.scorefrombestbeaconpoints = player.i.bestbeaconpoints.slog().div(4).add(1)
 
+        if (player.i.enhancepath.eq(0)) player.m.scorefrombestphantomsouls = new Decimal(1)
+        if (player.i.enhancepath.eq(1) && player.i.bestphantomsouls.neq(0)) player.m.scorefrombestphantomsouls = player.i.bestphantomsouls.slog().pow(1.25).div(3.5).add(1)
+
         //pathless factors
         if (!hasUpgrade("m", 14)) player.m.scorefromtimeplayed = new Decimal(1)
         if (hasUpgrade("m", 14)) player.m.scorefromtimeplayed = Math.log10(Math.cbrt(player.timePlayed + 5000))
 
         if (player.c.celestialcells.eq(0)) player.m.scorefromcelestialcells = new Decimal(1)
-        if (player.c.celestialcells.neq(0)) player.m.scorefromcelestialcells = player.c.celestialcells.mul(0.004).pow(0.5).add(1)
+        if (player.c.celestialcells.neq(0)) player.m.scorefromcelestialcells = player.c.celestialcells.mul(0.0001).pow(0.25).add(1)
 
         if (player.i.puremachines.eq(0)) player.m.scorefrompuremachines = new Decimal(1)
         if (player.i.puremachines.neq(0)) player.m.scorefrompuremachines = player.i.puremachines.pow(0.2).div(7).add(1)
@@ -227,19 +245,19 @@
         if (player.enhancelayer.eq(1)) player.m.scorefrommetaprestigetime = player.i.metaprestigetime.add(1).log10().cbrt().sqrt()
 
         if (player.timelayer.eq(0)) player.m.scorefromtimecapsules = new Decimal(1)
-        if (player.timelayer.eq(1)) player.m.scorefromtimecapsules = player.c.timecapsules.mul(0.005).pow(0.4).add(1)
+        if (player.timelayer.eq(1)) player.m.scorefromtimecapsules = player.c.timecapsules.mul(0.005).pow(0.3).add(1)
 
         if (player.spacelayer.eq(0)) player.m.scorefromspacebuildings = new Decimal(1)
-        if (player.spacelayer.eq(1)) player.m.scorefromspacebuildings = player.c.spacebuildings.mul(0.006).pow(0.55).add(1)
+        if (player.spacelayer.eq(1)) player.m.scorefromspacebuildings = player.c.spacebuildings.mul(0.006).pow(0.325).add(1)
         
         if (player.quirklayer.eq(0)) player.m.scorefromquirklayers = new Decimal(1)
-        if (player.quirklayer.eq(1)) player.m.scorefromquirklayers = player.c.quirklayers.mul(0.0055).pow(0.55).add(1)
+        if (player.quirklayer.eq(1)) player.m.scorefromquirklayers = player.c.quirklayers.mul(0.0055).pow(0.325).add(1)
 
         if (player.hindrancelayer.eq(0)) player.m.scorefromhindrancespirits = new Decimal(1)
-        if (player.hindrancelayer.eq(1)) player.m.scorefromhindrancespirits = player.hi.hindrancespirits.add(1).pow(0.035)
+        if (player.hindrancelayer.eq(1)) player.m.scorefromhindrancespirits = player.hi.hindrancespirits.add(1).pow(0.03)
 
         if (player.balanceenergylayer.eq(0)) player.m.scorefrombalanceenergy = new Decimal(1)
-        if (player.balanceenergylayer.eq(1)) player.m.scorefrombalanceenergy = player.be.balanceenergy.add(1).pow(0.0375)
+        if (player.balanceenergylayer.eq(1)) player.m.scorefrombalanceenergy = player.be.balanceenergy.add(1).pow(0.025)
 
         let minutes = new Decimal(0)
         minutes = today.getMinutes()
@@ -273,8 +291,11 @@
         player.m.score = player.m.score.mul(player.m.scorefromminutes)
         if (player.ma.currentspell.eq(1)) player.m.score = player.m.score.mul(player.ma.scorecerereffect)
         player.m.score = player.m.score.mul(buyableEffect("h", 68))
+        player.m.score = player.m.score.mul(player.m.scorefrombestphantomsouls)
+        player.m.score = player.m.score.mul(buyableEffect("i", 143))
 
-        player.m.incrementalenergytoget = player.i.prestigemachines.pow(0.3)
+        if (!hasUpgrade("m", 39)) player.m.incrementalenergytoget = player.i.prestigemachines.pow(0.3)
+        if (hasUpgrade("m", 39)) player.m.incrementalenergytoget = player.i.prestigemachines.add(upgradeEffect("m", 39)).pow(0.3)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.noenergyboost)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(player.i.metataskeffect)
         player.m.incrementalenergytoget = player.m.incrementalenergytoget.mul(buyableEffect("h", 33))
@@ -626,6 +647,116 @@
             currencyDisplayName: "Celestial Cells",
             currencyInternalName: "celestialcells",
         },
+        37:
+        {
+            title: "Boost VI",
+            unlocked() { return player.m.sitraunlock.eq(1) && hasUpgrade("m", 34) },
+            description: "Score boosts space and subspace gain.",
+            cost: new Decimal(120000000),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+            effect() 
+            {
+                 return player.m.score.div(33).pow(0.5).add(1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
+        38:
+        {
+            title: "Boost VII",
+            unlocked() { return player.m.sitraunlock.eq(1) && hasUpgrade("m", 34) },
+            description: "Blood boosts meta-prestige time.",
+            cost: new Decimal(250000000),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+            effect() 
+            {
+                 return player.i.blood.pow(0.2).mul(5).add(1)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+        },
+        39:
+        {
+            title: "Cool Upgrade II",
+            unlocked() { return player.m.sitraunlock.eq(1) && hasUpgrade("m", 34) },
+            description: "Gain 1 prestige machine worth of incremental energy per day of meta-prestige time.",
+            cost: new Decimal(444444444),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+            effect() 
+            {
+                 return player.i.metaprestigetime.div(86400)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+" prestige machines." }, // Add formatting to the effect
+            style: {  width: '200px', "min-height": '120px' },
+        },
+        41:
+        {
+            title: "Crafting QoL IV",
+            unlocked() { return hasUpgrade("m", 36) && player.m.sitraunlock.eq(1) },
+            description: "Unlocks bulk crafting.",
+            cost: new Decimal(888),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
+        42:
+        {
+            title: "Crafting QoL V",
+            unlocked() { return hasUpgrade("m", 41) && player.m.sitraunlock.eq(1) },
+            description: "Adds another anvil slot.",
+            cost: new Decimal(2444),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+            onPurchase() {
+                player.c.anvilslots = player.c.anvilslots.add(1)
+            },
+        },
+        43:
+        {
+            title: "Standard Path QoL VI",
+            unlocked() { return hasUpgrade("m", 42) && player.phantomboostercutscene.eq(0) },
+            description: "Autobuys the rest of the standard path buyables. You heard me right.",
+            cost: new Decimal(3999),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
+        44:
+        {
+            title: "Standard Path QoL VI",
+            unlocked() { return hasUpgrade("m", 43) && player.phantomboostercutscene.eq(0) },
+            description: "Always generate 10% of pure energy, celestial energy, and hindrance points per second. (I THINK YOU SHOULD RETURN THERE AGAIN)",
+            cost: new Decimal(6666),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+            style: {  width: '170px', "min-height": '120px' },
+        },
+        45:
+        {
+            title: "Gears",
+            unlocked() { return player.phantomboostercutscene.eq(0) && hasUpgrade("m", 39) },
+            description: "Unlocks gears (crafting resource).",
+            cost: new Decimal(2e9),
+            currencyLocation() { return player.m },
+            currencyDisplayName: "Incremental Power",
+            currencyInternalName: "points",
+        },
+        46:
+        {
+            title: "Enhance Path QoL II",
+            unlocked() { return hasUpgrade("m", 45)},
+            description: "Autobuy blood, damned soul, and phatnom booster buyables.",
+            cost: new Decimal(12345),
+            currencyLocation() { return player.c },
+            currencyDisplayName: "Celestial Cells",
+            currencyInternalName: "celestialcells",
+        },
     },
     buyables: {
     },
@@ -678,6 +809,8 @@
                            ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Best enhance points: " + format(player.i.bestenhancepoints) + " -> x" + format(player.m.scorefrombestenhancepoints) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.enhancepath.eq(1) && hasUpgrade("i", 105) ? "<h3>Best beacon points: " + format(player.i.bestbeaconpoints) + " -> x" + format(player.m.scorefrombestbeaconpoints) : "" }, { "color": "#b82fbd", "font-size": "18px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.i.enhancepath.eq(1) && player.i.sacrificeddrigganiz.gt(0) ? "<h3>Sacrificed to Drigganiz: " + format(player.i.sacrificeddrigganiz) + " -> x" + format(player.i.sacrificeddrigganizeffect) : "" }, { "color": "#63005d", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.enhancepath.eq(1) && player.i.sitraunlock.eq(1) && player.phantomsoulslayer.eq(1) ? "<h3>Best phantom souls: " + format(player.i.bestphantomsouls) + " -> x" + format(player.m.scorefrombestphantomsouls) : "" }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
+                           ["raw-html", function () { return player.i.enhancepath.eq(1) ? "<h3>Meta-Prestige Wraith: " + format(player.i.buyables[143]) + " -> x" + format(buyableEffect("i", 143)) : "" }, { "color": "#b38fbf", "font-size": "18px", "font-family": "monospace" }],
                            ["blank", "25px"],
                            ["raw-html", function () { return player.prestigelayer.eq(1) ? "<h3>Prestige Tree Factors " : "" }, { "color": "#31aeb0", "font-size": "24px", "font-family": "monospace" }],
                            ["raw-html", function () { return player.prestigelayer.eq(1) && player.pr.buyables[11].gt(0) ? "<h3>Score amplifier: " + format(player.pr.buyables[11]) + " -> x" + format(buyableEffect("pr", 11)) : "" }, { "color": "#31aeb0", "font-size": "18px", "font-family": "monospace" }],
@@ -758,6 +891,7 @@
                         ["blank", "25px"],
                         ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 16], ["upgrade", 17]]],
                         ["row", [["upgrade", 18], ["upgrade", 19], ["upgrade", 21], ["upgrade", 22], ["upgrade", 23], ["upgrade", 31], ["upgrade", 34]]],
+                        ["row", [["upgrade", 37], ["upgrade", 38], ["upgrade", 39], ["upgrade", 45]]],
         ]
 
             },
@@ -772,7 +906,8 @@
             ["raw-html", function () { return "<h3>(celestial cells are a crafting resource)" }, { "color": "#72a4d4", "font-size": "18px", "font-family": "monospace" }],
             ["blank", "25px"],
                         ["row", [["upgrade", 24], ["upgrade", 25], ["upgrade", 26], ["upgrade", 27], ["upgrade", 28], ["upgrade", 29]]],
-                        ["row", [["upgrade", 32], ["upgrade", 33], ["upgrade", 35], ["upgrade", 36]]],
+                        ["row", [["upgrade", 32], ["upgrade", 33], ["upgrade", 35], ["upgrade", 36], ["upgrade", 41], ["upgrade", 42]]],
+                        ["row", [["upgrade", 43],  ["upgrade", 44],  ["upgrade", 46]]],
         ]
 
             },

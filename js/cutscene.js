@@ -70,6 +70,22 @@
                 player.celestialflashbackscene = player.celestialflashbackscene.sub(1)
             },
         },
+        13: {
+            title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.artisflashbackcutscene.eq(1) },
+            unlocked() { return player.artisflashbackscene.lt(25) },
+            onClick() {
+                player.artisflashbackscene = player.artisflashbackscene.add(1)
+            },
+        },
+        14: {
+            title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+            canClick() { return player.artisflashbackcutscene.eq(1) },
+            unlocked() { return player.artisflashbackscene.lt(25) && player.artisflashbackscene.neq(0) },
+            onClick() {
+                player.artisflashbackscene = player.artisflashbackscene.sub(1)
+            },
+        },
     },
     upgrades: {
     },
@@ -116,10 +132,37 @@
         ["raw-html", function () { return player.celestialflashbackscene.eq(24) ? "Everything was destroyed, except for us. Hevi turned us celestials." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
         ["raw-html", function () { return player.celestialflashbackscene.eq(25) ? "We were all happy. We were so naive. None of this was predictable." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
         ["raw-html", function () { return player.celestialflashbackscene.eq(26) ? "He ruined everything..." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+
+        ["raw-html", function () { return player.artisflashbackscene.eq(1) ? "Artis, we must leave now! Where is the portal?" : "" }, { "color": "#880808", "font-size": "36px", }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(2) ? "Why?" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(3) ? "Beings larger than time itself..." : "" }, { "color": "#880808", "font-size": "36px", }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(4) ? "The gods! They have come to our world!" : "" }, { "color": "#880808", "font-size": "36px", }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(5) ? "I am confused, what did you see?" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(6) ? "I saw it. A giant ball of fire in the sky. Not any normal fire though." : "" }, { "color": "#880808", "font-size": "36px", }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(7) ? "Are the Jacorbians back? Didn't we win the war?" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(8) ? "It is not them. These beings are much more powerful. We are ants compared to them." : "" }, { "color": "#880808", "font-size": "36px", }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(9) ? "I can see it now. They look like our god. We will not leave." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(10) ? "Why? Don't we have a portal that leads to another world!" : "" }, { "color": "#880808", "font-size": "36px", }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(11) ? "Today is our day. Our judgement day. We will see heaven." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(12) ? "Everyone around us are dead. We are the only ones here left alive." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(13) ? "We have been chosen to go to heaven." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(14) ? "Are you serious? What about ??????! Is she still alive?" : "" }, { "color": "#880808", "font-size": "36px", }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(15) ? "Maybe they are all going to be in heaven." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(16) ? "So what do we do?" : "" }, { "color": "#880808", "font-size": "36px", }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(17) ? "We should just wait." : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(18) ? "Yes. You have been chosen for heaven." : "" }, { "font-style": "italic", "color": "#0f4c89", "font-size": "36px", "text-shadow": "rgba(15,76,137,1) 0px 0px 38px" }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(19) ? "Who are you?" : "" }, { "color": "#880808", "font-size": "36px", }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(20) ? "What? You don't look like a god!" : "" }, { "font-style": "italic", "color": "#ff5500", "font-size": "36px"}],
+        ["raw-html", function () { return player.artisflashbackscene.eq(21) ? "Well don't worry. I am god." : "" }, { "font-style": "italic", "color": "#0f4c89", "font-size": "36px", "text-shadow": "rgba(15,76,137,1) 0px 0px 38px" }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(22) ? "The both of you have been chosen for a task." : "" }, { "font-style": "italic", "color": "#0f4c89", "font-size": "36px", "text-shadow": "rgba(15,76,137,1) 0px 0px 38px" }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(23) ? "Once you are done, endless pleasure awaits." : "" }, { "font-style": "italic", "color": "#0f4c89", "font-size": "36px", "text-shadow": "rgba(15,76,137,1) 0px 0px 38px" }],
+        ["raw-html", function () { return player.artisflashbackscene.eq(24) ? "Allow me to introduce myself. I am Hevi, KING OF CELESTIALS!" : "" }, { "font-style": "italic", "color": "#0f4c89", "font-size": "36px", "text-shadow": "rgba(15,76,137,1) 0px 0px 38px" }],
+
         ["blank", "25px"],
         ["row", [["clickable", 12], ["clickable", 11]]],
+        ["row", [["clickable", 14], ["clickable", 13]]],
         ["blank", "25px"],
-        ["raw-html", function () { return player.celestialflashbackscene.gte(1) && player.celestialflashbackscene.lt(5) || player.celestialflashbackscene.eq(9)  ? "♅" : "" }, { "color": "#c31235", "font-size": "336px", }],
+        ["raw-html", function () { return player.celestialflashbackscene.gte(1) && player.celestialflashbackscene.lt(5) || player.celestialflashbackscene.eq(9)  ? "♅" : "" }, { "color": "#c31235", "font-size": "336px"}],
                 ["raw-html", function () { return player.celestialflashbackscene.gte(5) && player.celestialflashbackscene.lt(7) ? "<div class=spinning-symbol>☭</div>" : "" }],
                 ["raw-html", function () { return player.celestialflashbackscene.gte(7) && player.celestialflashbackscene.lt(9) ? "<div class=spinning-symbol3>⚙</div>" : "" }],
                 ["raw-html", function () { return player.celestialflashbackscene.gte(10) && player.celestialflashbackscene.lt(13) ? "⌬" : "" }, { "color": "#ead584", "font-size": "336px", }],
@@ -127,7 +170,11 @@
                 ["raw-html", function () { return player.celestialflashbackscene.gte(15) && player.celestialflashbackscene.lt(19) ? "Ψ" : "" }, { "color": "#64dd17", "font-size": "336px", }],
                 ["raw-html", function () { return player.celestialflashbackscene.gte(19) && player.celestialflashbackscene.lt(22) ? "<div class=spinning-symbol3>⚙</div>" : "" }],
                 ["raw-html", function () { return player.celestialflashbackscene.gte(22) && player.celestialflashbackscene.lt(28) ? "<div class=spinning-symbol>☭</div>" : "" }],
+
+                ["raw-html", function () { return player.artisflashbackscene.gte(18) && player.artisflashbackscene.lt(25) ? "♆" : "" }, { "color": "#0f4c89", "font-size": "336px", "text-shadow": "rgba(15,76,137,1) 0px 0px 38px" }],
+
                 ["raw-html", function () { return options.musicToggle && player.celestialflashbackcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/pathless.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+                ["raw-html", function () { return options.musicToggle && player.artisflashbackcutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
     layerShown() { return true }
 })

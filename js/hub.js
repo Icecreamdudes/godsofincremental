@@ -175,7 +175,8 @@ update(delta) {
     player.h.countingpointstoget = player.h.count.div(25).floor()
     if (hasUpgrade("h", 28)) player.h.countingpointstoget = player.h.countingpointstoget.mul(upgradeEffect("h", 28))
     player.h.countingpointstoget = player.h.countingpointstoget.mul(buyableEffect("h", 63))
-    player.h.countingpointseffect = player.h.countingpoints.mul(0.02).add(1).pow(0.7)
+    if (hasUpgrade("h", 32)) player.h.countingpointstoget = player.h.countingpointstoget.mul(upgradeEffect("h", 32))
+    player.h.countingpointseffect = player.h.countingpoints.mul(0.01).add(1).pow(0.4)
     if (player.h.countinput == player.h.nextcount && player.h.yourturncounting.eq(1))
     {
         countingPrint("You: " + formatWhole(player.h.nextcount))
@@ -655,6 +656,7 @@ update(delta) {
             let harvestspeed = new Decimal(5)
             let assemblylinespeed = new Decimal(1)
             assemblylinespeed = assemblylinespeed.mul(buyableEffect("h", 58))
+            if (hasUpgrade("h", 33)) assemblylinespeed = assemblylinespeed.mul(upgradeEffect("h", 33))
 
             redenergypersecond = redenergypersecond.mul(assemblylinespeed)
             redenergypersecond = redenergypersecond.mul(buyableEffect("h", 55))
@@ -1490,6 +1492,36 @@ upgrades: {
         currencyDisplayName: "Prestige Power",
         currencyInternalName: "prestigepower",
         currencyLocation() { return player.h },
+    },
+    32:
+    {
+        title: "Willpower Upgrade VIII",
+        unlocked() { return player.m.sitraunlock.eq(1) && hasUpgrade("h", 26) },
+        description: "Shrine power boost counting points.",
+        cost: new Decimal(1e14),
+        currencyDisplayName: "Willpower",
+        currencyInternalName: "willpower",
+        currencyLocation() { return player.h },
+        effect() 
+        {
+             return player.h.shrinepower.pow(0.1).div(16).add(1)
+        },
+        effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
+    },
+    33:
+    {
+        title: "Willpower Upgrade IX",
+        unlocked() { return player.m.sitraunlock.eq(1) && hasUpgrade("h", 32) },
+        description: "Counting points boost assembly line speed.",
+        cost: new Decimal(2e15),
+        currencyDisplayName: "Willpower",
+        currencyInternalName: "willpower",
+        currencyLocation() { return player.h },
+        effect() 
+        {
+             return player.h.countingpoints.pow(0.3).div(6).add(1)
+        },
+        effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }, // Add formatting to the effect
     },
 },
 buyables: {
@@ -2846,7 +2878,7 @@ buyables: {
         style: { width: '275px', height: '150px', "background-color": "red",}
     },
     76: {
-        cost(x) { return new Decimal(1.16).pow(x || getBuyableAmount(this.layer, this.id)).mul(22) },
+        cost(x) { return new Decimal(1.225).pow(x || getBuyableAmount(this.layer, this.id)).mul(22) },
         effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.02).add(1) },
         unlocked() { return player.h.slotbuyablepage.eq(7) },
         canAfford() { return player.h.slotgreenenergy[7].gte(this.cost()) },
@@ -2868,7 +2900,7 @@ buyables: {
         style: { width: '275px', height: '150px', "background-color": "green",}
     },
     77: {
-        cost(x) { return new Decimal(1.165).pow(x || getBuyableAmount(this.layer, this.id)).mul(24) },
+        cost(x) { return new Decimal(1.22).pow(x || getBuyableAmount(this.layer, this.id)).mul(24) },
         effect(x) { return new getBuyableAmount(this.layer, this.id).mul(0.03).add(1) },
         unlocked() { return player.h.slotbuyablepage.eq(7) },
         canAfford() { return player.h.slotblueenergy[7].gte(this.cost()) },
@@ -3094,7 +3126,7 @@ willpower: {
             ["row", [["buyable", 25], ["buyable", 26]]],
             ["blank", "25px"],
             ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 21]]],
-            ["row", [["upgrade", 26]]],
+            ["row", [["upgrade", 26], ["upgrade", 32], ["upgrade", 33]]],
         ]
 
     },

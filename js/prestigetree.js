@@ -548,6 +548,7 @@ update(delta) {
     player.sp.spacepersecond = player.sp.spacepersecond.mul(buyableEffect("h", 21))
     player.sp.spacepersecond = player.sp.spacepersecond.mul(buyableEffect("be", 11))
     player.sp.spacepersecond = player.sp.spacepersecond.mul(buyableEffect("h", 72))
+    if (hasUpgrade("m", 37)) player.sp.spacepersecond = player.sp.spacepersecond.mul(upgradeEffect("m", 37))
     player.sp.space = player.sp.space.add(player.sp.spacepersecond.mul(delta))
 
     if (player.i.standardpath.eq(0)) player.sp.spacestandardeffect = new Decimal(1)
@@ -559,7 +560,7 @@ clickables: {
     11: {
         title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.spacecutscene.eq(1) },
-        unlocked() { return player.spacescene.lte(17) },
+        unlocked() { return player.spacescene.lte(17) && player.spacecutscene.eq(1)},
         onClick() {
             player.spacescene = player.spacescene.add(1)
         },
@@ -567,7 +568,7 @@ clickables: {
     12: {
         title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
         canClick() { return player.spacecutscene.eq(1) },
-        unlocked() { return player.spacescene.lte(17) && player.spacescene.neq(0) },
+        unlocked() { return player.spacescene.lte(17) && player.spacescene.neq(0) && player.spacecutscene.eq(1) },
         onClick() {
             player.spacescene = player.spacescene.sub(1)
         },
@@ -1080,6 +1081,7 @@ update(delta) {
     player.ss.subspacepersecond = buyableEffect("ss", 11)
     player.ss.subspacepersecond = player.ss.subspacepersecond.mul(buyableEffect("ss", 12))
     player.ss.subspacepersecond = player.ss.subspacepersecond.mul(buyableEffect("h", 23))
+    if (hasUpgrade("m", 37)) player.ss.subspacepersecond = player.ss.subspacepersecond.mul(upgradeEffect("m", 37))
 
     player.ss.subspace = player.ss.subspace.add(player.ss.subspacepersecond.mul(delta))
     player.ss.subspaceeffect = player.ss.subspace.pow(0.25).div(3.5).add(1)
@@ -1450,7 +1452,7 @@ clickables: {
     },
     13: {
         title() { return "<h2>Scorecerer" },
-        canClick() { return player.ma.currentspell.eq(0) },
+        canClick() { return true },
         unlocked() { return player.magiccutscene.eq(0)},
         display() {
             return "<h3>Boosts score by x" + format(player.ma.scorecerereffect) + "."
@@ -1462,7 +1464,7 @@ clickables: {
     },
     14: {
         title() { return "<h2>Point-Prestige Synergy" },
-        canClick() { return player.ma.currentspell.eq(0) },
+        canClick() { return true },
         unlocked() { return player.magiccutscene.eq(0)},
         display() {
             return "<h3>Boosts points by x" + format(player.ma.pointprestigesynergyeffect) + ". (Based on prestige points)"
@@ -1474,7 +1476,7 @@ clickables: {
     },
     15: {
         title() { return "<h2>Energy Emulsifier" },
-        canClick() { return player.ma.currentspell.eq(0) },
+        canClick() { return true },
         unlocked() { return player.magiccutscene.eq(0)},
         display() {
             return "<h3>Boosts incremental energy by x" + format(player.ma.energyemulsifiereffect) + "."
@@ -1615,6 +1617,102 @@ tabFormat: [
 ["microtabs", "stuff", { 'border-width': '0px' }],
 ["raw-html", function () { return options.musicToggle && player.magiccutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/demonin.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ["raw-html", function () { return options.musicToggle && player.magiccutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+],
+layerShown() { return player.magiclayer.eq(1) }
+})
+
+addLayer("ps", {
+    name: "Phantom Souls", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "PS", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+tooltip: "Phantom Souls", // Row the layer is in on the tree (0 is the first row)
+branches: ["qu", "hi"],
+color: "#b38fbf",
+startData() { return {
+    unlocked: true,
+}
+},
+update(delta) {
+    if (player.phantomsoulsscene.eq(21)) {
+        player.phantomsoulscutscene = new Decimal(0)
+    }
+},
+clickables: {
+    11: {
+        title() { return "<img src='resources/assemblylinearrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.phantomsoulscutscene.eq(1) },
+        unlocked() { return player.phantomsoulsscene.lt(21) },
+        onClick() {
+            player.phantomsoulsscene = player.phantomsoulsscene.add(1)
+        },
+    },
+    12: {
+        title() { return "<img src='resources/backarrow.png'style='width:calc(80%);height:calc(80%);margin:10%'></img>" },
+        canClick() { return player.phantomsoulscutscene.eq(1) },
+        unlocked() { return player.phantomsoulsscene.lt(21) && player.phantomsoulsscene.neq(0) },
+        onClick() {
+            player.phantomsoulsscene = player.phantomsoulsscene.sub(1)
+        },
+    },
+},
+upgrades: {
+},
+buyables: {
+
+},
+milestones: {
+
+},
+challenges: {
+},
+bars: {
+
+},
+infoboxes: {
+
+},
+microtabs: {
+stuff: {
+"Main": {
+buttonStyle() { return { 'color': '#b38fbf' } },
+unlocked() { return player.magiclayer.eq(1) },
+content:
+
+    [
+        ["raw-html", function () { return player.phantomsoulsscene.eq(1) ? "Well, you've unlocked phantom souls now." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(2) ? "It seems like you've had a celestial flashback." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(3) ? "You were able to peek in a celestial's past memories." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(4) ? "Well, I have to explain something. The jacorbians." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(5) ? "Basically, the people from my home dimension started to worship me." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(6) ? "I know, it's strange, but they never seen someone with so much power before." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(7) ? "As a matter of fact, they started getting more stronger and advanced as time passed." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(8) ? "After a few centuries, they started interdimensional travel." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(9) ? "They have an insane desire to obtain jacorbian energy." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(10) ? "They hopped from dimension to dimension, so they can obtain my energy." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(11) ? "Turns out they have stumbled upon Artis and Sitra's world." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(12) ? "There are actually jacorbian energy there, but in very small amounts." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(13) ? "Each person in that world has a PHANTOM SOUL." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(14) ? "It is a soul laced with small amounts of jacorbian energy." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(15) ? "Every person is able to manipulate the laws of physics, but not like magic." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(16) ? "They are only allowed to do so in their own space." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(17) ? "The size is determined by the amount of jacorbian energy in their soul." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(18) ? "That made them very strong beings, they were able to defeat the jacorbians." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(19) ? "However the celestial king was able to destroy the whole universe with no work." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["raw-html", function () { return player.phantomsoulsscene.eq(20) ? "It's crazy how strong people can get." : "" }, { "color": "purple", "font-size": "36px", }],
+        ["blank", "25px"],
+        ["row", [["clickable", 12], ["clickable", 11]]],
+        ["raw-html", function () { return "<h1>Unloked a new prestige layer in the enhance path (with sitra summoned)" }],
+    ],
+
+},
+},
+
+},
+
+tabFormat: [
+["microtabs", "stuff", { 'border-width': '0px' }],
+["raw-html", function () { return options.musicToggle && player.phantomsoulscutscene.eq(1) ? "<audio controls autoplay loop hidden><source src=music/jacorbcutscene.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
+["raw-html", function () { return options.musicToggle && player.phantomsoulscutscene.eq(0) ? "<audio controls autoplay loop hidden><source src=music/prestigetree.mp3 type<=audio/mp3>loop=true hidden=true autostart=true</audio>" : "" }],
 ],
 layerShown() { return player.magiclayer.eq(1) }
 })
